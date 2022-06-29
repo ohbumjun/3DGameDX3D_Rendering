@@ -470,6 +470,11 @@ bool CCollision::CollisionPixelToPoint(CollisionResult& SrcResult, CollisionResu
 
 bool CCollision::CollisionRayToSphere(Vector3& HitPoint, const Ray& ray, const SphereInfo& Sphere)
 {
+
+	return true;
+}
+
+/*
 	Vector3	M = ray.Pos - Sphere.Center;
 
 	float	b = 2.f * M.Dot(ray.Dir);
@@ -497,5 +502,4 @@ bool CCollision::CollisionRayToSphere(Vector3& HitPoint, const Ray& ray, const S
 
 	HitPoint = ray.Pos + ray.Dir * Dist;
 
-	return true;
-}
+*/

@@ -63,6 +63,9 @@ bool CScene::Picking(CGameObject*& result)
 {
 	CCameraComponent* Camera = m_CameraManager->GetCurrentCamera();
 
+	// CInput 에서 실시간 만들어주는 Ray 정보는 뷰 공간 상에서의 Ray
+	// 아래의 함수를 통해서, View 행렬의 역행렬을 곱해준 Ray
+	// 즉, World 공간 상의 Ray 를 가져다준다.
 	Ray	ray = CInput::GetInst()->GetRay(Camera->GetViewMatrix());
 
 	auto	iter = m_RenderComponentList.begin();
@@ -201,8 +204,10 @@ void CScene::PostUpdate(float DeltaTime)
 
 	for (; iter != iterEnd; ++iter)
 	{
+		// Culling 여부 조사하고
 		(*iter)->AddCollision();
 
+		// 해당 Object 의 모든 Scene Component 들을 돌면서
 		const std::list<CSceneComponent*>& List = (*iter)->GetSceneComponents();
 
 		auto	iter1 = List.begin();
@@ -210,6 +215,7 @@ void CScene::PostUpdate(float DeltaTime)
 
 		for (; iter1 != iter1End; ++iter1)
 		{
+			// Render 되기도 하면서, Culling 처리 되지 않은 녀석들을 모아둔다.
 			if ((*iter1)->GetRender() && !(*iter1)->GetCulling())
 			{
 				m_RenderComponentList.push_back(*iter1);

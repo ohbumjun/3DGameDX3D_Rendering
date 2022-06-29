@@ -26,10 +26,17 @@ void CFrustum::Update(Matrix matVP)
 	// 역행렬을 구한다.
 	matVP.Inverse();
 
+	// 우리의 의도는, 투영 공간에 있는 좌표점들을, view * proj 행렬의 역행렬을 곱해서
+	// World 공간으로 변환하려는 것이다.
+	// 그렇다면 전제는 해당 좌표점들이 투영 공간에 위치해있어야 한다는 것인데
+	// 처음 물음은, 아니. 애초에 해당 점들을 투영 공간으로 변환 시키는 과정이 없었는데 어떻게
+	// 이러한 과정이 가능한 것인가 였다.
+	// - 바로, 애초에 위 생성자에서 투영 공간 상 (즉, NDC 좌표상의 투영 공간 좌표) 로 만들어줬기 때문에
+	// - 이런 과정이 가능한 것이다.
+	// - (뭔가 가정이, 투영공간 변환 이후, 좌표들은 x,y 는 -1에서 1 사이
+	// z 는 0 에서 1 사이)
 	for (int i = 0; i < 8; ++i)
-	{
 		Pos[i] = m_Pos[i].TransformCoord(matVP);
-	}
 
 	// Left
 	m_Plane[(int)Frustum_Plane_Dir::Left] = XMPlaneFromPoints(Pos[4].Convert(), Pos[0].Convert(),

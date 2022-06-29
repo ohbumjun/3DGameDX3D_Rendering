@@ -186,8 +186,6 @@ void CParticleComponent::Render()
 	if (m_Material)
 		m_Material->Render();
 
-
-
 	// 인스턴싱을 이용해서 그려준다.
 	m_Mesh->RenderInstancing(m_CBuffer->GetSpawnCount());
 
@@ -196,7 +194,6 @@ void CParticleComponent::Render()
 	{
 		m_vecStructuredBuffer[i]->ResetShader(30 + (int)i, (int)Buffer_Shader_Type::Geometry);
 	}
-
 
 	if (m_Material)
 		m_Material->Reset();
