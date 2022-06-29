@@ -194,7 +194,7 @@ void CCameraComponent::PostUpdate(float DeltaTime)
 	for (int i = 0; i < AXIS_MAX; ++i)
 	{
 		Vector3	Axis = GetWorldAxis((AXIS)i);
-		memcpy(&m_matView[i][0], &Axis, sizeof(Vector3));
+		memcpy(&m_matView[i][0], &Axis, sizeof(Vector3)); //
 	}
 
 	/*
