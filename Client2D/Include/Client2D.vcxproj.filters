@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="01. SceneMode">
+      <UniqueIdentifier>{e62b997e-036e-4fba-99e4-b4aae31a745e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Object">
+      <UniqueIdentifier>{8fd42c1c-d823-47ee-941b-8f2a2bf4a2ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. UI">
+      <UniqueIdentifier>{d73ae55b-c5b2-4d09-9359-f74da5079a37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Object\01. Player">
+      <UniqueIdentifier>{2b976b71-9523-49cb-bc61-c218858c7b61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Object\02. Bullet">
+      <UniqueIdentifier>{e42e0f77-f2af-4652-bfeb-7818856ca6dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Object\03. Monster">
+      <UniqueIdentifier>{88b1c541-daee-4bd1-bf12-56e05e64b8ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Object\04. Test">
+      <UniqueIdentifier>{817d639e-7f86-4af5-adfa-e9ec4e941306}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Object\05. Particle">
+      <UniqueIdentifier>{6209f83c-fd2a-4444-8449-43e9109cc3e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Object\06. TileMap">
+      <UniqueIdentifier>{6d51f824-511a-4234-86a5-046edd96b17d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. UI\01. Mouse">
+      <UniqueIdentifier>{b77deffe-dc3f-4ee0-9cce-ac5750be9bf9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\LoadingThread.h">
+      <Filter>01. SceneMode</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\MainScene.h">
+      <Filter>01. SceneMode</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\StartScene.h">
+      <Filter>01. SceneMode</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\LoadingScene.h">
+      <Filter>01. SceneMode</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Player2D.h">
+      <Filter>02. Object\01. Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\PlayerAnimation2D.h">
+      <Filter>02. Object\01. Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Bullet.h">
+      <Filter>02. Object\02. Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\BulletCamera.h">
+      <Filter>02. Object\02. Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\BulletTornaido.h">
+      <Filter>02. Object\02. Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\MonsterAnimation.h">
+      <Filter>02. Object\03. Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Monster.h">
+      <Filter>02. Object\03. Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\PixelTest.h">
+      <Filter>02. Object\04. Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\BubbleParticle.h">
+      <Filter>02. Object\05. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\TileMap.h">
+      <Filter>02. Object\06. TileMap</Filter>
+    </ClInclude>
+    <ClInclude Include="Widget\LoadingWidget.h">
+      <Filter>03. UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Widget\MainWidget.h">
+      <Filter>03. UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Widget\SimpleHUD.h">
+      <Filter>03. UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Widget\StartWidget.h">
+      <Filter>03. UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Widget\MouseAttack.h">
+      <Filter>03. UI\01. Mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="Widget\MouseNormal.h">
+      <Filter>03. UI\01. Mouse</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Client2D.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ClientManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\LoadingThread.cpp">
+      <Filter>01. SceneMode</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\MainScene.cpp">
+      <Filter>01. SceneMode</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\StartScene.cpp">
+      <Filter>01. SceneMode</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\LoadingScene.cpp">
+      <Filter>01. SceneMode</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Player2D.cpp">
+      <Filter>02. Object\01. Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\PlayerAnimation2D.cpp">
+      <Filter>02. Object\01. Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Bullet.cpp">
+      <Filter>02. Object\02. Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\BulletCamera.cpp">
+      <Filter>02. Object\02. Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\BulletTornaido.cpp">
+      <Filter>02. Object\02. Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\MonsterAnimation.cpp">
+      <Filter>02. Object\03. Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Monster.cpp">
+      <Filter>02. Object\03. Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\PixelTest.cpp">
+      <Filter>02. Object\04. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\BubbleParticle.cpp">
+      <Filter>02. Object\05. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\TileMap.cpp">
+      <Filter>02. Object\06. TileMap</Filter>
+    </ClCompile>
+    <ClCompile Include="Widget\MainWidget.cpp">
+      <Filter>03. UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Widget\SimpleHUD.cpp">
+      <Filter>03. UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Widget\StartWidget.cpp">
+      <Filter>03. UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Widget\LoadingWidget.cpp">
+      <Filter>03. UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Widget\MouseAttack.cpp">
+      <Filter>03. UI\01. Mouse</Filter>
+    </ClCompile>
+    <ClCompile Include="Widget\MouseNormal.cpp">
+      <Filter>03. UI\01. Mouse</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
