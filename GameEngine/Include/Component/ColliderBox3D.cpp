@@ -16,6 +16,9 @@ CColliderBox3D::CColliderBox3D()
 	m_Render = true;
 
 	m_ColliderType = Collider_Type::Box3D;
+
+	// DebugLayer ¿¡ Ãâ·Â
+	m_LayerName = "DebugLayer";
 }
 
 CColliderBox3D::CColliderBox3D(const CColliderBox3D& com)

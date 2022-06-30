@@ -323,7 +323,9 @@ void CSceneComponent::CheckCollision()
 		// 실질적인 Offset 은 MeshSize * Worldscale 값에 의존한다.
 		// WorldScale 값을 실시간 변하지만, MeshSize는 바뀌지 않는다.
 		// 따라서 MeshSize 를 세팅해두고, 여기에 실시간 바뀌는 World Scale 정보를 세팅하는 방법이 있다.
-		Info.Center.y += (0.5f * GetWorldScale().y);
+		// 혹은, 해당 MeshSize 는, Root Component 의 Transform 의 MeshSize 라는 변수에 들어있으므로
+		// 해당 변수 내용을 이용해도 된다.
+		Info.Center.y += 0.5f * (m_Transform->GetMeshSize().y * GetRelativeScale().y);
 
 		Vector3	Radius;
 		Radius.x = GetMeshSize().Length();

@@ -139,6 +139,12 @@ bool CRenderManager::Init()
 
 	m_RenderLayerList.push_back(Layer);
 
+	Layer = new RenderLayer;
+	Layer->Name = "DebugLayer";
+	Layer->LayerPriority = 5;
+
+	m_RenderLayerList.push_back(Layer);
+
 	m_DepthDisable = m_RenderStateManager->FindRenderState("DepthDisable");
 	m_AlphaBlend = m_RenderStateManager->FindRenderState("AlphaBlend");
 	m_LightAccBlend = m_RenderStateManager->FindRenderState("LightAcc");
@@ -421,10 +427,8 @@ void CRenderManager::Render(float DeltaTime)
 	// 인스턴싱 정보를 만든다.
 	RenderDefaultInstancingInfo();
 
-
 	// 그림자 맵을 만든다.
 	RenderShadowMap();
-
 
 	// GBuffer를 만들어낸다.
 	RenderGBuffer();
@@ -475,8 +479,18 @@ void CRenderManager::Render(float DeltaTime)
 	m_AlphaBlend->SetState();
 
 	// 파티클 레이어 출력
+
 	auto	iter = m_RenderLayerList[3]->RenderList.begin();
 	auto	iterEnd = m_RenderLayerList[3]->RenderList.end();
+
+	for (; iter != iterEnd; ++iter)
+	{
+		(*iter)->Render();
+	}
+
+	// Collider 등 Debug 시 Light 적용과 별도로 Render 해줄 녀석들 출력하기 
+	iter = m_RenderLayerList[5]->RenderList.begin();
+	iterEnd = m_RenderLayerList[5]->RenderList.end();
 
 	for (; iter != iterEnd; ++iter)
 	{
