@@ -5,6 +5,7 @@
 #include "Scene/Scene.h"
 #include "Scene/Navigation3DManager.h"
 #include "Weapon.h"
+#include "Component/ColliderBox3D.h"
 
 CPlayer::CPlayer()
 {
@@ -30,38 +31,58 @@ bool CPlayer::Init()
 	m_Arm = CreateComponent<CArm>("Arm");
 	m_Camera = CreateComponent<CCameraComponent>("Camera");
 	m_NavAgent = CreateComponent<CNavAgent>("NavAgent");
+	m_ColliderBox3D = CreateComponent<CColliderBox3D>("ColliderBox3D");
 
+	// Arm, Camera
 	m_Mesh->AddChild(m_Arm);
-
 	m_Arm->AddChild(m_Camera);
 
 	m_Camera->SetInheritRotX(true);
 	m_Camera->SetInheritRotY(true);
 	m_Camera->SetInheritRotZ(true);
 
+	// Set Mesh 를 해줘야만 MeshSize가 세팅 (SetMeshSize)
+	// - Root Component 인 Animation Mesh Component 의 Transform 에 MeshSize 에 대한 정보가 들어있게 된다. (min, max)
 	m_Mesh->SetMesh("PlayerMesh");
 	m_Mesh->SetReceiveDecal(false);
 
-
-
+	// Animation
 	m_Mesh->CreateAnimationInstance<CPlayerAnimation>();
-
 	m_Animation = (CPlayerAnimation*)m_Mesh->GetAnimationInstance();
 
+	// Scale
 	m_Mesh->SetRelativeScale(0.02f, 0.02f, 0.02f);
-	m_Mesh->SetWorldPos(1.f, 0.f, 1.f);
+	// m_Mesh->SetWorldPos(1.f, 0.f, 1.f);
+	// 이걸 해도 되는 것인가 ?
 
 	m_Arm->SetOffset(0.f, 2.f, 0.f);
 	m_Arm->SetRelativeRotation(25.f, 0.f, 0.f);
 	m_Arm->SetTargetDistance(10.f);
 
+	// Collider
+	m_Mesh->AddChild(m_ColliderBox3D);
 
+	const Vector3& AnimComponentMeshSize = m_Mesh->GetMeshSize();
+	const Vector3& MeshWorldScale = m_Mesh->GetWorldScale();
+	Vector3 ColliderLength = Vector3(
+		AnimComponentMeshSize.x * MeshWorldScale.x,
+		AnimComponentMeshSize.y * MeshWorldScale.y,
+		AnimComponentMeshSize.z * MeshWorldScale.z
+	);
+	
+	// Center 지점의 경우, 기본적으로 Player 의 WorldPos 가 발밑으로 잡힌다.
+	// 즉, 아무 처리를 해주지 않을 경우, Center 가 발밑으로 잡힌다는 의미이다.
+	
+	// m_ColliderBox3D->SetInfo(
+	// 	m_RootComponent->GetWorldPos() - AnimComponentMeshSize * m_RootComponent->GetPivot(),
+	// 	ColliderLength * 0.5f);
 
-	m_Weapon = m_Scene->CreateGameObject<CWeapon>("Weapon");
+	// m_Body->SetCollisionProfile("Player");
+	// SetInfo(const Vector3 & Center, const Vector3 & Length)
 
-	m_Mesh->AddChild(m_Weapon, "Weapon");
-
-
+	// Weapon 달지 말고
+	// m_Weapon = m_Scene->CreateGameObject<CWeapon>("Weapon");
+	// m_Mesh->AddChild(m_Weapon, "Weapon");
 
 	CInput::GetInst()->SetKeyCallback<CPlayer>("MoveFront", KeyState_Push,
 		this, &CPlayer::MoveFront);
@@ -105,8 +126,6 @@ void CPlayer::Update(float DeltaTime)
 	{
 		m_Animation->ChangeAnimation("Idle");
 	}
-
-
 
 	CGameObject* PickObj = nullptr;
 

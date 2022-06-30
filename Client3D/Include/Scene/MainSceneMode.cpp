@@ -40,7 +40,7 @@ bool CMainSceneMode::Init()
 	SetPlayerObject(Player);
 
 
-	CLandScapeObj* LandScape = m_Scene->CreateGameObject<CLandScapeObj>("LandScape");
+	// CLandScapeObj* LandScape = m_Scene->CreateGameObject<CLandScapeObj>("LandScape");
 
 
 	CDecalObj* Decal = m_Scene->CreateGameObject<CDecalObj>("Decal");

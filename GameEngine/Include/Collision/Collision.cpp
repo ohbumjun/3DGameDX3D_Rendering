@@ -468,8 +468,44 @@ bool CCollision::CollisionPixelToPoint(CollisionResult& SrcResult, CollisionResu
 	return Result;
 }
 
-bool CCollision::CollisionRayToSphere(Vector3& HitPoint, const Ray& ray, const SphereInfo& Sphere)
+// https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=hermet&logNo=68084286
+bool CCollision::CollisionRayToSphere(Vector3& HitPoint, 
+	const Ray& ray, const SphereInfo& Sphere)
 {
+	// Ray 시작점 -> 원 중심
+	Vector3 L = Sphere.Center - ray.Pos;
+
+	// L 벡터에서 ray dir 벡터에 투영
+	float s = L.Dot(ray.Dir);
+
+	// L 벡터 길이 : L * L
+	float LLength = L.Dot(L);
+
+	// 구 반지름 ^ 2
+	float RadiusPow = Sphere.Radius * Sphere.Radius;
+
+	// 1) 내적 결과 < 0 : ray 방향과 L 벡터의 방향이 반대
+	// 2) L 벡터 길이 > 구 반지름 ^2 : Ray 시작점이 구 밖에 존재
+	if (LLength > RadiusPow && s < 0)
+		return false;
+
+	float CenterToProjVector = sqrt(LLength - s * s);
+
+	// 광선이 구를 비껴가는 경우
+	if (CenterToProjVector > Sphere.Radius)
+		return false;
+
+	float q = sqrt(RadiusPow - pow(CenterToProjVector,2));
+
+	float DistFromRayToInters = 0.f;
+
+	// 만약 Ray 시작점이 원 안에 존재한다면
+	if (LLength < RadiusPow)
+		DistFromRayToInters = s + q;
+	else
+		DistFromRayToInters = s - q;
+
+	HitPoint = ray.Pos + ray.Dir * DistFromRayToInters;
 
 	return true;
 }

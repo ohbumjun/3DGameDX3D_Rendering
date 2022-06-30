@@ -789,6 +789,9 @@
     <ClCompile Include="Scene\NavigationThread3D.cpp">
       <Filter>03. Scene\06. Navigation\02. 3D</Filter>
     </ClCompile>
+    <ClCompile Include="Component\ColliderBox3D.cpp">
+      <Filter>05. Component\01. SceneComponent\02. Collider</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Device.h">
@@ -1309,6 +1312,9 @@
     </ClInclude>
     <ClInclude Include="Scene\NavigationThread3D.h">
       <Filter>03. Scene\06. Navigation\02. 3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Component\ColliderBox3D.h">
+      <Filter>05. Component\01. SceneComponent\02. Collider</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

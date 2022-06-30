@@ -30,6 +30,7 @@
     <ClCompile Include="Component\BillboardComponent.cpp" />
     <ClCompile Include="Component\CameraComponent.cpp" />
     <ClCompile Include="Component\ColliderBox2D.cpp" />
+    <ClCompile Include="Component\ColliderBox3D.cpp" />
     <ClCompile Include="Component\ColliderCircle.cpp" />
     <ClCompile Include="Component\ColliderComponent.cpp" />
     <ClCompile Include="Component\ColliderPixel.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="Component\BillboardComponent.h" />
     <ClInclude Include="Component\CameraComponent.h" />
     <ClInclude Include="Component\ColliderBox2D.h" />
+    <ClInclude Include="Component\ColliderBox3D.h" />
     <ClInclude Include="Component\ColliderCircle.h" />
     <ClInclude Include="Component\ColliderComponent.h" />
     <ClInclude Include="Component\ColliderPixel.h" />

@@ -43,7 +43,7 @@ bool CMeshManager::Init()
 	m_mapMesh.insert(std::make_pair("FrameRect", FrameRectMesh));
 
 
-
+	// Box 2D
 	CMesh* Box2DMesh = new CStaticMesh;
 
 	Vector3	Box2DPos[5] =

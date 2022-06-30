@@ -81,6 +81,9 @@ public:
 		SphereInfo	Info;
 
 		//Info.Center = m_SphereInfo.Center * GetWorldScale() + GetWorldPos();
+
+		// Mesh 입장에서는 자신에게 부착된 Bone 의 변환 행렬 정보까지 모두 반영되어 만들어진
+		// World 행렬 정보를 이용해서, 정보를 얻어야 한다.
 		Info.Center = m_SphereInfo.Center.TransformCoord(GetWorldMatrix());
 		Info.Radius = m_SphereInfo.Radius;
 
