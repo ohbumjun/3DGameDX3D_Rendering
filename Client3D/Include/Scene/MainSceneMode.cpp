@@ -39,6 +39,8 @@ bool CMainSceneMode::Init()
 
 	SetPlayerObject(Player);
 
+	CMonster* Monster = m_Scene->CreateGameObject<CMonster>("Monster");
+	Monster->SetWorldPos(5.f, 0.f, 5.f);
 
 	// CLandScapeObj* LandScape = m_Scene->CreateGameObject<CLandScapeObj>("LandScape");
 
@@ -47,22 +49,25 @@ bool CMainSceneMode::Init()
 
 	CPortal* Portal = m_Scene->CreateGameObject<CPortal>("Portal");
 
-	for (int i = 0; i < 30; ++i)
-	{
-		CBonObj* BonObj = m_Scene->CreateGameObject<CBonObj>("BonObj");
+	// Static Mesh Instancing
+	// for (int i = 0; i < 30; ++i)
+	// {
+	// 	CBonObj* BonObj = m_Scene->CreateGameObject<CBonObj>("BonObj");
+	// 
+	// 	BonObj->SetWorldPos(i * 3.f, 4.f, 10.f);
+	// }
 
-		BonObj->SetWorldPos(i * 3.f, 4.f, 10.f);
-	}
 
-	for (int i = 0; i < 5; ++i)
-	{
-		for (int j = 0; j < 5; ++j)
-		{
-			CMonster* Monster = m_Scene->CreateGameObject<CMonster>("Monster");
-
-			Monster->SetWorldPos(j * 3.f + 10.f, 5.f, i * 3.f + 10.f);
-		}
-	}
+	// Animation Mesh Instancing
+	// for (int i = 0; i < 5; ++i)
+	// {
+	// 	for (int j = 0; j < 5; ++j)
+	// 	{
+	// 		CMonster* Monster = m_Scene->CreateGameObject<CMonster>("Monster");
+	// 
+	// 		Monster->SetWorldPos(j * 3.f + 10.f, 5.f, i * 3.f + 10.f);
+	// 	}
+	// }
 
 
 

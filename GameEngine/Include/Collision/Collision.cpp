@@ -2,6 +2,7 @@
 #include "../Component/ColliderBox2D.h"
 #include "../Component/ColliderCircle.h"
 #include "../Component/ColliderPixel.h"
+#include "../Component/ColliderSphere.h"
 
 bool CCollision::CollisionBox2DToBox2D(CColliderBox2D* Src, CColliderBox2D* Dest)
 {
@@ -468,6 +469,27 @@ bool CCollision::CollisionPixelToPoint(CollisionResult& SrcResult, CollisionResu
 	return Result;
 }
 
+bool CCollision::CollisionSphereToSphere(CColliderSphere* Src, CColliderSphere* Dest)
+{
+	CollisionResult	srcResult, destResult;
+
+	if (CollisionSphereToSphere(srcResult, destResult, Src->GetInfo(), Dest->GetInfo()))
+	{
+		srcResult.Src = Src;
+		srcResult.Dest = Dest;
+
+		destResult.Src = Dest;
+		destResult.Dest = Src;
+
+		Src->m_Result = srcResult;
+		Dest->m_Result = destResult;
+
+		return true;
+	}
+
+	return false;
+}
+
 // https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=hermet&logNo=68084286
 bool CCollision::CollisionRayToSphere(Vector3& HitPoint, 
 	const Ray& ray, const SphereInfo& Sphere)
@@ -508,6 +530,11 @@ bool CCollision::CollisionRayToSphere(Vector3& HitPoint,
 	HitPoint = ray.Pos + ray.Dir * DistFromRayToInters;
 
 	return true;
+}
+
+bool CCollision::CollisionSphereToSphere(CollisionResult& SrcResult, CollisionResult& DestResult, const SphereInfo& Src, const SphereInfo& Dest)
+{
+	return  Src.Center.Distance(Dest.Center) < Src.Radius + Dest.Radiu;
 }
 
 /*

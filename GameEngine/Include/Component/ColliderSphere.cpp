@@ -15,6 +15,7 @@ CColliderSphere::CColliderSphere()
 	m_Render = true;
 
 	m_ColliderType = Collider_Type::Sphere;
+	m_LayerName = "DebugLayer";
 }
 
 CColliderSphere::CColliderSphere(const CColliderSphere& com) :
@@ -89,7 +90,10 @@ void CColliderSphere::Render()
 	Matrix	matScale, matTrans;
 
 	matScale.Scaling(m_Info.Radius, m_Info.Radius, m_Info.Radius);
-	//matRot.Rotation(GetWorldRot());
+
+	// 어차피 원은 굳이 회전을 시켜줄 필요가 없다.
+	// matRot.Rotation(GetWorldRot());
+
 	matTrans.Translation(m_Info.Center);
 
 	matWorld = matScale * matTrans;
@@ -145,8 +149,7 @@ bool CColliderSphere::Collision(CColliderComponent* Dest)
 	switch (Dest->GetColliderType())
 	{
 	case Collider_Type::Sphere:
-		break;
-		//return CCollision::CollisionBox2DToCircle((CColliderBox2D*)Dest, this);
+		return CCollision::CollisionSphereToSphere((CColliderSphere*)Dest, this);
 	}
 
 	return false;

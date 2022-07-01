@@ -16,6 +16,7 @@ protected:
 private:
     CSharedPtr<CAnimationMeshComponent>    m_Mesh;
     class CMonsterAnimation* m_Animation;
+    CSharedPtr<class CColliderSphere>        m_ColliderSphere;
 
 public:
     virtual bool Init();

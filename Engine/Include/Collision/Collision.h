@@ -4,6 +4,7 @@
 
 class CCollision
 {
+// 2D
 public:
 	static bool CollisionBox2DToBox2D(class CColliderBox2D* Src, class CColliderBox2D* Dest);
 	static bool CollisionCircleToCircle(class CColliderCircle* Src, class CColliderCircle* Dest);
@@ -31,9 +32,18 @@ public:
 	static bool CollisionPixelToPoint(CollisionResult& SrcResult, CollisionResult& DestResult,
 		const PixelInfo& PixelInfo, const Vector2& Point);
 
-
-
+	// 3D
+public:
+	// static bool CollisionBox2DToBox2D(class CColliderBox2D* Src, class CColliderBox2D* Dest);
+	// static bool CollisionCircleToCircle(class CColliderCircle* Src, class CColliderCircle* Dest);
+	// static bool CollisionBox2DToCircle(class CColliderBox2D* Src, class CColliderCircle* Dest);
+	// static bool CollisionBox2DToPixel(class CColliderBox2D* Src, class CColliderPixel* Dest);
+	static bool CollisionSphereToSphere(class CColliderSphere* Src, class CColliderSphere* Dest);
 
 	static bool CollisionRayToSphere(Vector3& HitPoint, const Ray& ray, const SphereInfo& Sphere);
+
+private :
+	static bool CollisionSphereToSphere(CollisionResult& SrcResult, CollisionResult& DestResult,
+		const SphereInfo& Src, const SphereInfo& Dest);
 };
 

@@ -24,6 +24,7 @@ public:
         m_Info.Center = Center;
         m_Info.Radius = Radius;
 
+        SetWorldPos(Center);
         SetWorldScale(m_Info.Radius, m_Info.Radius, m_Info.Radius);
     }
 

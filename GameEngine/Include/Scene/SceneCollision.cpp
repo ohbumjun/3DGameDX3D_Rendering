@@ -32,9 +32,16 @@ void CSceneCollision::Start()
 
 bool CSceneCollision::Init()
 {
-	SetSectionSize(1000.f, 1000.f, 1.f);
+	// 2D
+	// SetSectionSize(1000.f, 1000.f, 1.f);
+	SetSectionSize(1000.f, 1000.f, 1000.f);
+	
 	SetSectionCenter(0.f, 0.f, 0.f);
-	SetSectionCount(10, 10, 1);
+	
+	// 2D
+	// SetSectionCount(10, 10, 1);
+	SetSectionCount(10, 10, 10);
+
 	CreateSection();
 
 	return true;
