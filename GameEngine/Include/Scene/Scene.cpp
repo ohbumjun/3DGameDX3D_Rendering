@@ -66,6 +66,8 @@ bool CScene::Picking(CGameObject*& result)
 	// CInput 에서 실시간 만들어주는 Ray 정보는 뷰 공간 상에서의 Ray
 	// 아래의 함수를 통해서, View 행렬의 역행렬을 곱해준 Ray
 	// 즉, World 공간 상의 Ray 를 가져다준다.
+	// 왜냐하면, 애초에 실시간으로 구해준 Input 에서의 ray 정보가
+	// 투영공간에서의 ray 정보이기 때문이다.
 	Ray	ray = CInput::GetInst()->GetRay(Camera->GetViewMatrix());
 
 	auto	iter = m_RenderComponentList.begin();
@@ -87,6 +89,52 @@ bool CScene::Picking(CGameObject*& result)
 	result = nullptr;
 
 	return false;
+}
+
+void CScene::Bresenham(int stR, int stC, int edR, int edC, std::vector<std::pair<int, int>>& vecP)
+{
+	// 가로 
+	int x = stC;
+	// 세로 
+	int y = stR;
+
+	int dx = edC - stC;
+	int dy = edR - stR;
+
+	int detP = 2 * dy - dx;
+
+	while (x <= edC)
+	{
+		vecP.push_back(std::make_pair(x, y));
+		++x;
+
+		if (detP < 0)
+			detP = detP + 2 * dy;
+		else
+		{
+			detP = detP + 2 * dy - 2 * dx;
+			y++;
+		}
+	}
+}
+
+void CScene::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player)
+{
+	// 1. Ray 을 Land Scape 의 Local Space 로 보내준다.
+	CCameraComponent* Camera = m_CameraManager->GetCurrentCamera();
+	Ray	ray = CInput::GetInst()->GetRay(LandScapeObject->GetWorldMatrix() * Camera->GetViewMatrix());
+
+	// 2. 지형 xz 에 투영한다.
+	Vector3 rayOnLandScape = Vector3(ray.Pos.x, 0.f, ray.Pos.z) + Vector3(ray.Dir.x, 0.f, ray.Dir.z);
+
+	// 3. 해당 벡터가 지나는 Mesh 목록을 찾는다.  (직선 알고리즘 적용하기)
+	// 정확히는, LandScape 영역을 찾는다.
+	// 그리고 해당 영역안에 존재하는 Mesh 목록을 찾는다...?
+
+
+
+	// 4. 각 Mesh 목록을 돌면서, t 가 가장 작은 숫자에 해당하는 Mesh 를 찾아낸다.
+
 }
 
 void CScene::Start()

@@ -106,8 +106,9 @@ bool CPlayer::Init()
 	CInput::GetInst()->SetKeyCallback<CPlayer>("RotationY", KeyState_Push,
 		this, &CPlayer::RotationY);
 
-	CInput::GetInst()->SetKeyCallback<CPlayer>("MovePoint", KeyState_Down,
-		this, &CPlayer::MovePoint);
+	// 3차원 Nav Mesh
+	// CInput::GetInst()->SetKeyCallback<CPlayer>("MovePoint", KeyState_Down,
+	// 	this, &CPlayer::MovePoint);
 
 	CInput::GetInst()->SetKeyCallback<CPlayer>("Attack1", KeyState_Down,
 		this, &CPlayer::Attack);
@@ -144,7 +145,12 @@ void CPlayer::Update(float DeltaTime)
 
 	if (m_Scene->Picking(PickObj))
 	{
-		int a = 0;
+		// Picking 대상이 LandScape 라면, DDT 알고리즘을 이용한 이동 처리를 수행한다.
+		if (PickObj->GetRootComponent()->GetTypeID() == typeid(CLandScape).hash_code())
+		{
+			// 오른쪽 클릭이 되었다면 해당 위치로 이동시킨다.
+
+		}
 	}
 }
 

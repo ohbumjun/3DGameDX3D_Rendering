@@ -103,7 +103,8 @@ public:
 
 public:
 	bool Picking(CGameObject*& result);
-
+	void Bresenham(int stR, int stC, int edR, int edC, std::vector<std::pair<int, int>>& vecP)
+	void DDTPicking(CGameObject* LandScapeObject, CGameObject* Player);
 public:
 	void Start();
 	void Update(float DeltaTime);
