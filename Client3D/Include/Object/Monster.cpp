@@ -32,6 +32,7 @@ bool CMonster::Init()
 	m_Animation = (CMonsterAnimation*)m_Mesh->GetAnimationInstance();
 
 	// Collider Box
+	/*
 	m_ColliderBox3D = CreateComponent<CColliderBox3D>("ColliderBox3D");
 	m_Mesh->AddChild(m_ColliderBox3D);
 
@@ -61,9 +62,10 @@ bool CMonster::Init()
 	// MeshSize y만큼 0.5 올려서 Center 를 잡을 것이다.
 	// 해당 변수 내용을 이용해도 된다.
 	m_ColliderBox3D->SetInfo(ColliderCenter, ColliderLength * 0.5f);
+	*/
+
 
 	// Collider Sphere
-	/*
 	m_ColliderSphere = CreateComponent<CColliderSphere>("ColliderSphere");
 	m_Mesh->AddChild(m_ColliderSphere);
 	m_ColliderSphere->SetCollisionProfile("Monster");
@@ -82,7 +84,6 @@ bool CMonster::Init()
 		AnimComponentMeshSize.z * MeshRelativeScale.z :ColliderRadiius;
 
 	m_ColliderSphere->SetInfo(ColliderCenter, ColliderRadiius);
-	*/
 
 
 	return true;

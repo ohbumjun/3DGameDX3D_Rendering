@@ -512,6 +512,27 @@ bool CCollision::CollisionBox3DToBox3D(CColliderBox3D* Src, CColliderBox3D* Dest
 	return false;
 }
 
+bool CCollision::CollisionSphereToBox3D(CColliderSphere* Src, CColliderBox3D* Dest)
+{
+	CollisionResult	srcResult, destResult;
+
+	if (CollisionSphereToBox3D(srcResult, destResult, Src->GetInfo(), Dest->GetInfo()))
+	{
+		srcResult.Src = Src;
+		srcResult.Dest = Dest;
+
+		destResult.Src = Dest;
+		destResult.Dest = Src;
+
+		Src->m_Result = srcResult;
+		Dest->m_Result = destResult;
+
+		return true;
+	}
+
+	return false;
+}
+
 // https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=hermet&logNo=68084286
 bool CCollision::CollisionRayToSphere(Vector3& HitPoint, 
 	const Ray& ray, const SphereInfo& Sphere)
@@ -762,6 +783,64 @@ bool CCollision::CollisionBox3DToBox3D(CollisionResult& SrcResult, CollisionResu
 		abs(Src.Axis[1].Dot(Axis) * Src.Length.y);
 	r2 = abs(Dest.Axis[0].Dot(Axis) * Dest.Length.x) +
 		abs(Dest.Axis[1].Dot(Axis) * Dest.Length.y);
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	return true;
+}
+
+bool CCollision::CollisionSphereToBox3D(CollisionResult& SrcResult, CollisionResult& DestResult, 
+	const SphereInfo& Src, const Box3DInfo& Dest)
+{
+	Vector3	CenterDir = Src.Center - Dest.Center;
+
+	// x축
+	Vector3	Axis = Dest.Axis[0];
+
+	float	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	float	r1, r2;
+
+	r1 = Dest.Length.x;
+	r2 = Src.Radius;
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	// y축
+	Axis = Dest.Axis[1];
+
+	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	r1 = Dest.Length.y;
+	r2 = Src.Radius;
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	// x축
+	Axis = Dest.Axis[2];
+
+	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	r1 = Dest.Length.z;
+	r2 = Src.Radius;
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	// 중심 ~ 중심
+	Axis = CenterDir;
+	Axis.Normalize();
+
+	CenterProjDist = CenterDir.Length();
+
+	r1 = abs(Dest.Axis[0].Dot(Axis) * Dest.Length.x) +
+		abs(Dest.Axis[1].Dot(Axis) * Dest.Length.y) + 
+		abs(Dest.Axis[2].Dot(Axis) * Dest.Length.z);
+
+	r2 = Src.Radius;
 
 	if (CenterProjDist > r1 + r2)
 		return false;

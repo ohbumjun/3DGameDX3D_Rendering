@@ -204,6 +204,8 @@ bool CColliderBox3D::Collision(CColliderComponent* Dest)
 	{
 	case Collider_Type::Box3D:
 		return CCollision::CollisionBox3DToBox3D((CColliderBox3D*)Dest, this);
+	case Collider_Type::Sphere:
+		return CCollision::CollisionSphereToBox3D((CColliderSphere*)Dest, this);
 	}
 
 	return false;

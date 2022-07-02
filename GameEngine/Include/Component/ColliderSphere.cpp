@@ -7,6 +7,7 @@
 #include "../Scene/Scene.h"
 #include "../Scene/CameraManager.h"
 #include "CameraComponent.h"
+#include "ColliderBox3D.h"
 
 CColliderSphere::CColliderSphere()
 {
@@ -150,6 +151,8 @@ bool CColliderSphere::Collision(CColliderComponent* Dest)
 	{
 	case Collider_Type::Sphere:
 		return CCollision::CollisionSphereToSphere((CColliderSphere*)Dest, this);
+	case Collider_Type::Box3D:
+		return CCollision::CollisionSphereToBox3D(this, (CColliderBox3D*)Dest);
 	}
 
 	return false;
