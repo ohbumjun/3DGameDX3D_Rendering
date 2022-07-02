@@ -2,6 +2,7 @@
 #include "../Component/ColliderBox2D.h"
 #include "../Component/ColliderCircle.h"
 #include "../Component/ColliderPixel.h"
+#include "../Component/ColliderBox3D.h"
 #include "../Component/ColliderSphere.h"
 
 bool CCollision::CollisionBox2DToBox2D(CColliderBox2D* Src, CColliderBox2D* Dest)
@@ -490,6 +491,27 @@ bool CCollision::CollisionSphereToSphere(CColliderSphere* Src, CColliderSphere* 
 	return false;
 }
 
+bool CCollision::CollisionBox3DToBox3D(CColliderBox3D* Src, CColliderBox3D* Dest)
+{
+	CollisionResult	srcResult, destResult;
+
+	if (CollisionBox3DToBox3D(srcResult, destResult, Src->GetInfo(), Dest->GetInfo()))
+	{
+		srcResult.Src = Src;
+		srcResult.Dest = Dest;
+
+		destResult.Src = Dest;
+		destResult.Dest = Src;
+
+		Src->m_Result = srcResult;
+		Dest->m_Result = destResult;
+
+		return true;
+	}
+
+	return false;
+}
+
 // https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=hermet&logNo=68084286
 bool CCollision::CollisionRayToSphere(Vector3& HitPoint, 
 	const Ray& ray, const SphereInfo& Sphere)
@@ -534,7 +556,217 @@ bool CCollision::CollisionRayToSphere(Vector3& HitPoint,
 
 bool CCollision::CollisionSphereToSphere(CollisionResult& SrcResult, CollisionResult& DestResult, const SphereInfo& Src, const SphereInfo& Dest)
 {
-	return  Src.Center.Distance(Dest.Center) < Src.Radius + Dest.Radiu;
+	return  Src.Center.Distance(Dest.Center) < Src.Radius + Dest.Radius;
+}
+
+bool CCollision::CollisionBox3DToBox3D(CollisionResult& SrcResult, CollisionResult& DestResult, const Box3DInfo& Src, const Box3DInfo& Dest)
+{
+	// Src 도형 3개 축에 투영
+	Vector3	CenterDir = Src.Center - Dest.Center;
+
+	Vector3	Axis = Src.Axis[0];
+
+	float	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	float	r1, r2, ㄱ3;
+
+	r1 = Src.Length.x;
+	r2 = abs(Dest.Axis[0].Dot(Axis) * Dest.Length.x) +
+		abs(Dest.Axis[1].Dot(Axis) * Dest.Length.y) +
+		abs(Dest.Axis[2].Dot(Axis) * Dest.Length.z);
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	Axis = Src.Axis[1];
+
+	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	r1 = Src.Length.y;
+	r2 = abs(Dest.Axis[0].Dot(Axis) * Dest.Length.x) +
+		abs(Dest.Axis[1].Dot(Axis) * Dest.Length.y) +
+		abs(Dest.Axis[2].Dot(Axis) * Dest.Length.z);
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	Axis = Src.Axis[2];
+
+	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	r1 = Src.Length.z;
+	r2 = abs(Dest.Axis[0].Dot(Axis) * Dest.Length.x) +
+		abs(Dest.Axis[1].Dot(Axis) * Dest.Length.y) +
+		abs(Dest.Axis[2].Dot(Axis) * Dest.Length.z);
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	// Dest 도형 3개 축에 투영
+	Axis = Dest.Axis[0];
+
+	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	r1 = Dest.Length.x;
+	r2 = abs(Src.Axis[0].Dot(Axis) * Src.Length.x) +
+		abs(Src.Axis[1].Dot(Axis) * Src.Length.y) + 
+		abs(Src.Axis[2].Dot(Axis) * Src.Length.z);
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	Axis = Dest.Axis[1];
+
+	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	r1 = Dest.Length.y;
+	r2 = abs(Src.Axis[0].Dot(Axis) * Src.Length.x) +
+		abs(Src.Axis[1].Dot(Axis) * Src.Length.y) +
+		abs(Src.Axis[2].Dot(Axis) * Src.Length.z);
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	Axis = Dest.Axis[2];
+
+	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	r1 = Dest.Length.z;
+	r2 = abs(Src.Axis[0].Dot(Axis) * Src.Length.x) +
+		abs(Src.Axis[1].Dot(Axis) * Src.Length.y) +
+		abs(Src.Axis[2].Dot(Axis) * Src.Length.z);
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	// Src * Dest : 총 9개 종류 축에 투영 
+	// 1. x축 ~ x축
+	Axis = Src.Axis[0].Cross(Dest.Axis[0]);
+	Axis.Normalize();
+
+	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	r1 = abs(Src.Axis[1].Dot(Axis) * Src.Length.y) +
+		abs(Src.Axis[2].Dot(Axis) * Src.Length.z);
+	r2 =abs(Dest.Axis[1].Dot(Axis) * Dest.Length.y) +
+		abs(Dest.Axis[2].Dot(Axis) * Dest.Length.z);
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	// 2. x축 ~ y축
+	Axis = Src.Axis[0].Cross(Dest.Axis[1]);
+	Axis.Normalize();
+
+	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	r1 = abs(Src.Axis[1].Dot(Axis) * Src.Length.y) +
+		abs(Src.Axis[2].Dot(Axis) * Src.Length.z);
+	r2 = abs(Dest.Axis[0].Dot(Axis) * Dest.Length.x) +
+		abs(Dest.Axis[2].Dot(Axis) * Dest.Length.z);
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	// 3. x축 ~ z축
+	Axis = Src.Axis[0].Cross(Dest.Axis[2]);
+	Axis.Normalize();
+
+	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	r1 = abs(Src.Axis[1].Dot(Axis) * Src.Length.y) +
+		abs(Src.Axis[2].Dot(Axis) * Src.Length.z);
+	r2 = abs(Dest.Axis[0].Dot(Axis) * Dest.Length.x) +
+		abs(Dest.Axis[1].Dot(Axis) * Dest.Length.y);
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	// 4. y축 ~ x축
+	Axis = Src.Axis[1].Cross(Dest.Axis[0]);
+	Axis.Normalize();
+
+	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	r1 = abs(Src.Axis[0].Dot(Axis) * Src.Length.x) +
+		abs(Src.Axis[2].Dot(Axis) * Src.Length.z);
+	r2 = abs(Dest.Axis[1].Dot(Axis) * Dest.Length.y) +
+		abs(Dest.Axis[2].Dot(Axis) * Dest.Length.z);
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	// 5. y축 ~ y축
+	Axis = Src.Axis[1].Cross(Dest.Axis[1]);
+	Axis.Normalize();
+
+	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	r1 = abs(Src.Axis[0].Dot(Axis) * Src.Length.x) +
+		abs(Src.Axis[2].Dot(Axis) * Src.Length.z);
+	r2 = abs(Dest.Axis[0].Dot(Axis) * Dest.Length.x) +
+		abs(Dest.Axis[2].Dot(Axis) * Dest.Length.z);
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	// 6. y축 ~ z축
+	Axis = Src.Axis[1].Cross(Dest.Axis[2]);
+	Axis.Normalize();
+
+	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	r1 = abs(Src.Axis[0].Dot(Axis) * Src.Length.x) +
+		abs(Src.Axis[2].Dot(Axis) * Src.Length.z);
+	r2 = abs(Dest.Axis[0].Dot(Axis) * Dest.Length.x) +
+		abs(Dest.Axis[1].Dot(Axis) * Dest.Length.y);
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	// 7. z축 ~ x축
+	Axis = Src.Axis[2].Cross(Dest.Axis[0]);
+	Axis.Normalize();
+
+	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	r1 = abs(Src.Axis[0].Dot(Axis) * Src.Length.x) +
+		abs(Src.Axis[1].Dot(Axis) * Src.Length.y);
+	r2 = abs(Dest.Axis[1].Dot(Axis) * Dest.Length.y) +
+		abs(Dest.Axis[2].Dot(Axis) * Dest.Length.z);
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	// 8. z축 ~ y축
+	Axis = Src.Axis[2].Cross(Dest.Axis[1]);
+	Axis.Normalize();
+
+	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	r1 = abs(Src.Axis[0].Dot(Axis) * Src.Length.x) +
+		abs(Src.Axis[1].Dot(Axis) * Src.Length.y);
+	r2 = abs(Dest.Axis[0].Dot(Axis) * Dest.Length.x) +
+		abs(Dest.Axis[2].Dot(Axis) * Dest.Length.z);
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	// 8. z축 ~ z축
+	Axis = Src.Axis[2].Cross(Dest.Axis[2]);
+	Axis.Normalize();
+
+	CenterProjDist = abs(CenterDir.Dot(Axis));
+
+	r1 = abs(Src.Axis[0].Dot(Axis) * Src.Length.x) +
+		abs(Src.Axis[1].Dot(Axis) * Src.Length.y);
+	r2 = abs(Dest.Axis[0].Dot(Axis) * Dest.Length.x) +
+		abs(Dest.Axis[1].Dot(Axis) * Dest.Length.y);
+
+	if (CenterProjDist > r1 + r2)
+		return false;
+
+	return true;
 }
 
 /*

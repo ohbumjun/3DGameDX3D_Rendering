@@ -39,11 +39,13 @@ public:
 	// static bool CollisionBox2DToCircle(class CColliderBox2D* Src, class CColliderCircle* Dest);
 	// static bool CollisionBox2DToPixel(class CColliderBox2D* Src, class CColliderPixel* Dest);
 	static bool CollisionSphereToSphere(class CColliderSphere* Src, class CColliderSphere* Dest);
-
+	static bool CollisionBox3DToBox3D(class CColliderBox3D* Src, class CColliderBox3D* Dest);
 	static bool CollisionRayToSphere(Vector3& HitPoint, const Ray& ray, const SphereInfo& Sphere);
 
 private :
 	static bool CollisionSphereToSphere(CollisionResult& SrcResult, CollisionResult& DestResult,
 		const SphereInfo& Src, const SphereInfo& Dest);
+	static bool CollisionBox3DToBox3D(CollisionResult& SrcResult, CollisionResult& DestResult,
+		const Box3DInfo& Src, const Box3DInfo& Dest);
 };
 

@@ -6,7 +6,6 @@
 #include "Scene/Navigation3DManager.h"
 #include "Weapon.h"
 #include "Component/ColliderBox3D.h"
-#include "Component/ColliderSphere.h"
 
 CPlayer::CPlayer()
 {
@@ -32,7 +31,7 @@ bool CPlayer::Init()
 	m_Arm = CreateComponent<CArm>("Arm");
 	m_Camera = CreateComponent<CCameraComponent>("Camera");
 	m_NavAgent = CreateComponent<CNavAgent>("NavAgent");
-	// m_ColliderBox3D = CreateComponent<CColliderBox3D>("ColliderBox3D");
+	m_ColliderBox3D = CreateComponent<CColliderBox3D>("ColliderBox3D");
 
 	// Arm, Camera
 	m_Mesh->AddChild(m_Arm);
@@ -61,7 +60,7 @@ bool CPlayer::Init()
 	m_Arm->SetTargetDistance(10.f);
 
 	// Collider
-	// m_Mesh->AddChild(m_ColliderBox3D);
+	m_Mesh->AddChild(m_ColliderBox3D);
 
 	const Vector3& AnimComponentMeshSize = m_Mesh->GetMeshSize();
 	const Vector3& MeshRelativeScale = m_Mesh->GetRelativeScale();
@@ -88,26 +87,8 @@ bool CPlayer::Init()
 	// 즉, 아무 처리를 해주지 않을 경우, Center 가 발밑으로 잡힌다는 의미이다.
 	// MeshSize y만큼 0.5 올려서 Center 를 잡을 것이다.
 	// 해당 변수 내용을 이용해도 된다.
-	// m_ColliderBox3D->SetInfo(ColliderCenter,ColliderLength * 0.5f);
+	m_ColliderBox3D->SetInfo(ColliderCenter,ColliderLength * 0.5f);
 
-	m_ColliderSphere = CreateComponent<CColliderSphere>("ColliderSphere");
-	m_Mesh->AddChild(m_ColliderSphere);
-	m_ColliderSphere->SetCollisionProfile("Player");
-	// const Vector3& AnimComponentMeshSize = m_Mesh->GetMeshSize();
-	// const Vector3& MeshRelativeScale = m_Mesh->GetRelativeScale();
-	// Vector3 ColliderCenter = Vector3(
-	// 	GetWorldPos().x,
-	// 	GetWorldPos().y + AnimComponentMeshSize.y * MeshRelativeScale.y * 0.5f,
-	// 	GetWorldPos().z
-	// );
-
-	float ColliderRadiius = AnimComponentMeshSize.x * MeshRelativeScale.x;
-	ColliderRadiius = AnimComponentMeshSize.y * MeshRelativeScale.y < ColliderRadiius ?
-		AnimComponentMeshSize.y * MeshRelativeScale.y : ColliderRadiius;
-	ColliderRadiius = AnimComponentMeshSize.z * MeshRelativeScale.z < ColliderRadiius ?
-		AnimComponentMeshSize.z * MeshRelativeScale.z : ColliderRadiius;
-
-	m_ColliderSphere->SetInfo(ColliderCenter, ColliderRadiius);
 
 	// m_Body->SetCollisionProfile("Player");
 	// SetInfo(const Vector3 & Center, const Vector3 & Length)

@@ -32,6 +32,7 @@ CColliderBox3D::~CColliderBox3D()
 
 void CColliderBox3D::Start()
 {
+	CColliderComponent::Start();
 }
 
 bool CColliderBox3D::Init()
@@ -199,12 +200,18 @@ void CColliderBox3D::Load(FILE* File)
 
 bool CColliderBox3D::Collision(CColliderComponent* Dest)
 {
+	switch (Dest->GetColliderType())
+	{
+	case Collider_Type::Box3D:
+		return CCollision::CollisionBox3DToBox3D((CColliderBox3D*)Dest, this);
+	}
+
 	return false;
 }
 
 bool CColliderBox3D::CollisionMouse(const Vector2& MousePos)
 {
-	return false;
+	return m_MouseCollision;
 }
 
 bool CColliderBox3D::CollisionRay(const Ray& ray)

@@ -20,8 +20,8 @@ private:
     CSharedPtr<CAnimationMeshComponent>    m_Mesh;
     CSharedPtr<CArm>                    m_Arm;
     CSharedPtr<CCameraComponent>        m_Camera;
-    // CSharedPtr<class CColliderBox3D>        m_ColliderBox3D;
-    CSharedPtr<class CColliderSphere>        m_ColliderSphere;
+    CSharedPtr<class CColliderBox3D>        m_ColliderBox3D;
+    // CSharedPtr<class CColliderSphere>        m_ColliderSphere;
     Vector3     m_Velocity;
     class CPlayerAnimation* m_Animation;
     CSharedPtr<class CWeapon>   m_Weapon;
