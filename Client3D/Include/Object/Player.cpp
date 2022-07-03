@@ -6,6 +6,8 @@
 #include "Scene/Navigation3DManager.h"
 #include "Weapon.h"
 #include "Component/ColliderBox3D.h"
+#include "Component/ColliderSphere.h"
+#include "Component/PickingLayerBox3D.h"
 
 CPlayer::CPlayer()
 {
@@ -31,7 +33,6 @@ bool CPlayer::Init()
 	m_Arm = CreateComponent<CArm>("Arm");
 	m_Camera = CreateComponent<CCameraComponent>("Camera");
 	m_NavAgent = CreateComponent<CNavAgent>("NavAgent");
-	m_ColliderBox3D = CreateComponent<CColliderBox3D>("ColliderBox3D");
 
 	// Arm, Camera
 	m_Mesh->AddChild(m_Arm);
@@ -59,9 +60,6 @@ bool CPlayer::Init()
 	m_Arm->SetRelativeRotation(25.f, 0.f, 0.f);
 	m_Arm->SetTargetDistance(10.f);
 
-	// Collider
-	m_Mesh->AddChild(m_ColliderBox3D);
-
 	const Vector3& AnimComponentMeshSize = m_Mesh->GetMeshSize();
 	const Vector3& MeshRelativeScale = m_Mesh->GetRelativeScale();
 
@@ -72,7 +70,7 @@ bool CPlayer::Init()
 	// 	AnimComponentMeshSize.z * MeshRelativeScale.z
 	// );
 	Vector3 ColliderLength = Vector3(
-		AnimComponentMeshSize.x * MeshRelativeScale.x * 0.5f,
+		AnimComponentMeshSize.x * MeshRelativeScale.x * 0.5f, // 위에서 써놨듯이, 조정을 적절히 해줘야 한다.
 		AnimComponentMeshSize.y * MeshRelativeScale.y,
 		AnimComponentMeshSize.z * MeshRelativeScale.z
 	);
@@ -82,16 +80,49 @@ bool CPlayer::Init()
 		GetWorldPos().y + AnimComponentMeshSize.y * MeshRelativeScale.y * 0.5f,
 		GetWorldPos().z
 	);
+
+	// Collider
+	/*
+	m_ColliderBox3D = CreateComponent<CColliderBox3D>("ColliderBox3D");
+	m_ColliderBox3D->SetCollisionProfile("Player");
+	m_Mesh->AddChild(m_ColliderBox3D);
+
+
 	
 	// Center 지점의 경우, 기본적으로 Player 의 WorldPos 가 발밑으로 잡힌다.
 	// 즉, 아무 처리를 해주지 않을 경우, Center 가 발밑으로 잡힌다는 의미이다.
 	// MeshSize y만큼 0.5 올려서 Center 를 잡을 것이다.
 	// 해당 변수 내용을 이용해도 된다.
-	m_ColliderBox3D->SetInfo(ColliderCenter,ColliderLength * 0.5f);
-
-
+	m_ColliderBox3D->SetInfo(ColliderCenter, ColliderLength * 0.5f);
 	// m_Body->SetCollisionProfile("Player");
 	// SetInfo(const Vector3 & Center, const Vector3 & Length)
+	*/
+
+	/*
+	m_ColliderSphere = CreateComponent<CColliderSphere>("ColliderSphere");
+	m_Mesh->AddChild(m_ColliderSphere);
+	m_ColliderSphere->SetCollisionProfile("Player");
+	const Vector3& AnimComponentMeshSize = m_Mesh->GetMeshSize();
+	const Vector3& MeshRelativeScale = m_Mesh->GetRelativeScale();
+	Vector3 ColliderCenter = Vector3(
+		GetWorldPos().x,
+		GetWorldPos().y + AnimComponentMeshSize.y * MeshRelativeScale.y * 0.5f,
+		GetWorldPos().z
+	);
+
+	float ColliderRadiius = AnimComponentMeshSize.x * MeshRelativeScale.x;
+	ColliderRadiius = AnimComponentMeshSize.y * MeshRelativeScale.y < ColliderRadiius ?
+		AnimComponentMeshSize.y * MeshRelativeScale.y : ColliderRadiius;
+	ColliderRadiius = AnimComponentMeshSize.z * MeshRelativeScale.z < ColliderRadiius ?
+		AnimComponentMeshSize.z * MeshRelativeScale.z : ColliderRadiius;
+
+	m_ColliderSphere->SetInfo(ColliderCenter, ColliderRadiius);
+	*/
+
+	// Picking 용 Box
+	m_CullingArea3D = CreateComponent<CPickingLayerBox3D>("ColliderBox3D");
+	m_Mesh->AddChild(m_CullingArea3D);
+	m_CullingArea3D->SetInfo(ColliderCenter, ColliderLength * 0.5f);
 
 	// Weapon 달지 말고
 	// m_Weapon = m_Scene->CreateGameObject<CWeapon>("Weapon");
@@ -143,13 +174,19 @@ void CPlayer::Update(float DeltaTime)
 
 	CGameObject* PickObj = nullptr;
 
-	if (m_Scene->Picking(PickObj))
+	bool PickResult = m_Scene->Picking(PickObj);
+
+	if (PickResult)
 	{
 		// Picking 대상이 LandScape 라면, DDT 알고리즘을 이용한 이동 처리를 수행한다.
-		if (PickObj->GetRootComponent()->GetTypeID() == typeid(CLandScape).hash_code())
+		// if (PickObj->GetRootComponent()->GetTypeID() != typeid(CLandScape).hash_code())
+		// 	return;
+
+		if (CInput::GetInst()->GetMouseLButtonClick())
 		{
 			// 오른쪽 클릭이 되었다면 해당 위치로 이동시킨다.
-
+			// m_Scene->DDTPicking(PickObj, this);
+			bool CheckResult = false;
 		}
 	}
 }

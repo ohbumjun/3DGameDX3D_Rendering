@@ -145,6 +145,13 @@ bool CRenderManager::Init()
 
 	m_RenderLayerList.push_back(Layer);
 
+	// Culling, Picking Layer
+	Layer = new RenderLayer;
+	Layer->Name = "PickingCullingLayer";
+	Layer->LayerPriority = 6;
+
+	m_RenderLayerList.push_back(Layer);
+
 	m_DepthDisable = m_RenderStateManager->FindRenderState("DepthDisable");
 	m_AlphaBlend = m_RenderStateManager->FindRenderState("AlphaBlend");
 	m_LightAccBlend = m_RenderStateManager->FindRenderState("LightAcc");
@@ -479,7 +486,6 @@ void CRenderManager::Render(float DeltaTime)
 	m_AlphaBlend->SetState();
 
 	// 파티클 레이어 출력
-
 	auto	iter = m_RenderLayerList[3]->RenderList.begin();
 	auto	iterEnd = m_RenderLayerList[3]->RenderList.end();
 
@@ -489,13 +495,10 @@ void CRenderManager::Render(float DeltaTime)
 	}
 
 	// Collider 등 Debug 시 Light 적용과 별도로 Render 해줄 녀석들 출력하기 
-	iter = m_RenderLayerList[5]->RenderList.begin();
-	iterEnd = m_RenderLayerList[5]->RenderList.end();
+	RenderColliderComponents();
 
-	for (; iter != iterEnd; ++iter)
-	{
-		(*iter)->Render();
-	}
+	// Culling 시 활용되는 영역을 보여준다. (Sphere 단위이지만, 우선 임시적으로 정육면체 영역 형태로 보여주기)
+	RenderCullingLayer();
 
 	m_AlphaBlend->ResetState();
 
@@ -907,6 +910,28 @@ void CRenderManager::RenderFinalScreen()
 	m_DepthDisable->ResetState();
 
 	FinalScreenTarget->ResetTargetShader(21);
+}
+
+void CRenderManager::RenderColliderComponents()
+{
+	auto iter = m_RenderLayerList[5]->RenderList.begin();
+	auto iterEnd = m_RenderLayerList[5]->RenderList.end();
+
+	for (; iter != iterEnd; ++iter)
+	{
+		(*iter)->Render();
+	}
+}
+
+void CRenderManager::RenderCullingLayer()
+{
+	auto iter = m_RenderLayerList[6]->RenderList.begin();
+	auto iterEnd = m_RenderLayerList[6]->RenderList.end();
+
+	for (; iter != iterEnd; ++iter)
+	{
+		(*iter)->Render();
+	}
 }
 
 void CRenderManager::SetBlendFactor(const std::string& Name, float r, float g,

@@ -20,6 +20,7 @@ bool CLandScapeObj::Init()
 {
 	m_LandScape = CreateComponent<CLandScape>("LandScape");
 
+	// 129, 129 sms, Height Map 의 크기 에 따라서 세팅해준 값이다.
 	m_LandScape->CreateLandScape("LandScape", 129, 129,
 		TEXT("LandScape/height1.bmp"));
 

@@ -1,4 +1,4 @@
-#include "ColliderBox3D.h"
+#include "PickingLayerBox3D.h"
 #include "../Collision/Collision.h"
 #include "../Scene/Scene.h"
 #include "../Scene/SceneResource.h"
@@ -9,36 +9,44 @@
 #include "ColliderCircle.h"
 #include "ColliderPixel.h"
 
-CColliderBox3D::CColliderBox3D()
+CPickingLayerBox3D::CPickingLayerBox3D()
 {
-	SetTypeID<CColliderBox3D>();
+	SetTypeID<CPickingLayerBox3D>();
 	m_ComponentType = Component_Type::SceneComponent;
 	m_Render = true;
 
-	m_ColliderType = Collider_Type::Box3D;
-
 	// DebugLayer 에 출력
-	m_LayerName = "DebugLayer";
+	m_LayerName = "PickingCullingLayer";
 }
 
-CColliderBox3D::CColliderBox3D(const CColliderBox3D& com)
+CPickingLayerBox3D::CPickingLayerBox3D(const CPickingLayerBox3D& com)
 {
 	m_Info = com.m_Info;
 }
 
-CColliderBox3D::~CColliderBox3D()
+CPickingLayerBox3D::~CPickingLayerBox3D()
 {
+	SAFE_DELETE(m_CBuffer);
 }
 
-void CColliderBox3D::Start()
+void CPickingLayerBox3D::Start()
 {
-	CColliderComponent::Start();
+	CSceneComponent::Start();
 }
 
-bool CColliderBox3D::Init()
+bool CPickingLayerBox3D::Init()
 {
-	if (!CColliderComponent::Init())
+	if (!CSceneComponent::Init())
 		return false;
+
+	m_CBuffer = new CColliderConstantBuffer;
+
+	m_CBuffer->Init();
+
+	m_CBuffer->SetColliderColor(Vector4(0.f, 1.f, 0.f, 1.f));
+
+	m_Shader = CResourceManager::GetInst()->FindShader("ColliderShader");
+
 
 	m_Info.Axis[0] = Vector3(1.f, 0.f, 0.f);
 	m_Info.Axis[1] = Vector3(0.f, 1.f, 0.f);
@@ -56,14 +64,14 @@ bool CColliderBox3D::Init()
 	m_Mesh = m_Scene->GetResource()->FindMesh("CubeLinePos");
 }
 
-void CColliderBox3D::Update(float DeltaTime)
+void CPickingLayerBox3D::Update(float DeltaTime)
 {
-	CColliderComponent::Update(DeltaTime);
+	CSceneComponent::Update(DeltaTime);
 }
 
-void CColliderBox3D::PostUpdate(float DeltaTime)
+void CPickingLayerBox3D::PostUpdate(float DeltaTime)
 {
-	CColliderComponent::PostUpdate(DeltaTime);
+	CSceneComponent::PostUpdate(DeltaTime);
 
 	m_Info.Center.x = GetWorldPos().x + m_Offset.x;
 	m_Info.Center.y = GetWorldPos().y + m_Offset.y;
@@ -133,14 +141,14 @@ void CColliderBox3D::PostUpdate(float DeltaTime)
 	m_Info.Max.z = m_Max.z;
 }
 
-void CColliderBox3D::PrevRender()
+void CPickingLayerBox3D::PrevRender()
 {
-	CColliderComponent::PrevRender();
+	CSceneComponent::PrevRender();
 }
 
-void CColliderBox3D::Render()
+void CPickingLayerBox3D::Render()
 {
-	CColliderComponent::Render();
+	CSceneComponent::Render();
 
 	CCameraComponent* Camera = m_Scene->GetCameraManager()->GetCurrentCamera();
 
@@ -163,18 +171,7 @@ void CColliderBox3D::Render()
 
 	m_CBuffer->SetWVP(matWVP);
 
-	if (m_PrevCollisionList.empty())
-		m_CBuffer->SetColliderColor(Vector4(0.f, 1.f, 0.f, 1.f));
-
-	else
-		m_CBuffer->SetColliderColor(Vector4(1.f, 0.f, 0.f, 1.f));
-
-	if (m_MouseCollision)
-		m_CBuffer->SetColliderColor(Vector4(1.f, 0.f, 0.f, 1.f));
-
-	// Culling 영역 표시용이라면 
-	if (m_LayerName == "PickingCullingLayer")
-		m_CBuffer->SetColliderColor(Vector4(0.f, 0.f, 1.f, 1.f));
+	m_CBuffer->SetColliderColor(Vector4(0.f, 0.f, 1.f, 1.f));
 
 	m_CBuffer->UpdateCBuffer();
 
@@ -184,43 +181,7 @@ void CColliderBox3D::Render()
 
 }
 
-void CColliderBox3D::PostRender()
+void CPickingLayerBox3D::PostRender()
 {
-	CColliderComponent::PostRender();
-}
-
-CColliderBox3D* CColliderBox3D::Clone()
-{
-	return nullptr;
-}
-
-void CColliderBox3D::Save(FILE* File)
-{
-}
-
-void CColliderBox3D::Load(FILE* File)
-{
-}
-
-bool CColliderBox3D::Collision(CColliderComponent* Dest)
-{
-	switch (Dest->GetColliderType())
-	{
-	case Collider_Type::Box3D:
-		return CCollision::CollisionBox3DToBox3D((CColliderBox3D*)Dest, this);
-	case Collider_Type::Sphere:
-		return CCollision::CollisionSphereToBox3D((CColliderSphere*)Dest, this);
-	}
-
-	return false;
-}
-
-bool CColliderBox3D::CollisionMouse(const Vector2& MousePos)
-{
-	return m_MouseCollision;
-}
-
-bool CColliderBox3D::CollisionRay(const Ray& ray)
-{
-	return false;
+	CSceneComponent::PostRender();
 }

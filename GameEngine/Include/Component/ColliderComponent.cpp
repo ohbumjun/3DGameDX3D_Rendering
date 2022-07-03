@@ -15,6 +15,9 @@ CColliderComponent::CColliderComponent()
 	m_Profile = nullptr;
 	m_MouseCollision = false;
 	m_CBuffer = nullptr;
+
+	// Collider Component 는 Pikcing 대상에서 제외시킨다
+	m_IgnorePicking = true;
 }
 
 CColliderComponent::CColliderComponent(const CColliderComponent& com) :

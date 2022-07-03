@@ -114,6 +114,10 @@ void CColliderSphere::Render()
 	if (m_MouseCollision)
 		m_CBuffer->SetColliderColor(Vector4(1.f, 0.f, 0.f, 1.f));
 
+	// Culling 영역 표시용이라면 
+	if (m_LayerName == "PickingCullingLayer")
+		m_CBuffer->SetColliderColor(Vector4(0.f, 0.f, 1.f, 1.f));
+
 	m_CBuffer->UpdateCBuffer();
 
 	m_Shader->SetShader();

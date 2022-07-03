@@ -295,6 +295,9 @@
     <Filter Include="02. Resource\02. Shader\03. ConstantBuffer\15. Shadow">
       <UniqueIdentifier>{3b7de16d-a6fe-44c0-848b-933b0deb30ee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="05. Component\01. SceneComponent\12. PickingLayer">
+      <UniqueIdentifier>{98415df3-15c7-4864-a694-114e73238063}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device.cpp">
@@ -791,6 +794,9 @@
     </ClCompile>
     <ClCompile Include="Component\ColliderBox3D.cpp">
       <Filter>05. Component\01. SceneComponent\02. Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="Component\PickingLayerBox3D.cpp">
+      <Filter>05. Component\01. SceneComponent\12. PickingLayer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1315,6 +1321,9 @@
     </ClInclude>
     <ClInclude Include="Component\ColliderBox3D.h">
       <Filter>05. Component\01. SceneComponent\02. Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="Component\PickingLayerBox3D.h">
+      <Filter>05. Component\01. SceneComponent\12. PickingLayer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

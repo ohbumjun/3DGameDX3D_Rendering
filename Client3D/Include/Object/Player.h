@@ -21,7 +21,10 @@ private:
     CSharedPtr<CArm>                    m_Arm;
     CSharedPtr<CCameraComponent>        m_Camera;
     CSharedPtr<class CColliderBox3D>        m_ColliderBox3D;
-    // CSharedPtr<class CColliderSphere>        m_ColliderSphere;
+    CSharedPtr<class CColliderSphere>        m_ColliderSphere;
+    // 원래 Culling 및 Picking 용은 "Sphere"로 판단하는 중이다.
+    // 단, 우선적으로 debugging을 위해 파란색으로 SphereInfo로 판단되는 지점을 세팅할 것이다. (범위는 min, max)
+    CSharedPtr<class CPickingLayerBox3D>        m_CullingArea3D;
     Vector3     m_Velocity;
     class CPlayerAnimation* m_Animation;
     CSharedPtr<class CWeapon>   m_Weapon;

@@ -3,6 +3,9 @@
 #include "../PathManager.h"
 #include "SceneManager.h"
 #include "../Component/CameraComponent.h"
+#include "../Component/ColliderBox3D.h"
+#include "../Component/ColliderSphere.h"
+#include "../Component/LandScape.h"
 #include "../GameObject/SkyObject.h"
 #include "../Input.h"
 #include "../Collision/Collision.h"
@@ -120,20 +123,54 @@ void CScene::Bresenham(int stR, int stC, int edR, int edC, std::vector<std::pair
 
 void CScene::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player)
 {
-	// 1. Ray 을 Land Scape 의 Local Space 로 보내준다.
+	// LandScape Object 가 아니라면 return
+	CLandScape* LandScapeComponent = dynamic_cast<CLandScape*>(LandScapeObject->GetRootComponent());
+
+	if (LandScapeComponent == nullptr)
+		return;
+
+	// >> 1. Ray 을 World Space 로 보내준다. (Ray ~ LandScape => World Space 에서 비교해줄 것이다.)
 	CCameraComponent* Camera = m_CameraManager->GetCurrentCamera();
-	Ray	ray = CInput::GetInst()->GetRay(LandScapeObject->GetWorldMatrix() * Camera->GetViewMatrix());
+	Ray	ray = CInput::GetInst()->GetRay(Camera->GetViewMatrix());
 
-	// 2. 지형 xz 에 투영한다.
-	Vector3 rayOnLandScape = Vector3(ray.Pos.x, 0.f, ray.Pos.z) + Vector3(ray.Dir.x, 0.f, ray.Dir.z);
+	// >> 2. 지형 xz 에 투영한다. (ray의 위치는 y pos 를 LandScape WorldPos 에 세팅, Dir 의 경우, xz 정보만 고려)
+	const Vector3& LandScapeWorldPos = LandScapeObject->GetWorldPos();
 
-	// 3. 해당 벡터가 지나는 Mesh 목록을 찾는다.  (직선 알고리즘 적용하기)
-	// 정확히는, LandScape 영역을 찾는다.
-	// 그리고 해당 영역안에 존재하는 Mesh 목록을 찾는다...?
+	// Ray 출발점
+	// Vector3 RayOnLandScapeY = Vector3(ray.Pos.x, LandScapeWorldPos.y, ray.Pos.z) + Vector3(ray.Dir.x, 0.f, ray.Dir.z);
+	Vector3 RayOnLandScapeY = Vector3(ray.Pos.x, LandScapeWorldPos.y, ray.Pos.z);
+
+	// 검사 시작점, 끝점을 찾는다. -> 두 직선 교차 알고리즘 활용하기
+	Vector3 RayCheckStPos, RayCheckEdPos;
+
+	// LandScape 의 경우, 왼쪽 위에서 아래로 내려오는 형태로 이루어져 있다.
+	// 어떤 조치도 취해주지 않는다면, min은 0이 되고, max 는 크기만큼 세팅되어 있을 것이다.
+	// 즉, WorldPos 를 사각형 왼쪽 하단에 둔다고 생각하면 된다.
+	// 출발점이 LandScape 안에 있지 않다면 
+	SphereInfo  LandScapeSphereInfo = LandScapeComponent->GetSphereInfo();
+	
+	Vector3 LandScapeMin = LandScapeSphereInfo.Center - (LandScapeComponent->GetMeshSize() * LandScapeComponent->GetRelativeScale());
+	LandScapeMin.y = LandScapeWorldPos.y;
+
+	Vector3 LandScapeMax = LandScapeSphereInfo.Center + (LandScapeComponent->GetMeshSize() * LandScapeComponent->GetRelativeScale());
+	LandScapeMax.y = LandScapeWorldPos.y;
+
+	// LandScape 4개의 변 각각에 대한 직선 방정식을 정의한다.
 
 
+	bool IsRayStInsideLandScape = false;
 
-	// 4. 각 Mesh 목록을 돌면서, t 가 가장 작은 숫자에 해당하는 Mesh 를 찾아낸다.
+	if (RayOnLandScapeY.x >= LandScapeMin.x && RayOnLandScapeY.z >= LandScapeMin.z &&
+		RayOnLandScapeY.x <= LandScapeMax.x && RayOnLandScapeY.z <= LandScapeMax.z)
+	{
+		IsRayStInsideLandScape = true;
+	}
+
+	// >> 3. Bresenham 알고리즘을 이용해서, 해당 Ray가 지나가는 LandScape 격자 영역 목록을 뽑아낸다
+
+	// >> 4. 해당 격자 안에 있는 삼각형 목록을 뽑아낸다.
+
+	// 4. 해당 삼각형 목록 중에서 Ray 와 가장 가까이 위치한 삼각형 정보를 뽑아낸다.
 
 }
 
@@ -263,6 +300,10 @@ void CScene::PostUpdate(float DeltaTime)
 
 		for (; iter1 != iter1End; ++iter1)
 		{
+			// ColliderBox3D, ColliderSphere 의 경우, Picking 대상으로 고려하지 않을 것이다.
+			if ((*iter1)->IsIgnorePicking())
+				continue;
+
 			// Render 되기도 하면서, Culling 처리 되지 않은 녀석들을 모아둔다.
 			if ((*iter1)->GetRender() && !(*iter1)->GetCulling())
 			{

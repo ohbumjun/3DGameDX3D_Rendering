@@ -141,6 +141,8 @@ private:
 	void RenderLightAcc();
 	void RenderLightBlend();
 	void RenderFinalScreen();
+	void RenderColliderComponents();
+	void RenderCullingLayer();
 
 
 	// Render State
