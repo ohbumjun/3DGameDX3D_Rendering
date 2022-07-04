@@ -7,6 +7,7 @@
 #include "Weapon.h"
 #include "Component/ColliderBox3D.h"
 #include "Component/ColliderSphere.h"
+#include "Engine.h"
 #include "Component/PickingLayerBox3D.h"
 
 // 1. 왜 Player 의 SphereInfo.Center 는 0이 아니라 음수가 세팅될까 ? (y좌표)
@@ -99,11 +100,14 @@ bool CPlayer::Init()
 	m_ColliderBox3D->SetCollisionProfile("Player");
 	m_Mesh->AddChild(m_ColliderBox3D);
 
-	// Center 지점의 경우, 기본적으로 Player 의 WorldPos 가 발밑으로 잡힌다.
-	// 즉, 아무 처리를 해주지 않을 경우, Center 가 발밑으로 잡힌다는 의미이다.
-	// MeshSize y만큼 0.5 올려서 Center 를 잡을 것이다.
-	// 해당 변수 내용을 이용해도 된다.
-	m_ColliderBox3D->SetInfo(m_RootComponent->GetSphereOriginInfo().Center, ColliderLength * 0.5f);
+	// Root Component 의 World 공간, SphereInfo 의 Center 값을 세팅
+	const Vector3& ColliderCenter = m_RootComponent->GetSphereInfo().Center;
+
+	// 아래와 같은 코드로 세팅하면 안된다.
+	// ColliderBox3D 의 경우, PickingLayerBox3D 와 다르게
+	// 여기에서 세팅해주는 Center Info가 WorldPos 로 세팅되기 때문이다.
+	// m_ColliderBox3D->SetInfo(m_RootComponent->GetSphereOriginInfo().Center, ColliderLength * 0.5f);
+	m_ColliderBox3D->SetInfo(ColliderCenter, ColliderLength * 0.5f);
 
 	/*
 	m_ColliderSphere = CreateComponent<CColliderSphere>("ColliderSphere");
@@ -111,11 +115,7 @@ bool CPlayer::Init()
 	m_ColliderSphere->SetCollisionProfile("Player");
 	const Vector3& AnimComponentMeshSize = m_Mesh->GetMeshSize();
 	const Vector3& MeshRelativeScale = m_Mesh->GetRelativeScale();
-	Vector3 ColliderCenter = Vector3(
-		GetWorldPos().x,
-		GetWorldPos().y + AnimComponentMeshSize.y * MeshRelativeScale.y * 0.5f,
-		GetWorldPos().z
-	);
+
 
 	float ColliderRadiius = AnimComponentMeshSize.x * MeshRelativeScale.x;
 	ColliderRadiius = AnimComponentMeshSize.y * MeshRelativeScale.y < ColliderRadiius ?
@@ -150,6 +150,12 @@ bool CPlayer::Init()
 
 	CInput::GetInst()->SetKeyCallback<CPlayer>("Attack1", KeyState_Down,
 		this, &CPlayer::Attack);
+
+	// Picking Layer 세팅하기 
+	CInput::GetInst()->SetKeyCallback<CPlayer>("PickingLayerCtrl", KeyState_Down,
+		this, &CPlayer::ControlPickingLayerShowEnable);
+	CInput::GetInst()->SetKeyCallback<CPlayer>("ColliderLayerCtrl", KeyState_Down,
+		this, &CPlayer::ControlColliderLayerShowEnable);
 
 	return true;
 }
@@ -191,8 +197,8 @@ void CPlayer::Update(float DeltaTime)
 		if (CInput::GetInst()->GetMouseLButtonClick())
 		{
 			// 오른쪽 클릭이 되었다면 해당 위치로 이동시킨다.
-			// m_Scene->DDTPicking(PickObj, this);
-			bool CheckResult = false;
+			m_Scene->DDTPicking(PickObj, this);
+			// bool CheckResult = false;
 		}
 	}
 }
@@ -201,10 +207,9 @@ void CPlayer::PostUpdate(float DeltaTime)
 {
 	CGameObject::PostUpdate(DeltaTime);
 
+	// todo : nav Mesh
 	//Vector3	Pos = GetWorldPos();
-
 	//Pos.y = m_Scene->GetNavigation3DManager()->GetY(Pos);
-
 	//SetWorldPos(Pos);
 
 	m_Velocity = Vector3::Zero;
@@ -250,4 +255,19 @@ void CPlayer::MovePoint(float DeltaTime)
 	Vector3 Point = m_Scene->GetNavigation3DManager()->GetPickingPos();
 
 	Move(Point);
+}
+
+void CPlayer::ControlPickingLayerShowEnable(float DeltaTime)
+{
+	bool PickingLayerEnable = CEngine::GetInst()->IsPickingLayerShowEnable();
+
+	CEngine::GetInst()->SetShowPickingLayerEnable(PickingLayerEnable ? false : true);
+}
+
+void CPlayer::ControlColliderLayerShowEnable(float DeltaTime)
+{
+	bool PickingLayerEnable = CEngine::GetInst()->IsColliderLayerShowEnable();
+
+	CEngine::GetInst()->SetShowColliderLayerEnable(PickingLayerEnable ? false : true);
+	
 }

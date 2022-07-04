@@ -23,9 +23,20 @@ private:
 	CSharedPtr<class CTexture>	m_GlobalNoiseTexture;
 	class CStructuredBuffer* m_RandomBuffer;
 	bool			m_EditMode;
-
+	bool          m_ShowPickingLayer;
+	bool          m_ShowColliderLayer;
 public:
 	void SetMouseState(Mouse_State State);
+
+	bool IsPickingLayerShowEnable() const
+	{
+		return m_ShowPickingLayer;
+	}
+
+	bool IsColliderLayerShowEnable() const
+	{
+		return m_ShowColliderLayer;
+	}
 
 	void EnableEditMode()
 	{
@@ -45,6 +56,16 @@ public:
 	Engine_Space GetEngineSpace()	const
 	{
 		return m_Space;
+	}
+
+	void SetShowColliderLayerEnable(bool Enable)
+	{
+		m_ShowColliderLayer = Enable;
+	}
+
+	void SetShowPickingLayerEnable(bool Enable)
+	{
+		m_ShowPickingLayer = Enable;
 	}
 
 	void SetEngineSpace(Engine_Space Space)

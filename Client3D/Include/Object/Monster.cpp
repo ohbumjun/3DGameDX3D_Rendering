@@ -52,11 +52,10 @@ bool CMonster::Init()
 		AnimComponentMeshSize.z * MeshRelativeScale.z
 	);
 
-	// Center 지점의 경우, 기본적으로 Player 의 WorldPos 가 발밑으로 잡힌다.
-	// 즉, 아무 처리를 해주지 않을 경우, Center 가 발밑으로 잡힌다는 의미이다.
-	// MeshSize y만큼 0.5 올려서 Center 를 잡을 것이다.
-	// 해당 변수 내용을 이용해도 된다.
-	m_ColliderBox3D->SetInfo(m_RootComponent->GetSphereOriginInfo().Center, ColliderLength * 0.5f);
+	// Root Component 의 World 공간, SphereInfo 의 Center 값을 세팅
+	const Vector3& ColliderCenter = m_RootComponent->GetSphereInfo().Center;
+
+	m_ColliderBox3D->SetInfo(ColliderCenter, ColliderLength * 0.5f);
 
 
 	// Collider Sphere

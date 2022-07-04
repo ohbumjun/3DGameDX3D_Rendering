@@ -149,10 +149,12 @@ void CScene::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player)
 	// 출발점이 LandScape 안에 있지 않다면 
 	SphereInfo  LandScapeSphereInfo = LandScapeComponent->GetSphereInfo();
 	
-	Vector3 LandScapeMin = LandScapeSphereInfo.Center - (LandScapeComponent->GetMeshSize() * LandScapeComponent->GetRelativeScale());
+	// Vector3 LandScapeMin = LandScapeSphereInfo.Center - (LandScapeComponent->GetMeshSize() * LandScapeComponent->GetRelativeScale() * 0.5f);
+	Vector3 LandScapeMin = LandScapeComponent->GetMin() * LandScapeComponent->GetRelativeScale();
 	LandScapeMin.y = LandScapeWorldPos.y;
 
-	Vector3 LandScapeMax = LandScapeSphereInfo.Center + (LandScapeComponent->GetMeshSize() * LandScapeComponent->GetRelativeScale());
+	// Vector3 LandScapeMax = LandScapeSphereInfo.Center + (LandScapeComponent->GetMeshSize() * LandScapeComponent->GetRelativeScale() * 0.5f);
+	Vector3 LandScapeMax = LandScapeComponent->GetMax() * LandScapeComponent->GetRelativeScale();
 	LandScapeMax.y = LandScapeWorldPos.y;
 
 	// LandScape 4개의 변 각각에 대한 직선 방정식을 정의한다.

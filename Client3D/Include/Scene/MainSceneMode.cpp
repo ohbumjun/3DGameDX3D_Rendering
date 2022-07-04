@@ -41,11 +41,10 @@ bool CMainSceneMode::Init()
 
 	SphereInfo PlayerWorldSphereInfo = Player->GetRootComponent()->GetSphereInfo();
 
-	// CMonster* Monster = m_Scene->CreateGameObject<CMonster>("Monster");
-	// Monster->SetWorldPos(5.f, 0.f, 5.f);
+	CMonster* Monster = m_Scene->CreateGameObject<CMonster>("Monster");
+	Monster->SetWorldPos(5.f, 0.f, 5.f);
 
 	CLandScapeObj* LandScape = m_Scene->CreateGameObject<CLandScapeObj>("LandScape");
-
 
 	CDecalObj* Decal = m_Scene->CreateGameObject<CDecalObj>("Decal");
 

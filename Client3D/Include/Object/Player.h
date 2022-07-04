@@ -43,5 +43,10 @@ private:
     void RotationY(float DeltaTime);
     void Attack(float DeltaTime);
     void MovePoint(float DeltaTime);
+
+private :
+    // Picking Layer 들을 보이게 할지 말지 세팅
+    void ControlPickingLayerShowEnable(float DeltaTime);
+    void ControlColliderLayerShowEnable(float DeltaTime);
 };
 

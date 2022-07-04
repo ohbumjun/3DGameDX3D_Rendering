@@ -914,6 +914,9 @@ void CRenderManager::RenderFinalScreen()
 
 void CRenderManager::RenderColliderComponents()
 {
+	if (CEngine::GetInst()->IsColliderLayerShowEnable() == false)
+		return;
+
 	auto iter = m_RenderLayerList[5]->RenderList.begin();
 	auto iterEnd = m_RenderLayerList[5]->RenderList.end();
 
@@ -925,6 +928,9 @@ void CRenderManager::RenderColliderComponents()
 
 void CRenderManager::RenderCullingLayer()
 {
+	if (CEngine::GetInst()->IsPickingLayerShowEnable() == false)
+		return;
+
 	auto iter = m_RenderLayerList[6]->RenderList.begin();
 	auto iterEnd = m_RenderLayerList[6]->RenderList.end();
 

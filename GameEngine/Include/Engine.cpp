@@ -26,7 +26,8 @@ CEngine::CEngine()	:
 	m_ShowCursorCount(0),
 	m_GlobalCBuffer(nullptr),
 	m_GlobalAccTime(0.f),
-	m_EditMode(false)
+	m_EditMode(false),
+	m_ShowPickingLayer(false)
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//_CrtSetBreakAlloc(2755);

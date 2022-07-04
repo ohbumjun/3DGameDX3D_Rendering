@@ -46,6 +46,8 @@ bool CClientManager3D::Init(HINSTANCE hInst)
 	CInput::GetInst()->CreateKey("Attack1", VK_LBUTTON);
 	CInput::GetInst()->CreateKey("Skill1", '1');
 	CInput::GetInst()->CreateKey("MovePoint", VK_RBUTTON);
+	CInput::GetInst()->CreateKey("PickingLayerCtrl", '9');
+	CInput::GetInst()->CreateKey("ColliderLayerCtrl", '0');
 
 	CResourceManager::GetInst()->CreateSoundChannelGroup("UI");
 	CResourceManager::GetInst()->SetVolume(10);
