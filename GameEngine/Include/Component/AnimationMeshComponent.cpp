@@ -134,6 +134,12 @@ void CAnimationMeshComponent::SetMesh(const std::string& Name)
 
 	m_SphereInfo.Center = (m_Mesh->GetMax() + m_Mesh->GetMin()) / 2.f;
 
+	// (Player.cpp ) 상위 메모 참조
+	// 딱 Max ~ Min 사이의 간격 1/2 만큼만 y 값을 증가시켜서 세팅해주어야 한다.
+	// 그렇지 않으면, 마치 SphereInfo.Center 값이 Player의 발밑에 위치한 것처럼 세팅될 수 있다.
+	m_SphereInfo.Center.y += (m_Mesh->GetMax().y - m_Mesh->GetMin().y) * 0.5f;
+
+
 	auto	iter1 = m_InstancingCheckList.begin();
 	auto	iter1End = m_InstancingCheckList.end();
 

@@ -6,6 +6,7 @@
 #include "../Scene/Scene.h"
 #include "../Scene/CameraManager.h"
 #include "CameraComponent.h"
+#include "AnimationMeshComponent.h"
 #include "ColliderCircle.h"
 #include "ColliderPixel.h"
 
@@ -64,6 +65,9 @@ void CColliderBox3D::Update(float DeltaTime)
 void CColliderBox3D::PostUpdate(float DeltaTime)
 {
 	CColliderComponent::PostUpdate(DeltaTime);
+
+	if (m_Object->GetRootComponent()->GetTypeID() == typeid(CAnimationMeshComponent).hash_code())
+		bool True = true;
 
 	m_Info.Center.x = GetWorldPos().x + m_Offset.x;
 	m_Info.Center.y = GetWorldPos().y + m_Offset.y;
@@ -153,6 +157,10 @@ void CColliderBox3D::Render()
 
 	matScale.Scaling(m_Info.Length.x * 2.f, m_Info.Length.y * 2.f, m_Info.Length.z * 2.f);
 	matRot.Rotation(GetWorldRot());
+
+	if (m_Object->GetRootComponent()->GetTypeID() == typeid(CAnimationMeshComponent).hash_code())
+		bool True = true;
+
 	matTrans.Translation(m_Info.Center);
 
 	matWorld = matScale * matRot * matTrans;

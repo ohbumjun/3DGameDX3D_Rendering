@@ -28,10 +28,12 @@ public:
         return m_Info;
     }
 
-    void SetInfo(const Vector3& Center, const Vector3& Length)
+    void SetLength(const Vector3& Length)
     {
         m_Info.Length = Length;
-        m_Info.Center = Center;
+
+        // m_Info.Center = Center;
+        // SetWorldPos(Center);
 
         SetWorldScale(m_Info.Length.x * 2.f, m_Info.Length.y * 2.f, m_Info.Length.z * 2.f);
     }

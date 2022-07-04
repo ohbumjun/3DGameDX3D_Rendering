@@ -39,8 +39,10 @@ bool CMainSceneMode::Init()
 
 	SetPlayerObject(Player);
 
-	CMonster* Monster = m_Scene->CreateGameObject<CMonster>("Monster");
-	Monster->SetWorldPos(5.f, 0.f, 5.f);
+	SphereInfo PlayerWorldSphereInfo = Player->GetRootComponent()->GetSphereInfo();
+
+	// CMonster* Monster = m_Scene->CreateGameObject<CMonster>("Monster");
+	// Monster->SetWorldPos(5.f, 0.f, 5.f);
 
 	CLandScapeObj* LandScape = m_Scene->CreateGameObject<CLandScapeObj>("LandScape");
 
@@ -48,6 +50,9 @@ bool CMainSceneMode::Init()
 	CDecalObj* Decal = m_Scene->CreateGameObject<CDecalObj>("Decal");
 
 	CPortal* Portal = m_Scene->CreateGameObject<CPortal>("Portal");
+
+	CBonObj* BonObj = m_Scene->CreateGameObject<CBonObj>("BonObj");
+	BonObj->SetWorldPos(3.f, 4.f, 10.f);
 
 	// Static Mesh Instancing
 	// for (int i = 0; i < 30; ++i)

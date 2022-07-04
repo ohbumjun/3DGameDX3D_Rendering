@@ -1,6 +1,8 @@
 
 #include "Portal.h"
 
+#include "Component/PickingLayerBox3D.h"
+
 CPortal::CPortal()
 {
 	SetTypeID<CPortal>();

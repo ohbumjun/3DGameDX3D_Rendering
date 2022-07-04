@@ -1,5 +1,6 @@
 
 #include "LandScapeObj.h"
+#include "Component/PickingLayerBox3D.h"
 
 CLandScapeObj::CLandScapeObj()
 {
@@ -28,6 +29,26 @@ bool CLandScapeObj::Init()
 
 	m_LandScape->SetDetailLevel(30.f);
 	m_LandScape->SetSplatCount(4);
+
+	// Culling Area
+	const Vector3& AnimComponentMeshSize = m_LandScape->GetMeshSize();
+	const Vector3& MeshRelativeScale = m_LandScape->GetRelativeScale();
+
+	// 아래 수치는 정석 (하지만 실제 크기는 이에 맞게 조정해줘야 한다)
+	// Vector3 ColliderLength = Vector3(
+	// 	AnimComponentMeshSize.x * MeshRelativeScale.x,
+	// 	AnimComponentMeshSize.y * MeshRelativeScale.y,
+	// 	AnimComponentMeshSize.z * MeshRelativeScale.z
+	// );
+	Vector3 ColliderLength = Vector3(
+		AnimComponentMeshSize.x * MeshRelativeScale.x,
+		AnimComponentMeshSize.y * MeshRelativeScale.y,
+		AnimComponentMeshSize.z * MeshRelativeScale.z
+	);
+
+	m_CullingArea3D = CreateComponent<CPickingLayerBox3D>("ColliderBox3D");
+	m_LandScape->AddChild(m_CullingArea3D);
+	m_CullingArea3D->SetLength(ColliderLength * 0.5f);
 
 	return true;
 }

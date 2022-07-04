@@ -6,6 +6,7 @@
 #include "../Scene/Scene.h"
 #include "../Scene/CameraManager.h"
 #include "CameraComponent.h"
+#include "AnimationMeshComponent.h"
 #include "ColliderCircle.h"
 #include "ColliderPixel.h"
 
@@ -47,7 +48,6 @@ bool CPickingLayerBox3D::Init()
 
 	m_Shader = CResourceManager::GetInst()->FindShader("ColliderShader");
 
-
 	m_Info.Axis[0] = Vector3(1.f, 0.f, 0.f);
 	m_Info.Axis[1] = Vector3(0.f, 1.f, 0.f);
 	m_Info.Axis[2] = Vector3(0.f, 0.f, 1.f);
@@ -72,6 +72,9 @@ void CPickingLayerBox3D::Update(float DeltaTime)
 void CPickingLayerBox3D::PostUpdate(float DeltaTime)
 {
 	CSceneComponent::PostUpdate(DeltaTime);
+
+	if (m_Object->GetRootComponent()->GetTypeID() == typeid(CAnimationMeshComponent).hash_code())
+		bool True = true;
 
 	m_Info.Center.x = GetWorldPos().x + m_Offset.x;
 	m_Info.Center.y = GetWorldPos().y + m_Offset.y;
@@ -161,7 +164,16 @@ void CPickingLayerBox3D::Render()
 
 	matScale.Scaling(m_Info.Length.x * 2.f, m_Info.Length.y * 2.f, m_Info.Length.z * 2.f);
 	matRot.Rotation(GetWorldRot());
-	matTrans.Translation(m_Info.Center);
+
+	// LandScape Component 의 PikcingLayer
+	// if (m_Object->GetRootComponent()->GetTypeID() == typeid(CLandScape).hash_code())
+	if (m_Object->GetRootComponent()->GetTypeID() == typeid(CAnimationMeshComponent).hash_code())
+		bool True = true;
+
+	// Sphere Info 의 Center 영역으로 세팅한다.
+	SphereInfo WorldSphereInfo = m_Object->GetRootComponent()->GetSphereInfo();
+	// matTrans.Translation(m_Info.Center);
+	matTrans.Translation(WorldSphereInfo.Center); 
 
 	matWorld = matScale * matRot * matTrans;
 

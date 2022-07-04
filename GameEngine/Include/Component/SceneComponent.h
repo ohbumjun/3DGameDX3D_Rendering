@@ -106,6 +106,12 @@ public:
     }
 
 public:
+	void SetSphereOriginInfo(const Vector3& Center, float Radius)
+	{
+		m_SphereInfo.Center = Center;
+		m_SphereInfo.Radius = Radius;
+	}
+
 	void SetInstancing(bool Instancing)
 	{
 		m_Instancing = Instancing;

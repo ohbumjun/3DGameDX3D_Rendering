@@ -33,6 +33,7 @@ public:
         m_Info.Length = Length;
         m_Info.Center = Center;
 
+        SetWorldPos(Center);
         SetWorldScale(m_Info.Length.x * 2.f, m_Info.Length.y * 2.f, m_Info.Length.z * 2.f);
     }
 

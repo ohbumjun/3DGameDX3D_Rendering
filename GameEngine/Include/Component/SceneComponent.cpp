@@ -101,20 +101,6 @@ SphereInfo CSceneComponent::GetSphereInfo() const
 	
 	Info.Radius = m_SphereInfo.Radius;
 
-	// 아래의 경우를 아예 Init 할 때 세팅한다.
-	// (CheckCollision 에서도 똑같이 세팅)
-	//  ex. Player 의 경우, 어떠한 처리도 하지 않으면, 발밑으로 World Pos가 잡히고
-	// 이로 인해, Center도 발밑으로 잡힌다.
-	// 하지만, 제대로 Culling을 세팅하려면, Center 가 몸 중앙에 와야 한다.
-	// 따라서 SphereInfo에 별도의 Offset 을 줘서 이를 조정해줘야 한다.
-	// 정확히는 World 공간상..y 값 ?
-	// 실질적인 Offset 은 MeshSize * Worldscale 값에 의존한다.
-	// WorldScale 값을 실시간 변하지만, MeshSize는 바뀌지 않는다.
-	// 따라서 MeshSize 를 세팅해두고, 여기에 실시간 바뀌는 World Scale 정보를 세팅하는 방법이 있다.
-	// 혹은, 해당 MeshSize 는, Root Component 의 Transform 의 MeshSize 라는 변수에 들어있으므로
-	// 해당 변수 내용을 이용해도 된다.
-	// Info.Center.y += 0.5f * (m_Transform->GetMeshSize().y * GetRelativeScale().y);
-
 	return Info;
 }
 

@@ -9,6 +9,25 @@
 #include "Component/ColliderSphere.h"
 #include "Component/PickingLayerBox3D.h"
 
+// 1. 왜 Player 의 SphereInfo.Center 는 0이 아니라 음수가 세팅될까 ? (y좌표)
+// -> 아래에서 m_Mesh->SetMesh(PlayerMesh) 를 하면서, Load한 fbx Mesh 정보를 세팅한다.
+// -> 이때, 해당 Mesh 에서 min, max 정보가 있는데, min이 0에서 시작하는 것이 아니다. 각자 그때그때 다른 min, max 가 세팅되어 있다.
+// -> 이에 따라 SphereInfo.Center 도 다르게 세팅되는 것이다.
+
+// 2. 그러면 왜 Player 의 발밑이 min 이 아니라, Center 에서 시작하는 것일까 ?
+// 즉, 왜 SphereInfo.Center 가 Player 의 발밑으로 세팅되는 것일까 ?
+// -> 말이 틀렸다. Player 의 발밑은, Player 의 World Pos 이다. 그리고 이 값은 처음에 (0.f, 0.f, 0.f) 이다
+// -> 반면, SphereInfo.Center 의 y값은 미묘하게 -0.34 이다.
+// -> 즉, Mesh 의 Min 자체가 0에서 시작하는 것이 아니기 때문에 SphereInfo.Center 와, 실제 물체의 중간 위치가 일치하지 않는 것
+// -> 반면, LandScape 의 경우, Min이 0에서 시작하게 코드가 되어 있다. 그래서 Center 와 실제 중간 위치가 일치하는 것
+
+// 3. 어떻게 하면 일관되게 Center 정보를 세팅할 수 있을까 ?
+// -> 모든 min 을 0 에서 시작하도록 조정해주면 되는 것 아닐까 ?
+// -> 아니다. 원본 Mesh 정보는 그대로 세팅하는 것이 좋을 것 같다.
+// -> 그저 SphereInfo.Center 정보만 WorldPos 와 Mesh 크기에 맞게 조정해주면 될 것 같다.
+// -> Animation Mesh 혹은 Static Mesh Component 에 대해서만 적용하면 될 것 같다.
+// -> 
+
 CPlayer::CPlayer()
 {
 	SetTypeID<CPlayer>();
@@ -43,8 +62,9 @@ bool CPlayer::Init()
 	m_Camera->SetInheritRotZ(true);
 
 	// Set Mesh 를 해줘야만 MeshSize가 세팅 (SetMeshSize)
-	// - Root Component 인 Animation Mesh Component 의 Transform 에 MeshSize 에 대한 정보가 들어있게 된다. (min, max)
-	m_Mesh->SetMesh("PlayerMesh");
+	// - Root Component 인 Animation Mesh Component 의 Transform 에 MeshSize 에 대한 정보가 들어있게 된다. 
+	// 여기에서 Min, Max 정보가 세팅되고, SphereInfo Center, Radius 정보가 세팅된다.
+ 	m_Mesh->SetMesh("PlayerMesh");
 	m_Mesh->SetReceiveDecal(false);
 
 	// Animation
@@ -53,8 +73,6 @@ bool CPlayer::Init()
 
 	// Scale
 	m_Mesh->SetRelativeScale(0.02f, 0.02f, 0.02f);
-	// m_Mesh->SetWorldPos(1.f, 0.f, 1.f);
-	// 이걸 해도 되는 것인가 ?
 
 	m_Arm->SetOffset(0.f, 2.f, 0.f);
 	m_Arm->SetRelativeRotation(25.f, 0.f, 0.f);
@@ -69,34 +87,23 @@ bool CPlayer::Init()
 	// 	AnimComponentMeshSize.y * MeshRelativeScale.y,
 	// 	AnimComponentMeshSize.z * MeshRelativeScale.z
 	// );
+
 	Vector3 ColliderLength = Vector3(
 		AnimComponentMeshSize.x * MeshRelativeScale.x * 0.5f, // 위에서 써놨듯이, 조정을 적절히 해줘야 한다.
 		AnimComponentMeshSize.y * MeshRelativeScale.y,
 		AnimComponentMeshSize.z * MeshRelativeScale.z
 	);
 
-	Vector3 ColliderCenter = Vector3(
-		GetWorldPos().x,
-		GetWorldPos().y + AnimComponentMeshSize.y * MeshRelativeScale.y * 0.5f,
-		GetWorldPos().z
-	);
-
 	// Collider
-	/*
 	m_ColliderBox3D = CreateComponent<CColliderBox3D>("ColliderBox3D");
 	m_ColliderBox3D->SetCollisionProfile("Player");
 	m_Mesh->AddChild(m_ColliderBox3D);
 
-
-	
 	// Center 지점의 경우, 기본적으로 Player 의 WorldPos 가 발밑으로 잡힌다.
 	// 즉, 아무 처리를 해주지 않을 경우, Center 가 발밑으로 잡힌다는 의미이다.
 	// MeshSize y만큼 0.5 올려서 Center 를 잡을 것이다.
 	// 해당 변수 내용을 이용해도 된다.
-	m_ColliderBox3D->SetInfo(ColliderCenter, ColliderLength * 0.5f);
-	// m_Body->SetCollisionProfile("Player");
-	// SetInfo(const Vector3 & Center, const Vector3 & Length)
-	*/
+	m_ColliderBox3D->SetInfo(m_RootComponent->GetSphereOriginInfo().Center, ColliderLength * 0.5f);
 
 	/*
 	m_ColliderSphere = CreateComponent<CColliderSphere>("ColliderSphere");
@@ -122,11 +129,11 @@ bool CPlayer::Init()
 	// Picking 용 Box
 	m_CullingArea3D = CreateComponent<CPickingLayerBox3D>("ColliderBox3D");
 	m_Mesh->AddChild(m_CullingArea3D);
-	m_CullingArea3D->SetInfo(ColliderCenter, ColliderLength * 0.5f);
+	m_CullingArea3D->SetLength(ColliderLength * 0.5f);
 
 	// Weapon 달지 말고
-	// m_Weapon = m_Scene->CreateGameObject<CWeapon>("Weapon");
-	// m_Mesh->AddChild(m_Weapon, "Weapon");
+	m_Weapon = m_Scene->CreateGameObject<CWeapon>("Weapon");
+	m_Mesh->AddChild(m_Weapon, "Weapon");
 
 	CInput::GetInst()->SetKeyCallback<CPlayer>("MoveFront", KeyState_Push,
 		this, &CPlayer::MoveFront);
@@ -144,7 +151,6 @@ bool CPlayer::Init()
 	CInput::GetInst()->SetKeyCallback<CPlayer>("Attack1", KeyState_Down,
 		this, &CPlayer::Attack);
 
-
 	return true;
 }
 
@@ -155,7 +161,7 @@ void CPlayer::Update(float DeltaTime)
 	if (CInput::GetInst()->GetWheelDir())
 	{
 		float Length = m_Arm->GetTargetDistance() +
-			CInput::GetInst()->GetWheelDir() * 0.1f;
+			CInput::GetInst()->GetWheelDir() * 1.0f;
 
 		m_Arm->SetTargetDistance(Length);
 	}
