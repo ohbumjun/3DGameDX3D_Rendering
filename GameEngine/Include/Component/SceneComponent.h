@@ -41,6 +41,9 @@ protected:
 	bool  m_IgnorePicking;
 	static std::list<InstancingCheckCount*>	m_InstancingCheckList;
 
+	// Debugging 용 값
+	// RenderComponent List 에서 정렬할 때, View공간 Center Length - Radius 값
+	float RenderCompDist;
 public:
 	void SetInstancingInfo(Instancing3DInfo* Info);
 	void SetInstancingShadowInfo(Instancing3DInfo* Info);
@@ -62,6 +65,11 @@ public:
 	}
 
 public:
+	void SetRenderCompDist(float Dist)
+	{
+		RenderCompDist = Dist;
+	}
+
 	bool IsIgnorePicking() const
 	{
 		return m_IgnorePicking;

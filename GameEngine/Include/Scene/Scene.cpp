@@ -420,10 +420,18 @@ void CScene::LoadFullPath(const char* FullPath)
 	fclose(File);
 }
 
+// 오름 차순 정렬을 시켜야 한다.
 bool CScene::SortRenderList(CSceneComponent* Src, CSceneComponent* Dest)
 {
 	SphereInfo	SrcInfo = Src->GetSphereInfoViewSpace();
 	SphereInfo	DestInfo = Dest->GetSphereInfoViewSpace();
 
-	return SrcInfo.Center.Length() - SrcInfo.Radius > DestInfo.Center.Length() - DestInfo.Radius;
+	float SrcCenterLength = SrcInfo.Center.Length();
+	float DestCenterLength = DestInfo.Center.Length();
+
+	// Debugging 용 값
+	Src->SetRenderCompDist(SrcCenterLength - SrcInfo.Radius);
+	Dest->SetRenderCompDist(DestCenterLength - DestInfo.Radius);
+
+	return SrcCenterLength - SrcInfo.Radius < DestCenterLength - DestInfo.Radius;
 }

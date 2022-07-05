@@ -132,8 +132,8 @@ bool CPlayer::Init()
 	m_CullingArea3D->SetLength(ColliderLength * 0.5f);
 
 	// Weapon 달지 말고
-	m_Weapon = m_Scene->CreateGameObject<CWeapon>("Weapon");
-	m_Mesh->AddChild(m_Weapon, "Weapon");
+	// m_Weapon = m_Scene->CreateGameObject<CWeapon>("Weapon");
+	// m_Mesh->AddChild(m_Weapon, "Weapon");
 
 	CInput::GetInst()->SetKeyCallback<CPlayer>("MoveFront", KeyState_Push,
 		this, &CPlayer::MoveFront);
@@ -186,15 +186,16 @@ void CPlayer::Update(float DeltaTime)
 
 	CGameObject* PickObj = nullptr;
 
-	bool PickResult = m_Scene->Picking(PickObj);
+	
 
-	if (PickResult)
+	if (CInput::GetInst()->GetMouseLButtonClick())
 	{
 		// Picking 대상이 LandScape 라면, DDT 알고리즘을 이용한 이동 처리를 수행한다.
 		// if (PickObj->GetRootComponent()->GetTypeID() != typeid(CLandScape).hash_code())
 		// 	return;
 
-		if (CInput::GetInst()->GetMouseLButtonClick())
+		bool PickResult = m_Scene->Picking(PickObj);
+		if (PickResult)
 		{
 			// 오른쪽 클릭이 되었다면 해당 위치로 이동시킨다.
 			m_Scene->DDTPicking(PickObj, this);

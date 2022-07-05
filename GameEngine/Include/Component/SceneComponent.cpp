@@ -111,6 +111,7 @@ SphereInfo CSceneComponent::GetSphereInfoViewSpace() const
 	// 먼저 World Space 상에서의 Sphere Info (Center, Radius 정보를 잡는다)
 	CCameraComponent* Camera = m_Scene->GetCameraManager()->GetCurrentCamera();
 
+	// World Space
 	Info.Center = m_SphereInfo.Center * GetWorldScale() + GetWorldPos();
 
 	// Radius 의 경우, 처음부터 잡는 값이 World 공간 상에서의 Radius 크기가 될 것이다.

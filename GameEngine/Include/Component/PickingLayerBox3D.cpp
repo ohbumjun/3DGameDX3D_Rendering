@@ -18,6 +18,9 @@ CPickingLayerBox3D::CPickingLayerBox3D()
 
 	// DebugLayer 에 출력
 	m_LayerName = "PickingCullingLayer";
+
+	// Picking 대상 제외
+	m_IgnorePicking = true;
 }
 
 CPickingLayerBox3D::CPickingLayerBox3D(const CPickingLayerBox3D& com)
