@@ -63,7 +63,12 @@ public:
 
 public:
 	float GetHeight(const Vector3& Pos);
-
+	// LandScape 기준 (왼쪽하단에서 오른쪽 상단으로 올라가는 Idx)
+	// World Space RaySt, RayDir 정보
+	// 1) 결과적으로 Mesh 기준의 Idx 정보 (왼쪽 상단 -> 오른쪽 하단으로 내려오는 순서의 삼각형 Mesh 기준 Idx
+	// 2) Ray ~ Triangle 사이의 Dist
+	// pair<int MeshIdx, int DistBetw>
+	std::optional<std::pair<int, int>> CheckRayIntersectsTriangle(int LandScapeXIdx, int LandScapeZIdx, const Vector3& RaySt, const Vector3& RayDir);
 public:
 	virtual void Start();
 	virtual bool Init();

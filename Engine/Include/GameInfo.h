@@ -19,6 +19,7 @@
 #include <d2d1.h>
 #include <stack>
 #include <process.h>
+#include <optional>
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxguid.lib")

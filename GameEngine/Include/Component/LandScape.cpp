@@ -372,6 +372,77 @@ float CLandScape::GetHeight(const Vector3& Pos)
 	return Y[0] + (Y[3] - Y[2]) * RatioX + (Y[2] - Y[0]) * RatioZ;
 }
 
+// 삼각형 - Ray 까지 거리 
+std::optional<float> CLandScape::CheckRayIntersectsTriangle(int LandScapeXIdx, int LandScapeZIdx, 
+	const Vector3& RaySt, const Vector3& RayDir)
+{
+	// 5*5 -> 실제 4*4 총 16개의 사각형이 존재
+	// (1,2) ->  (2,2) 가 되어야 한다.
+	int ConvertZIdx = m_CountZ - 2 - LandScapeZIdx;
+	int ConvertXIdx = LandScapeXIdx;
+
+	// if (IndexX < 0 || IndexX >= m_CountX || IndexZ < 0 || IndexZ >= m_CountZ - 1)
+	if (ConvertZIdx < 0 || ConvertZIdx >= m_CountZ - 1 || ConvertXIdx < 0 || ConvertXIdx >= m_CountX - 1)
+		return std::nullopt;
+
+	int Index = ConvertZIdx * m_CountX + ConvertXIdx;
+
+	// 좌하단, 우상단 삼각형 모두를 비교한다.
+	Vector3 RightUpTri_1;   // 왼쪽 Up
+	Vector3 RightUpTri_2;   // 오른쪽 Up
+	Vector3 RightUpTri_3;   // 오른쪽 Down
+
+	Vector3 LeftDownTri_1; // 왼쪽 Up
+	Vector3 LeftDownTri_2; // 오른쪽 Down
+	Vector3 LeftDownTri_3; // 왼쪽 Down
+
+	RightUpTri_1.x = m_vecPos[Index].x;
+	RightUpTri_1.y = m_vecPos[Index].y;
+	RightUpTri_1.z = m_vecPos[Index].z;
+	RightUpTri_1 = RightUpTri_1 * GetWorldScale() + GetWorldPos();
+
+	RightUpTri_2.x = m_vecPos[Index + 1].x;
+	RightUpTri_2.y = m_vecPos[Index + 1].y;
+	RightUpTri_2.z = m_vecPos[Index + 1].z;
+	RightUpTri_2 = RightUpTri_2 * GetWorldScale() + GetWorldPos();
+
+	RightUpTri_3.x = m_vecPos[Index + m_CountX + 1].x;
+	RightUpTri_3.y = m_vecPos[Index + m_CountX + 1].y;
+	RightUpTri_3.z = m_vecPos[Index + m_CountX + 1].z;
+	RightUpTri_3 = RightUpTri_3 * GetWorldScale() + GetWorldPos();
+
+	float DistToRightUp;
+	bool RightTriIntersect = DirectX::TriangleTests::Intersects(RaySt.Convert(),
+	RayDir.Convert(), RightUpTri_1.Convert(), RightUpTri_2.Convert(), RightUpTri_3.Convert(), DistToRightUp);
+
+	if (RightTriIntersect)
+		return DistToRightUp;
+
+	LeftDownTri_1.x = m_vecPos[Index].x;
+	LeftDownTri_1.y = m_vecPos[Index].y;
+	LeftDownTri_1.z = m_vecPos[Index].z;
+	LeftDownTri_1 = LeftDownTri_1 * GetWorldScale() + GetWorldPos();
+
+	LeftDownTri_2.x = m_vecPos[Index + m_CountX + 1].x;
+	LeftDownTri_2.y = m_vecPos[Index + m_CountX + 1].y;
+	LeftDownTri_2.z = m_vecPos[Index + m_CountX + 1].z;
+	LeftDownTri_2 = LeftDownTri_2 * GetWorldScale() + GetWorldPos();
+
+	LeftDownTri_3.x = m_vecPos[Index + m_CountX].x;
+	LeftDownTri_3.y = m_vecPos[Index + m_CountX].y;
+	LeftDownTri_3.z = m_vecPos[Index + m_CountX].z;
+	LeftDownTri_3 = LeftDownTri_3 * GetWorldScale() + GetWorldPos();
+
+	float DistToLeftDown;
+	bool LeftTriIntersect = DirectX::TriangleTests::Intersects(RaySt.Convert(),
+		RayDir.Convert(), LeftDownTri_1.Convert(), LeftDownTri_2.Convert(), LeftDownTri_3.Convert(), DistToLeftDown);
+
+	if (LeftTriIntersect)
+		return DistToLeftDown;
+
+	return std::nullopt;
+}
+
 void CLandScape::Start()
 {
 	CSceneComponent::Start();

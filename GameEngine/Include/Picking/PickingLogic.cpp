@@ -69,7 +69,7 @@ void CPickingLogic::Bresenham(int stR, int stC, int edR, int edC, std::vector<st
 	}
 }
 
-bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player, Vector3& PickedPos)
+bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player, Vector3& PickedWorldPos)
 {
 	// LandScape Object 가 아니라면 return
 	CLandScape* LandScapeComponent = dynamic_cast<CLandScape*>(LandScapeObject->GetRootComponent());
@@ -184,8 +184,6 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 		}
 	}
 
-
-
 	// >> 3. Bresenham 알고리즘을 이용해서, 해당 Ray가 지나가는 LandScape 격자 영역 목록을 뽑아낸다
 	// St, Ed 지점에 대해서 LandScape 상의 2차원 좌표값을 구한다.
 	// 예를 들어, CountX,Z 가 각각 129 개라면
@@ -200,16 +198,45 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 	int RayEndZIdx = (int)((RayFinalCheckEdPos.z - LandScapeMin.z) / LandScapeSizeZ);
 
 	// LandScape 4개의 변 각각에 대한 직선 방정식을 정의한다.
-	std::vector<std::pair<int, int>> vecRayGoingThroughIdx;
-	vecRayGoingThroughIdx.reserve((size_t)LandScapeComponent->GetCountX() * (size_t)LandScapeComponent->GetCountZ());
-	Bresenham(RayStartXIdx, RayStartZIdx, RayEndXIdx, RayEndZIdx, vecRayGoingThroughIdx);
+	std::vector<std::pair<int, int>> vecLandScapeRayGoingThroughIdx;
+	vecLandScapeRayGoingThroughIdx.reserve((size_t)LandScapeComponent->GetCountX() * (size_t)LandScapeComponent->GetCountZ());
+	
+	Bresenham(RayStartXIdx, RayStartZIdx, RayEndXIdx, RayEndZIdx, vecLandScapeRayGoingThroughIdx);
+
+	// 혹시나 지나가는 Idx 정보가 존재하지 않는다면 Return -> 여기에 걸리면 안되는 것 아닌가 ?
+	if (vecLandScapeRayGoingThroughIdx.size() <= 0)
+		return false;
 
 	// >> 4. 해당 격자 안에 있는 삼각형 목록을 뽑아낸다.
-	auto st = 1;
-	for (const auto &[XIdx, ZIdx] : vecRayGoingThroughIdx)
-	{ }
+	// vecRayGoingThroughIdx 안에 들어있는 Idx 정보는, 왼쪽 하단 -> 오른쪽 상단 방향으로 증가하는
+	// LandScape 사각형 단위의 Idx 정보이다.
+
+	// vecTriangleRayGoingThroughIdx 의 경우, 왼쪽 상단 -> 오른쪽 하단 방향으로 내려오는 삼각형 판별 기준 Idx
+	// 삼각형 - Ray 까지 거리 , 삼각형 Idx . 에 대한 정보들을 담을 것이다.
+	// 차후, 삼각형 - Ray 까지 거리  를 기준으로 오름차순 정렬해주기 위해서, "삼각형 - Ray 까지 거리" 를 먼저 담는다.
+	std::vector<int> vecTriangleRayGoingThroughIdx;
+
+	for (const auto &[XIdx, ZIdx] : vecLandScapeRayGoingThroughIdx)
+	{ 
+		// Ray	ray = CInput::GetInst()->GetRay(Camera->GetViewMatrix());
+		auto IntersectResult = LandScapeComponent->CheckRayIntersectsTriangle(XIdx, ZIdx, ray.Pos, ray.Dir);
+
+		if (IntersectResult.has_value())
+		{
+			float DistToTriangle = IntersectResult.value();
+			vecTriangleRayGoingThroughIdx.push_back(DistToTriangle);
+		}
+	}
 
 	// 4. 해당 삼각형 목록 중에서 Ray 와 가장 가까이 위치한 삼각형 정보를 뽑아낸다.
+	// 혹시나 충돌하는 삼각형 정보가 없다면 Break -> 이것은 가능성 있다. Bounding Volume 과만 부딪힐 뿐
+	// 실제 Traingle 들과는 부딪히지 않을 수도 있기 때문이다.
+	if (vecLandScapeRayGoingThroughIdx.size() <= 0)
+		return false;
+
+	float DistToTriangle = vecLandScapeRayGoingThroughIdx[0].second;
+
+	PickedWorldPos = ray.Pos + ray.Dir * DistToTriangle;
 
 	return true;
 }

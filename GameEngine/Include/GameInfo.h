@@ -12,6 +12,7 @@
 #include <math.h>
 #include <algorithm>
 #include <d3d11.h>
+#include <DirectXCollision.h>
 #include <d3dcompiler.h>
 #include <dinput.h>
 #include <dwrite.h>
@@ -19,6 +20,7 @@
 #include <d2d1.h>
 #include <stack>
 #include <process.h>
+#include <optional>
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxguid.lib")
