@@ -106,21 +106,8 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 	// 정의할 수 있기 때문이다.
 	// RayStart 에서 RayDir 방향으로 길게 늘여서 임의의 한점을 잡는다.
 	// LandScape 크기의 * 10배만큼 늘여서 잡을 것 (적어도 LandScape 범위 밖에 위치해야 한다.)
-	// 그리고 LandScape 범위 근처로 그 점의 위치를 제한한다.
 	Vector3 TempRayCheckEdPos = RayStPosOnLandScapeY + RayDirWithYZero * LandScapeComponent->GetMeshSize() * LandScapeComponent->GetRelativeScale() * 10.f;
 	TempRayCheckEdPos.y = 0.f;
-
-	if (TempRayCheckEdPos.x <= LandScapeMin.x)
-		TempRayCheckEdPos.x = LandScapeMin.x - 1.f;
-
-	if (TempRayCheckEdPos.x >= LandScapeMax.x)
-		TempRayCheckEdPos.x = LandScapeMax.x + 1.f;
-
-	if (TempRayCheckEdPos.z <= LandScapeMin.z)
-		TempRayCheckEdPos.z = LandScapeMin.z - 1.f;
-
-	if (TempRayCheckEdPos.z >= LandScapeMax.z)
-		TempRayCheckEdPos.z = LandScapeMax.z + 1.f;
 	
 	std::vector<Vector3> vecIntersects;
 
@@ -136,6 +123,20 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 	// 오른쪽 세로 
 	GetIntersectPoints(Vector3(LandScapeMax.x, 0.f, LandScapeMin.z), LandScapeMax,
 		RayStPosOnLandScapeY, TempRayCheckEdPos, vecIntersects);
+
+	// 찾아낸 교차점이 LandScape 밖에 있는지 확인한다.
+	auto iterSt = vecIntersects.begin();
+	auto iterEd = vecIntersects.end();
+
+	for (; iterSt != iterEd;)
+	{
+		if ((*iterSt).x < LandScapeMin.x || (*iterSt).z < LandScapeMin.z || 
+			(*iterSt).x > LandScapeMax.x || (*iterSt).z > LandScapeMax.z)
+		{
+			vecIntersects.erase(iterSt);
+		}
+		++iterSt;
+	}
 
 	// 1) Ray  시작점이 LandScape 안에 있다면, 1개의 교차점이 나와야 하고, 그것이 바로 End
 	// 2) Ray 시작점이 LandScape 밖에 있다면, 정상적인 경우, 교차점 2개가 다 나와야 한다.
@@ -184,6 +185,7 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 	}
 
 
+
 	// >> 3. Bresenham 알고리즘을 이용해서, 해당 Ray가 지나가는 LandScape 격자 영역 목록을 뽑아낸다
 	// St, Ed 지점에 대해서 LandScape 상의 2차원 좌표값을 구한다.
 	// 예를 들어, CountX,Z 가 각각 129 개라면
@@ -226,7 +228,7 @@ bool CPickingLogic::GetIntersectPoints(const Vector3& StartPoint, const Vector3&
 
 	// 분모
 	// double under = (BP2.y - BP1.y) * (AP2.x - AP1.x) - (BP2.x - BP1.x) * (AP2.y - AP1.y);
-	float under = (EndPoint.z - StartPoint.z) * (RayEndPos.x - RayStartPos.x) - (EndPoint.x - StartPoint.x) * (RayEndPos.x - RayStartPos.x);
+	float under = (EndPoint.z - StartPoint.z) * (RayEndPos.x - RayStartPos.x) - (EndPoint.x - StartPoint.x) * (RayEndPos.z - RayStartPos.z);
 	
 	// 분모값이 0 이라는 의미는 두 선이 평행하다는 의미이다.
 	if (under == 0)
@@ -250,7 +252,7 @@ bool CPickingLogic::GetIntersectPoints(const Vector3& StartPoint, const Vector3&
 		return false;
 
 	float IntersectX = RayStartPos.x + t * (float)(RayEndPos.x - RayStartPos.x);
-	float IntersectZ = RayStartPos.z + t * (float)(RayEndPos.z - RayStartPos.x);
+	float IntersectZ = RayStartPos.z + t * (float)(RayEndPos.z - RayStartPos.z);
 
 	vecIntersects.push_back(Vector3(IntersectX, 0.f, IntersectZ));
 
