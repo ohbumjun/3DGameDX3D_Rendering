@@ -60,6 +60,9 @@
     <ClInclude Include="Object\MonsterAnimation.h">
       <Filter>02. Object</Filter>
     </ClInclude>
+    <ClInclude Include="Object\MapObj.h">
+      <Filter>02. Object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client3D.rc">
@@ -106,6 +109,9 @@
       <Filter>02. Object</Filter>
     </ClCompile>
     <ClCompile Include="Object\MonsterAnimation.cpp">
+      <Filter>02. Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\MapObj.cpp">
       <Filter>02. Object</Filter>
     </ClCompile>
   </ItemGroup>

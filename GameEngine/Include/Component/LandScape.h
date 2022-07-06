@@ -25,6 +25,14 @@ protected:
 	Vector3	m_Max;
 
 public:
+	int GetCountX() const
+	{
+		return m_CountX;
+	}
+	int GetCountZ() const
+	{
+		return m_CountZ;
+	}
 	const Vector3& GetMin()	const
 	{
 		return m_Min;

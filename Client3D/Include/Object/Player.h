@@ -29,7 +29,7 @@ private:
     class CPlayerAnimation* m_Animation;
     CSharedPtr<class CWeapon>   m_Weapon;
     CSharedPtr<CNavAgent>     m_NavAgent;
-
+    Vector3 m_DDTPickedPos;
 public:
     virtual bool Init();
     virtual void Update(float DeltaTime);

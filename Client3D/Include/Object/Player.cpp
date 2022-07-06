@@ -7,6 +7,7 @@
 #include "Weapon.h"
 #include "Component/ColliderBox3D.h"
 #include "Component/ColliderSphere.h"
+#include "Picking/PickingLogic.h"
 #include "Engine.h"
 #include "Component/PickingLayerBox3D.h"
 
@@ -167,12 +168,13 @@ void CPlayer::Update(float DeltaTime)
 	if (CInput::GetInst()->GetWheelDir())
 	{
 		float Length = m_Arm->GetTargetDistance() +
-			CInput::GetInst()->GetWheelDir() * 1.0f;
+			CInput::GetInst()->GetWheelDir() * 3.0f;
 
 		m_Arm->SetTargetDistance(Length);
 	}
 
 	//m_Arm->AddRelativeRotationY(90.f * DeltaTime);
+
 	if (m_Velocity.Length() > 0.f)
 	{
 		//m_Animation->ChangeAnimation("Walk");
@@ -190,15 +192,16 @@ void CPlayer::Update(float DeltaTime)
 
 	if (CInput::GetInst()->GetMouseLButtonClick())
 	{
-		// Picking 대상이 LandScape 라면, DDT 알고리즘을 이용한 이동 처리를 수행한다.
-		// if (PickObj->GetRootComponent()->GetTypeID() != typeid(CLandScape).hash_code())
-		// 	return;
-
-		bool PickResult = m_Scene->Picking(PickObj);
+		bool PickResult = CPickingLogic::Picking(PickObj);
 		if (PickResult)
 		{
+			// Picking 대상이 LandScape 라면, DDT 알고리즘을 이용한 이동 처리를 수행한다.
+			if (PickObj->GetRootComponent()->GetTypeID() != typeid(CLandScape).hash_code())
+				return;
+
 			// 오른쪽 클릭이 되었다면 해당 위치로 이동시킨다.
-			m_Scene->DDTPicking(PickObj, this);
+			CPickingLogic::DDTPicking(PickObj, this, m_DDTPickedPos);
+
 			// bool CheckResult = false;
 		}
 	}
@@ -223,16 +226,16 @@ CPlayer* CPlayer::Clone()
 
 void CPlayer::MoveFront(float DeltaTime)
 {
-	m_Velocity += GetWorldAxis(AXIS_Z) * 10.f * DeltaTime;
+	m_Velocity += GetWorldAxis(AXIS_Z) * 50.f * DeltaTime;
 
-	AddWorldPos(GetWorldAxis(AXIS_Z) * 10.f * DeltaTime);
+	AddWorldPos(GetWorldAxis(AXIS_Z) * 50.f * DeltaTime);
 }
 
 void CPlayer::MoveBack(float DeltaTime)
 {
-	m_Velocity += GetWorldAxis(AXIS_Z) * -10.f * DeltaTime;
+	m_Velocity += GetWorldAxis(AXIS_Z) * -50.f * DeltaTime;
 
-	AddWorldPos(GetWorldAxis(AXIS_Z) * -10.f * DeltaTime);
+	AddWorldPos(GetWorldAxis(AXIS_Z) * -50.f * DeltaTime);
 }
 
 void CPlayer::RotationYInv(float DeltaTime)

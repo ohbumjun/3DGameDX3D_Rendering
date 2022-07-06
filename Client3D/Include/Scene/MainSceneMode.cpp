@@ -7,6 +7,7 @@
 #include "../Object/LandScapeObj.h"
 #include "../Object/DecalObj.h"
 #include "../Object/Portal.h"
+#include "../Object/MapObj.h"
 #include "../Object/BonObj.h"
 #include "../Object/Monster.h"
 #include "GameObject/LightObj.h"
@@ -44,11 +45,13 @@ bool CMainSceneMode::Init()
 	CMonster* Monster = m_Scene->CreateGameObject<CMonster>("Monster");
 	Monster->SetWorldPos(5.f, 0.f, 5.f);
 
-	CLandScapeObj* LandScape = m_Scene->CreateGameObject<CLandScapeObj>("LandScape");
+	// CLandScapeObj* LandScape = m_Scene->CreateGameObject<CLandScapeObj>("LandScape");
 
 	CDecalObj* Decal = m_Scene->CreateGameObject<CDecalObj>("Decal");
 
 	CPortal* Portal = m_Scene->CreateGameObject<CPortal>("Portal");
+
+	CMapObj* MapObj = m_Scene->CreateGameObject<CMapObj>("Map");
 
 	CBonObj* BonObj = m_Scene->CreateGameObject<CBonObj>("BonObj");
 	BonObj->SetWorldPos(3.f, 4.f, 10.f);
@@ -103,6 +106,8 @@ void CMainSceneMode::LoadMesh()
 	m_Scene->GetResource()->LoadMesh(Mesh_Type::Static, "Blade",
 		TEXT("Blade.msh"));
 
+	m_Scene->GetResource()->LoadMesh(Mesh_Type::Static, "Map",
+		TEXT("mapFlipNormalMinusYUp.msh"));
 
 	m_Scene->GetResource()->LoadMesh(Mesh_Type::Static, "BonObj",
 		TEXT("BonObj.msh"));

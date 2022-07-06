@@ -298,6 +298,9 @@
     <Filter Include="05. Component\01. SceneComponent\12. PickingLayer">
       <UniqueIdentifier>{98415df3-15c7-4864-a694-114e73238063}</UniqueIdentifier>
     </Filter>
+    <Filter Include="10. Picking">
+      <UniqueIdentifier>{e68162b2-6c64-4a87-8fbd-b1d1fe48f073}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device.cpp">
@@ -797,6 +800,9 @@
     </ClCompile>
     <ClCompile Include="Component\PickingLayerBox3D.cpp">
       <Filter>05. Component\01. SceneComponent\12. PickingLayer</Filter>
+    </ClCompile>
+    <ClCompile Include="Picking\PickingLogic.cpp">
+      <Filter>10. Picking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1324,6 +1330,9 @@
     </ClInclude>
     <ClInclude Include="Component\PickingLayerBox3D.h">
       <Filter>05. Component\01. SceneComponent\12. PickingLayer</Filter>
+    </ClInclude>
+    <ClInclude Include="Picking\PickingLogic.h">
+      <Filter>10. Picking</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

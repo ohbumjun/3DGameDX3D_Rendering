@@ -157,7 +157,6 @@ void CLandScape::CreateLandScape(const std::string& Name,
 
 			m_vecPos.push_back(Vtx.Pos);
 
-
 			if (m_Min.x > Vtx.Pos.x)
 				m_Min.x = Vtx.Pos.x;
 
