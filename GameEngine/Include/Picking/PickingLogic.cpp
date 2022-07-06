@@ -16,11 +16,13 @@ bool CPickingLogic::Picking(CGameObject*& result)
 	// 아래의 함수를 통해서, View 행렬의 역행렬을 곱해준 Ray
 	// 즉, World 공간 상의 Ray 를 가져다준다.
 	// 왜냐하면, 애초에 실시간으로 구해준 Input 에서의 ray 정보가
-	// 투영공간에서의 ray 정보이기 때문이다.
+	// 뷰에서의 ray 정보이기 때문이다.
 	Ray	ray = CInput::GetInst()->GetRay(Camera->GetViewMatrix());
 
-	auto	iter = CSceneManager::GetInst()->GetScene()->GetRenderComponentsList().begin();
-	auto	iterEnd = CSceneManager::GetInst()->GetScene()->GetRenderComponentsList().end();
+	const std::list<class CSceneComponent*>& RenderCompLists = CSceneManager::GetInst()->GetScene()->GetRenderComponentsList();
+
+	auto	iter = RenderCompLists.begin();
+	auto	iterEnd = RenderCompLists.end();
 
 	Vector3	HitPoint;
 
@@ -152,7 +154,7 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 	}
 
 	// Ray Start 가 LandScape 안쪽에 존재한다면, 교차점 1개
-	if (IsRayStInsideLandScape == false)
+	if (IsRayStInsideLandScape == true)
 	{
 		// 여기 걸리면 안되는 것 아닌가 ?
 		if (vecIntersects.size() != 1)
@@ -202,6 +204,8 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 
 	// >> 4. 해당 격자 안에 있는 삼각형 목록을 뽑아낸다.
 	auto st = 1;
+	for (const auto &[XIdx, ZIdx] : vecRayGoingThroughIdx)
+	{ }
 
 	// 4. 해당 삼각형 목록 중에서 Ray 와 가장 가까이 위치한 삼각형 정보를 뽑아낸다.
 

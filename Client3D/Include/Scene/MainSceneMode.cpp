@@ -37,22 +37,22 @@ bool CMainSceneMode::Init()
 		m_LoadingFunction(false, 0.3f);
 
 	CPlayer* Player = m_Scene->CreateGameObject<CPlayer>("Player");
-
+	
 	SetPlayerObject(Player);
-
+	
 	SphereInfo PlayerWorldSphereInfo = Player->GetRootComponent()->GetSphereInfo();
-
+	
 	CMonster* Monster = m_Scene->CreateGameObject<CMonster>("Monster");
 	Monster->SetWorldPos(5.f, 0.f, 5.f);
-
-	// CLandScapeObj* LandScape = m_Scene->CreateGameObject<CLandScapeObj>("LandScape");
-
+	
+	CLandScapeObj* LandScape = m_Scene->CreateGameObject<CLandScapeObj>("LandScape");
+	
 	CDecalObj* Decal = m_Scene->CreateGameObject<CDecalObj>("Decal");
-
+	
 	CPortal* Portal = m_Scene->CreateGameObject<CPortal>("Portal");
-
-	CMapObj* MapObj = m_Scene->CreateGameObject<CMapObj>("Map");
-
+	
+	// CMapObj* MapObj = m_Scene->CreateGameObject<CMapObj>("Map");
+	
 	CBonObj* BonObj = m_Scene->CreateGameObject<CBonObj>("BonObj");
 	BonObj->SetWorldPos(3.f, 4.f, 10.f);
 

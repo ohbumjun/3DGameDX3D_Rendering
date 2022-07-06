@@ -90,11 +90,6 @@ SphereInfo CSceneComponent::GetSphereInfo() const
 
 	//Info.Center = m_SphereInfo.Center * GetWorldScale() + GetWorldPos();
 
-	// Mesh 입장에서는 자신에게 부착된 Bone 의 변환 행렬 정보까지 모두 반영되어 만들어진
-	// World 행렬 정보를 이용해서, 정보를 얻어야 한다.
-	if (m_TypeID == typeid(CLandScape).hash_code())
-		bool True = true;
-
 	Info.Center = m_SphereInfo.Center * GetWorldScale() + GetWorldPos();
 	
 	// Info.Center = m_SphereInfo.Center.TransformCoord(GetWorldMatrix());
@@ -337,25 +332,16 @@ void CSceneComponent::CheckCollision()
 		SphereInfo 	Info;
 		Info.Center = m_SphereInfo.Center * GetWorldScale() + GetWorldPos();
 
-		//Info.Center = m_SphereInfo.Center.TransformCoord(GetWorldMatrix());
-		// (임시코드) -> ex. Player 의 경우, 어떠한 처리도 하지 않으면, 발밑으로 World Pos가 잡히고
-		// 이로 인해, Center도 발밑으로 잡힌다.
-		// 하지만, 제대로 Culling을 세팅하려면, Center 가 몸 중앙에 와야 한다.
-		// 따라서 SphereInfo에 별도의 Offset 을 줘서 이를 조정해줘야 한다.
-		// 정확히는 World 공간상..y 값 ?
-		// 실질적인 Offset 은 MeshSize * Worldscale 값에 의존한다.
-		// WorldScale 값을 실시간 변하지만, MeshSize는 바뀌지 않는다.
-		// 따라서 MeshSize 를 세팅해두고, 여기에 실시간 바뀌는 World Scale 정보를 세팅하는 방법이 있다.
-		// 혹은, 해당 MeshSize 는, Root Component 의 Transform 의 MeshSize 라는 변수에 들어있으므로
-		// 해당 변수 내용을 이용해도 된다.
-		// Info.Center.y += 0.5f * (m_Transform->GetMeshSize().y * GetRelativeScale().y);
-
 		Vector3	Radius;
 		Radius.x = GetMeshSize().Length();
 		Radius.y = GetMeshSize().Length();
 		Radius.z = GetMeshSize().Length();
 
-		Radius = Radius.TransformCoord(GetWorldMatrix());
+		// 수업 코드
+		// Radius = Radius.TransformCoord(GetWorldMatrix());
+		// 그런데 Radius 의 경우, Scale, Rotation, Translation 중에서
+		// Scale만 고려하면 된다. 따라서, 아래와 같이 코드를 수정할 것이다.
+		Radius = Radius * GetWorldScale();
 
 		Info.Radius = Radius.x > Radius.y ? Radius.x : Radius.y;
 		Info.Radius = Info.Radius > Radius.z ? Info.Radius : Radius.z;
