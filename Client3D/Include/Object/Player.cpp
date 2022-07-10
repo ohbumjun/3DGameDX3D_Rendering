@@ -193,6 +193,7 @@ void CPlayer::Update(float DeltaTime)
 	if (CInput::GetInst()->GetMouseLButtonClick())
 	{
 		bool PickResult = CPickingLogic::Picking(PickObj);
+
 		if (PickResult)
 		{
 			// Picking 대상이 LandScape 라면, DDT 알고리즘을 이용한 이동 처리를 수행한다.

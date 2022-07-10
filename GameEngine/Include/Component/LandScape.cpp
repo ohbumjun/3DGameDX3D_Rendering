@@ -376,9 +376,26 @@ float CLandScape::GetHeight(const Vector3& Pos)
 // 삼각형 - Ray 까지 거리 
 // LandScapeXIdx : 열
 // LandScapeZIdx : 행
-std::optional<float> CLandScape::CheckRayIntersectsTriangleInLandScape(int LandScapeXIdx, int LandScapeZIdx, 
-	const Vector3& RaySt, const Vector3& RayDir)
+std::optional<float> CLandScape::CheckRayIntersectsTriangleInLandScape(int LandScapeXIdx,
+	int LandScapeZIdx, 
+	const Vector3& RayOrigin, const Vector3& RayDir)
 {
+	// 평면 방정식 정의 
+	// ax + by + cz + d = 0;
+	// a,b,c, -> Normal Vector 좌표
+	// x,y,z -> 평면 위의 임의의 점
+	// d -> 원점에서 평면 까지의 부호 있는 거리
+	// XMVECTOR PolygonPlane;
+	// float CoefA, CoefB, CoefC, PolygonDist;
+	// CoefA = RightUpNormal.x;
+	// CoefB = RightUpNormal.y;
+	// CoefC = RightUpNormal.z;
+	// PolygonDist = (CoefA * RightUpTri_1.x + CoefB * RightUpTri_1.y + CoefC * RightUpTri_1.z) * -1;
+	// PolygonPlane = { CoefA , CoefB , CoefC , PolygonDist };
+
+	float IntersectDist;
+	Vector3 IntersectPoint;
+
 	// 5*5 -> 실제 4*4 총 16개의 사각형이 존재
 	// (1,2) ->  (2,2) 가 되어야 한다.
 	int ConvertZIdx = m_CountZ - 2 - LandScapeZIdx;
@@ -417,13 +434,15 @@ std::optional<float> CLandScape::CheckRayIntersectsTriangleInLandScape(int LandS
 	if (RightUpTri_2.y > 0)
 		bool True = true;
 
-	std::vector<Vector3> vecRightUpTriPos = { RightUpTri_1 , RightUpTri_2 , RightUpTri_3 };
+	bool RightUpTriIntersectResult = CPickingLogic::CheckRayTriangleIntersect(
+		RayOrigin, RayDir, RightUpTri_1, RightUpTri_2, RightUpTri_3, IntersectDist, IntersectPoint);
 
+	if (RightUpTriIntersectResult)
+		return IntersectDist;
 	// float DistToRightUp;
-	auto RightTriIntersect = CPickingLogic::CheckRayIntersectTriangle(RaySt, RayDir, vecRightUpTriPos);
-
-	if (RightTriIntersect.has_value())
-		return RightTriIntersect.value().second;
+	// Vector3 IntersectPoint;
+	// bool RightTriIntersect = DirectX::TriangleTests::Intersects(RaySt.Convert(),
+	// 	RayDir.Convert(), RightUpTri_1.Convert(), RightUpTri_2.Convert(), RightUpTri_3.Convert(), DistToRightUp);
 
 	LeftDownTri_1.x = m_vecPos[Index].x;
 	LeftDownTri_1.y = m_vecPos[Index].y;
@@ -440,12 +459,11 @@ std::optional<float> CLandScape::CheckRayIntersectsTriangleInLandScape(int LandS
 	LeftDownTri_3.z = m_vecPos[Index + m_CountX].z;
 	LeftDownTri_3 = LeftDownTri_3 * GetWorldScale() + GetWorldPos();
 
-	float DistToLeftDown;
-	bool LeftTriIntersect = DirectX::TriangleTests::Intersects(RaySt.Convert(),
-		RayDir.Convert(), LeftDownTri_1.Convert(), LeftDownTri_2.Convert(), LeftDownTri_3.Convert(), DistToLeftDown);
+	bool LeftDownTriIntersectResult = CPickingLogic::CheckRayTriangleIntersect(
+		RayOrigin, RayDir, LeftDownTri_1, LeftDownTri_2, LeftDownTri_3, IntersectDist, IntersectPoint);
 
-	if (LeftTriIntersect)
-		return DistToLeftDown;
+	if (LeftDownTriIntersectResult)
+		return IntersectDist;
 
 	return std::nullopt;
 }

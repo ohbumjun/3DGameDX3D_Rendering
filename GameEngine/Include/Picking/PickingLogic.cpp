@@ -42,35 +42,65 @@ bool CPickingLogic::Picking(CGameObject*& result)
 	return false;
 }
 
+// 기울기가 양수일때만 고려한다.
 // 일반 Bresenham은 일반적으로 x가 1증가
 // 특정 판별식을 이용해서 x가 1 증가할 때, y는 그대로 머물러 있을지, y도 1증가할지를 판정
 void CPickingLogic::Bresenham(int stR, int stC, int edR, int edC, std::vector<std::pair<int, int>>& vecIdxP)
 {
+	// 기울기가 1이하인지, 1보다 큰지에 따라
+	// detP 를 구하는 방식이 다르다.
+
 	// 가로 (열)
-	int x = stC;
+	int C = stC;
 	// 세로 (행)
-	int y = stR;
+	int R = stR;
 
-	int dx = edC - stC;
-	int dy = edR - stR;
+	int dC = edC - stC;
+	int dR = edR - stR;
 
-	int detP = 2 * dy - dx;
-
-	while (x <= edC)
+	// 기울기가 1 이하인 경우라면
+	if (dR <= dC)
 	{
-		// 가로, 세로 (행, 열)
-		// 즉, (z,x) 정보를 반환한다.
-		vecIdxP.push_back(std::make_pair(x, y));
-		++x;
+		int detP = 2 * (dR - dC);
 
-		if (detP < 0)
-			detP = detP + 2 * dy;
-		else
+		while (C <= edC)
 		{
-			detP = detP + 2 * dy - 2 * dx;
-			y++;
+			// 가로, 세로 (행, 열)
+			// 즉, (z,x) 정보를 반환한다.
+			vecIdxP.push_back(std::make_pair(R, C));
+			++C;
+
+			if (detP < 0)
+				detP = detP + 2 * dR;
+			else
+			{
+				detP = detP + 2 * (dR - dC);
+				R++;
+			}
 		}
 	}
+	// 기울기가 1 보다 큰 경우라면
+	else
+	{
+		int detP = 2 * (dC - dR);
+
+		while (R <= edR)
+		{
+			// 가로, 세로 (행, 열)
+			// 즉, (z,x) 정보를 반환한다.
+			vecIdxP.push_back(std::make_pair(R, C));
+			++R;
+
+			if (detP < 0)
+				detP = detP + 2 * dC;
+			else
+			{
+				detP = detP + 2 * (dC - dR);
+				C++;
+			}
+		}
+	}
+	
 }
 
 bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player, Vector3& PickedWorldPos)
@@ -84,7 +114,8 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 	// >> 1. Ray 을 World Space 로 보내준다. (Ray ~ LandScape => World Space 에서 비교해줄 것이다.)
 	CCameraComponent* Camera = CSceneManager::GetInst()->GetScene()->GetCameraManager()->GetCurrentCamera();
 	Ray	ray = CInput::GetInst()->GetRay(Camera->GetViewMatrix());
-
+	ray.Dir.Normalize();
+		
 	// >> 2. 지형 xz 에 투영한다. (ray의 위치는 y pos 를 0 에 세팅, Dir 의 경우, xz 정보만 고려)
 	// Ray 출발점
 	// Vector3 RayOnLandScapeY = Vector3(ray.Pos.x, LandScapeWorldPos.y, ray.Pos.z) + Vector3(ray.Dir.x, 0.f, ray.Dir.z);
@@ -109,23 +140,23 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 	// 먼저 Ray 가 가는 방향의 End 지점을 구해야 한다. 해당 지점 ~ Ray Start 지점을 이어서 하나의 직선을
 	// 정의할 수 있기 때문이다.
 	// RayStart 에서 RayDir 방향으로 길게 늘여서 임의의 한점을 잡는다.
-	// LandScape 크기의 * 10배만큼 늘여서 잡을 것 (적어도 LandScape 범위 밖에 위치해야 한다.)
-	Vector3 TempRayCheckEdPos = RayStPosWithYZero + RayDirWithYZero * LandScapeComponent->GetMeshSize() * LandScapeComponent->GetRelativeScale() * 10.f;
+	// LandScape 크기의 * 1000배만큼 늘여서 잡을 것 (적어도 LandScape 범위 밖에 위치해야 한다.)
+	Vector3 TempRayCheckEdPos = RayStPosWithYZero + RayDirWithYZero * LandScapeComponent->GetMeshSize() * LandScapeComponent->GetRelativeScale() * 1000.f;
 	TempRayCheckEdPos.y = 0.f;
 	
 	std::vector<Vector3> vecIntersects;
 
 	// 아래 가로
-	bool IntersectLineToLineResult = GetIntersectPoints(LandScapeMin, Vector3(LandScapeMax.x, 0.f, LandScapeMin.z), 
+	bool IntersectLineToLineResult = GetLineIntersect(LandScapeMin, Vector3(LandScapeMax.x, 0.f, LandScapeMin.z),
 		RayStPosWithYZero, TempRayCheckEdPos, vecIntersects);
 	// 왼쪽 세로
-	IntersectLineToLineResult = GetIntersectPoints(LandScapeMin, Vector3(LandScapeMin.x, 0.f, LandScapeMax.z),
+	IntersectLineToLineResult = GetLineIntersect(LandScapeMin, Vector3(LandScapeMin.x, 0.f, LandScapeMax.z),
 		RayStPosWithYZero, TempRayCheckEdPos, vecIntersects);
 	// 위쪽 가로
-	IntersectLineToLineResult = GetIntersectPoints(Vector3(LandScapeMin.x, 0.f, LandScapeMax.z), LandScapeMax,
+	IntersectLineToLineResult = GetLineIntersect(Vector3(LandScapeMin.x, 0.f, LandScapeMax.z), LandScapeMax,
 		RayStPosWithYZero, TempRayCheckEdPos, vecIntersects);
 	// 오른쪽 세로 
-	IntersectLineToLineResult = GetIntersectPoints(Vector3(LandScapeMax.x, 0.f, LandScapeMin.z), LandScapeMax,
+	IntersectLineToLineResult = GetLineIntersect(Vector3(LandScapeMax.x, 0.f, LandScapeMin.z), LandScapeMax,
 		RayStPosWithYZero, TempRayCheckEdPos, vecIntersects);
 
 	// 찾아낸 교차점이 LandScape 밖에 있는지 확인한다.
@@ -179,9 +210,6 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 		if (vecIntersects.size() != 2)
 			return false;
 
-		// X 값이 더 작은 것을, St P 로 세팅할 것이다.
-		// 즉, 더 왼쪽에 있는 녀석
-		// 이래야만, 아래의 BresenHam 알고리즘이 적용된다. (열이 더 낮은 녀석에서, 열이 더 큰 녀석으로 가는 것)
 		if (vecIntersects[0].x < vecIntersects[1].x)
 		{
 			RayFinalCheckStPos = vecIntersects[0];
@@ -192,6 +220,16 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 			RayFinalCheckStPos = vecIntersects[1];
 			RayFinalCheckEdPos = vecIntersects[0];
 		}
+	}
+
+	// X 값이 더 작은 것을, St P 로 세팅할 것이다.
+	// 즉, 더 왼쪽에 있는 녀석 (열이 더 왼쪽)
+	// 이래야만, 아래의 BresenHam 알고리즘이 적용된다. (열이 더 낮은 녀석에서, 열이 더 큰 녀석으로 가는 것)
+	if (RayFinalCheckEdPos.x < RayFinalCheckStPos.x)
+	{
+		Vector3 Temp = RayFinalCheckEdPos;
+		RayFinalCheckEdPos = RayFinalCheckStPos;
+		RayFinalCheckStPos = RayFinalCheckEdPos;
 	}
 
 	// >> 3. Bresenham 알고리즘을 이용해서, 해당 Ray가 지나가는 LandScape 격자 영역 목록을 뽑아낸다
@@ -228,8 +266,6 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 	// LandScape 4개의 변 각각에 대한 직선 방정식을 정의한다.
 	std::vector<std::pair<int, int>> vecLandScapeRayGoingThroughIdx;
 	vecLandScapeRayGoingThroughIdx.reserve((size_t)LandScapeComponent->GetCountX() * (size_t)LandScapeComponent->GetCountZ());
-	
-	
 
 	// Z: 행
 	// X : 열
@@ -239,10 +275,13 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 	// - 즉, 마치 왼쪽 상단에서, 오른쪽 하단 측으로 증가하는 듯한 (왼쪽에서 오른쪽을 바라본 형태로 적용)
 	if (RayStartZIdx <= RayEndZIdx)
 	{
-		Bresenham(RayStartXIdx, RayStartZIdx, RayEndXIdx, RayEndZIdx, vecLandScapeRayGoingThroughIdx);
+		// 시작 행, 시작 열, 끝 행, 끝 열
+		// Bresenham(int stR, int stC, int edR, int edC, std::vector<std::pair<int, int>>& vecIdxP)
+		Bresenham(RayStartZIdx, RayStartXIdx, RayEndZIdx, RayEndXIdx, vecLandScapeRayGoingThroughIdx);
 	}
 	else
 	{
+		// 예시 1
 		/* (Before)
 		2,0 / 2,1 / 2,2 / 2,3 / 2,4
 		1,0 / 1,1 / 1,2 / 1,3 / 1,4
@@ -255,6 +294,7 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 		0,2 / 1,2 / 2,2 / 3,2 / 4,3
 		*/
 
+		// 예시 2
 		/* (Before)
 		4,0 / 4,1 / 4,2
 		3,0 / 3,1 / 3.2
@@ -283,7 +323,7 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 		int ChangedEdColIdx = (LandScapeComponent->GetCountZ() - 1) - RayEndZIdx;
 
 		// 시작 열,행 - 끝 열,행
-		Bresenham(ChangedStColIdx, ChangedStRowIdx, ChangedEdColIdx, ChangedEdRowIdx, vecLandScapeRayGoingThroughIdx);
+		Bresenham(ChangedStRowIdx, ChangedStColIdx, ChangedEdRowIdx, ChangedEdColIdx, vecLandScapeRayGoingThroughIdx);
 
 		// 그리고 얻어낸 (행,열) 정보는 또 다시 바꿔줘야 한다. (After -> Before)
 		// 1) 행 -> 열
@@ -306,19 +346,17 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 	// LandScape 사각형 단위의 Idx 정보이다.
 
 	// vecTriangleRayGoingThroughIdx 의 경우, 왼쪽 상단 -> 오른쪽 하단 방향으로 내려오는 삼각형 판별 기준 Idx
+	// 즉, LandScape 의 사각형 격자 Idx 단위와 , 삼각형 Idx 단위는 다르기 때문에, 중간에 조정 과정을 거쳐야 한다.
 	// 삼각형 - Ray 까지 거리 , 삼각형 Idx . 에 대한 정보들을 담을 것이다.
 	// 차후, 삼각형 - Ray 까지 거리  를 기준으로 오름차순 정렬해주기 위해서, "삼각형 - Ray 까지 거리" 를 먼저 담는다.
 	std::vector<float> vecTriangleRayDist;
 
-	// 혹시 모르니 Dir 정보는 한번 더 정규화 해준다.
-	// ray.Dir.Normalize();
-
 	// Z: 행 Idx, X : 열 Idx
 	for (const auto &[ZIdx, XIdx] : vecLandScapeRayGoingThroughIdx)
 	{ 
-		// Ray	ray = CInput::GetInst()->GetRay(Camera->GetViewMatrix());
 		// 특정 격자안의 2개 삼각형 중에서 충돌하는 삼각형이 있는지 검사한다.
-		auto IntersectResult = LandScapeComponent->CheckRayIntersectsTriangleInLandScape(XIdx, ZIdx, ray.Pos, ray.Dir);
+		auto IntersectResult = LandScapeComponent->CheckRayIntersectsTriangleInLandScape(XIdx, ZIdx,
+			ray.Pos, ray.Dir);
 
 		if (IntersectResult.has_value())
 		{
@@ -343,11 +381,11 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 }
 
 // https://devvcxxx.tistory.com/38
-bool CPickingLogic::GetIntersectPoints(const Vector3& StartPoint, const Vector3& EndPoint, 
+bool CPickingLogic::GetLineIntersect(const Vector3& StartPoint, const Vector3& EndPoint,
 	const Vector3& RayStartPos, const Vector3& RayEndPos,
 	std::vector<Vector3>& vecIntersects)
 {
-	// BP1 : StartPoint, 
+	// BP1 : StartPoint,
 	// BP2 : EndPoint
 	// AP1 : RayStartPos
 	// AP2 : RayEndPos
@@ -357,7 +395,7 @@ bool CPickingLogic::GetIntersectPoints(const Vector3& StartPoint, const Vector3&
 	// 분모
 	// double under = (BP2.y - BP1.y) * (AP2.x - AP1.x) - (BP2.x - BP1.x) * (AP2.y - AP1.y);
 	float under = (EndPoint.z - StartPoint.z) * (RayEndPos.x - RayStartPos.x) - (EndPoint.x - StartPoint.x) * (RayEndPos.z - RayStartPos.z);
-	
+
 	// 분모값이 0 이라는 의미는 두 선이 평행하다는 의미이다.
 	if (under == 0)
 		return false;
@@ -387,34 +425,79 @@ bool CPickingLogic::GetIntersectPoints(const Vector3& StartPoint, const Vector3&
 	return true;
 }
 
-// 모든 Vector3 들은 같은 Space 상에 존재해야 한다.
-std::optional<std::pair<bool, float>> CPickingLogic::CheckRayIntersectTriangle(const Vector3& RayDir, const Vector3& RayStartPos,
-	std::vector<Vector3>& vecTrianglePos)
+bool CPickingLogic::CheckRayTriangleIntersect(
+	const Vector3& rayOrig, const Vector3& rayDir,
+	const Vector3& v0, const Vector3& v1, const Vector3& v2,
+	float& IntersectDist, Vector3& IntersectPoint)
 {
-	// 삼각형 정보이므로, 3개의 World Space 상의 위치정보만을 가져와야 한다.
-	if (vecTrianglePos.size() != 3)
-	{
-		assert(false);
-		return std::nullopt;
-	}
+	// 1단계. 먼저, 평면 ~ 직선. 이 거의 평행한지 여부를 살핀다.
+	// 평면의 Normal 값을 계산한다.
+	// compute plane's normal
+	Vector3 Edge1 = v1 - v0;
+	Vector3 Edge2 = v2 - v0;
 
-	float IntersectDist;
+	// Normalize 할 필요는 없다.
+	Vector3 NormalV = Edge1.Cross(Edge2);  //N 
 
-	Vector3 TempDir = RayDir;
-	TempDir.Normalize();
-		
-	bool TriIntersect = DirectX::TriangleTests::Intersects(RayStartPos.Convert(),
-		TempDir.Convert(),
-		vecTrianglePos[0].Convert(), 
-		vecTrianglePos[1].Convert(),
-		vecTrianglePos[2].Convert(),
-		IntersectDist);
+	// 거의 0
+	float kEpsilon = 0.00001;
 
-	if (!TriIntersect)
-		return std::nullopt;
+	// 평면의 Normal Vector 와, Ray 의 Dir의 Dot 결과가
+	// 거의 0이라면, 둘은 거의 수직이라는 것
+	// 반대로 말하면, 평면과 Ray 는 거의 평행하다는 것
+	float NormalVDotRayDir = NormalV.Dot(rayDir);
+	
+	if (abs(NormalVDotRayDir) < kEpsilon)  //almost 0 
+		return false;  //they are parallel so they don't intersect ! 
 
-	// XMVECTOR 
+	// 2단계 : 평면과의 교차점 구하기 
+	// Ax + By + Cz + D = 0 이라는 평면의 방정식에서
+	// D 를 구하기 
+	// Normal Vector 의 원소값 * 평면 위 임의 한점과의 원소값
+	float PlaneDist = NormalV.Dot(v0) * -1;
 
-	return std::nullopt;
-	// return std::make_pair();
+	// Ray 에서 평면까지의 거리를 구한다.
+	// Ax + By + Cz + D 에서
+	// x,y,z 에 Ray 방정식 (StartPos + IntersectDist * RayDir) 을 대입
+	// 이를 통해, IntersectDist (미지수) 값을 도출해낼 수 있다.
+	// compute t (equation 3)
+	IntersectDist = -1 * (NormalV.Dot(rayOrig) + PlaneDist) / NormalVDotRayDir;
+
+	// 3단계 : Ray 의 시작점이 Triangle 보다 앞에 있는지 확인
+	// 즉, Ray Dir 방향 반대 쪽에 Triangle이 위치한다면
+	// IntersectDist 는 음수가 나올 것이다.
+	if (IntersectDist < 0) 
+		return false; 
+
+	// 4단계 : 교차점 좌표 구하기 
+	IntersectPoint = rayOrig + Vector3(rayDir.x * IntersectDist, rayDir.y * IntersectDist, rayDir.z * IntersectDist);
+	
+	// 5단계 : 교차점이 삼각형 내에 존재하는지 확인
+	Vector3 CkEdge = v1 - v0;
+	Vector3 CkPointEdge = IntersectPoint - v0;
+	Vector3 CkCrossResult = CkEdge.Cross(CkPointEdge);
+
+	if (NormalV.Dot(CkCrossResult) < 0)
+		return false;
+
+	CkEdge = v2 - v1;
+	CkPointEdge = IntersectPoint - v1;
+	CkCrossResult = CkEdge.Cross(CkPointEdge);
+
+	if (NormalV.Dot(CkCrossResult) < 0)
+		return false;
+
+	CkEdge = v0 - v2;
+	CkPointEdge = IntersectPoint - v2;
+	CkCrossResult = CkEdge.Cross(CkPointEdge);
+
+	if (NormalV.Dot(CkCrossResult) < 0)
+		return false;
+
+	return true;  //this ray hits the triangle 
 }
+
+/*
+
+
+*/
