@@ -589,7 +589,7 @@ bool CCollision::CollisionRayToSphere(Vector3& HitPoint,
 	if (CenterToProjVector > Sphere.Radius)
 		return false;
 
-	float q = sqrt(RadiusPow - pow(CenterToProjVector,2));
+	float q = (float)sqrt(RadiusPow - pow(CenterToProjVector,2));
 
 	float DistFromRayToInters = 0.f;
 
@@ -618,7 +618,7 @@ bool CCollision::CollisionBox3DToBox3D(CollisionResult& SrcResult, CollisionResu
 
 	float	CenterProjDist = abs(CenterDir.Dot(Axis));
 
-	float	r1, r2, ¤¡3;
+	float	r1, r2, r3;
 
 	r1 = Src.Length.x;
 	r2 = abs(Dest.Axis[0].Dot(Axis) * Dest.Length.x) +

@@ -20,7 +20,7 @@ CAnimationMesh::~CAnimationMesh()
 
 int CAnimationMesh::GetBoneCount() const
 {
-	return m_Skeleton->GetBoneCount();
+	return (int)m_Skeleton->GetBoneCount();
 }
 
 void CAnimationMesh::SetBoneShader()

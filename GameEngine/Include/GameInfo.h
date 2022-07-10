@@ -11,9 +11,7 @@
 #include <string>
 #include <math.h>
 #include <algorithm>
-#include <d3d11.h>
-#include <DirectXCollision.h>
-#include <d3dcompiler.h>
+
 #include <dinput.h>
 #include <dwrite.h>
 #include <dwrite_3.h>
@@ -21,6 +19,10 @@
 #include <stack>
 #include <process.h>
 #include <optional>
+
+#include <d3d11.h>
+#include <d3dcompiler.h>
+#include <DirectXCollision.h>
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxguid.lib")

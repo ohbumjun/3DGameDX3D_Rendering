@@ -128,7 +128,7 @@ bool CMeshManager::Init()
 	CreateMesh(Mesh_Type ::Static, "SpherePos",
 		&vecSpherePos[0], sizeof(Vector3), SphereSize,
 		D3D11_USAGE_DEFAULT, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
-		&vecSphereIndex[0], sizeof(int), vecSphereIndex.size(),
+		&vecSphereIndex[0], sizeof(int), (int)vecSphereIndex.size(),
 		D3D11_USAGE_DEFAULT, DXGI_FORMAT_R32_UINT);
 
 	Vector3	CubePos[8] =

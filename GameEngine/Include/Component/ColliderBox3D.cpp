@@ -55,6 +55,8 @@ bool CColliderBox3D::Init()
 	SetWorldScale(m_Info.Length.x * 2.f, m_Info.Length.y * 2.f, m_Info.Length.z * 2.f);
 
 	m_Mesh = m_Scene->GetResource()->FindMesh("CubeLinePos");
+
+	return true;
 }
 
 void CColliderBox3D::Update(float DeltaTime)

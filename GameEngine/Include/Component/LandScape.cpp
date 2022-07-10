@@ -9,6 +9,7 @@
 #include "../Resource/Shader/LandScapeConstantBuffer.h"
 #include "../Scene/Navigation3D.h"
 #include "../Scene/NavigationMesh.h"
+#include "../Picking/PickingLogic.h"
 
 CLandScape::CLandScape()	:
 	m_CountX(0),
@@ -195,9 +196,9 @@ void CLandScape::CreateLandScape(const std::string& Name,
 	// ex) N개의 사각형 --> N * 2개의 삼각형 을 순회하면서 색인 버퍼 정보를 만들어줘야 한다.
 	m_vecFaceNormal.resize((m_CountX - 1) * (m_CountZ - 1) * 2);
 
-	for (unsigned int i = 0; i < m_CountZ - 1; ++i)
+	for (unsigned int i = 0; i < (unsigned int)m_CountZ - 1; ++i)
 	{
-		for (unsigned int j = 0; j < m_CountX - 1; ++j)
+		for (unsigned int j = 0; j < (unsigned int)m_CountX - 1; ++j)
 		{
 			unsigned int	Index = i * m_CountX + j;
 
@@ -373,7 +374,9 @@ float CLandScape::GetHeight(const Vector3& Pos)
 }
 
 // 삼각형 - Ray 까지 거리 
-std::optional<float> CLandScape::CheckRayIntersectsTriangle(int LandScapeXIdx, int LandScapeZIdx, 
+// LandScapeXIdx : 열
+// LandScapeZIdx : 행
+std::optional<float> CLandScape::CheckRayIntersectsTriangleInLandScape(int LandScapeXIdx, int LandScapeZIdx, 
 	const Vector3& RaySt, const Vector3& RayDir)
 {
 	// 5*5 -> 실제 4*4 총 16개의 사각형이 존재
@@ -411,12 +414,16 @@ std::optional<float> CLandScape::CheckRayIntersectsTriangle(int LandScapeXIdx, i
 	RightUpTri_3.z = m_vecPos[Index + m_CountX + 1].z;
 	RightUpTri_3 = RightUpTri_3 * GetWorldScale() + GetWorldPos();
 
-	float DistToRightUp;
-	bool RightTriIntersect = DirectX::TriangleTests::Intersects(RaySt.Convert(),
-	RayDir.Convert(), RightUpTri_1.Convert(), RightUpTri_2.Convert(), RightUpTri_3.Convert(), DistToRightUp);
+	if (RightUpTri_2.y > 0)
+		bool True = true;
 
-	if (RightTriIntersect)
-		return DistToRightUp;
+	std::vector<Vector3> vecRightUpTriPos = { RightUpTri_1 , RightUpTri_2 , RightUpTri_3 };
+
+	// float DistToRightUp;
+	auto RightTriIntersect = CPickingLogic::CheckRayIntersectTriangle(RaySt, RayDir, vecRightUpTriPos);
+
+	if (RightTriIntersect.has_value())
+		return RightTriIntersect.value().second;
 
 	LeftDownTri_1.x = m_vecPos[Index].x;
 	LeftDownTri_1.y = m_vecPos[Index].y;

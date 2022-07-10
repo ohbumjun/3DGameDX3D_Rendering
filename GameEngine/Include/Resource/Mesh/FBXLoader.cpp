@@ -608,7 +608,7 @@ void CFBXLoader::LoadBoneRecursive(FbxNode* pNode, int iDepth, int iIndex, int i
 	for (int i = 0; i < iChildCount; ++i)
 	{
 		LoadBoneRecursive(pNode->GetChild(i), iDepth + 1,
-			m_vecBones.size(), iIndex);
+			(int)m_vecBones.size(), iIndex);
 	}
 }
 
@@ -690,7 +690,7 @@ int CFBXLoader::FindBoneFromName(const std::string& strName)
 	for (size_t i = 0; i < m_vecBones.size(); ++i)
 	{
 		if (m_vecBones[i]->strName == strName)
-			return i;
+			return (int)i;
 	}
 
 	return -1;
@@ -860,8 +860,8 @@ void CFBXLoader::ChangeWeightAndIndices(PFBXMESHCONTAINER pContainer)
 
 		for (int i = 0; i < iter->second.size(); ++i)
 		{
-			vWeight[i] = iter->second[i].dWeight;
-			vIndex[i] = iter->second[i].iIndex;
+			vWeight[i] = (float)iter->second[i].dWeight;
+			vIndex[i] = (float)iter->second[i].iIndex;
 		}
 
 		pContainer->vecBlendWeight[iter->first] = vWeight;

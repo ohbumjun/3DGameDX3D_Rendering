@@ -299,7 +299,7 @@ bool CAnimationSequence::LoadFullPathMultibyte(const char* pFullPath)
 	m_KeyFrameBuffer = new CStructuredBuffer;
 
 	m_KeyFrameBuffer->Init("KeyFrameBuffer", sizeof(AnimationFrameTrans),
-		vecFrameTrans.size(), 13, true, (int)Buffer_Shader_Type::Compute);
+		(unsigned int)vecFrameTrans.size(), 13, true, (int)Buffer_Shader_Type::Compute);
 
 	m_KeyFrameBuffer->UpdateBuffer(&vecFrameTrans[0],
 		vecFrameTrans.size());
@@ -437,7 +437,8 @@ bool CAnimationSequence::CreateSequence(bool bLoop,
 	m_KeyFrameBuffer = new CStructuredBuffer;
 
 	m_KeyFrameBuffer->Init("KeyFrameBuffer", sizeof(AnimationFrameTrans),
-		vecFrameTrans.size(), 13, true, (int)Buffer_Shader_Type::Compute);
+		(unsigned int)vecFrameTrans.size(),
+		13, true, (int)Buffer_Shader_Type::Compute);
 
 	m_KeyFrameBuffer->UpdateBuffer(&vecFrameTrans[0],
 		vecFrameTrans.size());
@@ -451,7 +452,7 @@ bool CAnimationSequence::CreateSequence(bool bLoop,
 		char	strAnimPath[MAX_PATH] = {};
 		strcpy_s(strAnimPath, m_FullPath);
 
-		int	iLength = strlen(strAnimPath);
+		int	iLength = (int)strlen(strAnimPath);
 		for (int i = iLength - 1; i >= 0; --i)
 		{
 			// aa/bb.exe 9개, 2번인덱스 3 ~ 8번까지 제거
@@ -547,10 +548,10 @@ bool CAnimationSequence::CreateSequence(
 	m_KeyFrameBuffer = new CStructuredBuffer;
 
 	m_KeyFrameBuffer->Init("KeyFrameBuffer", sizeof(AnimationFrameTrans),
-		vecFrameTrans.size(), 13, true, (int)Buffer_Shader_Type::Compute);
+		(unsigned int)vecFrameTrans.size(), 13, true, (int)Buffer_Shader_Type::Compute);
 
 	m_KeyFrameBuffer->UpdateBuffer(&vecFrameTrans[0],
-		vecFrameTrans.size());
+		(int)vecFrameTrans.size());
 
 	return true;
 }

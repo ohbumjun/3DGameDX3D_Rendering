@@ -134,7 +134,7 @@ void CNavigationMesh::AddCell(const Vector3 Pos[3])
 
 	Cell->Center = (Pos[0] + Pos[1] + Pos[2]) / 3.f;
 
-	Cell->Index = m_vecCell.size();
+	Cell->Index = (int)m_vecCell.size();
 
 	for (int i = 0; i < 3; ++i)
 	{
@@ -212,7 +212,7 @@ void CNavigationMesh::CreateGridMapAdj(int LineRectCount)
 		// 위쪽 사각형, 오른쪽 사각형, 자기자신 사각형의 왼쪽 하단 삼각형이
 		// 인접정보 후보가 된다.
 		// 위쪽 사각형의 좌하단 삼각형 인덱스를 구한다.
-		int	idx = i - LineRectCount * 2 + 1;
+		int	idx = (int)i - LineRectCount * 2 + 1;
 		if (idx >= 0 && idx < m_vecCell.size())
 		{
 			Info.Index = idx;
@@ -221,7 +221,7 @@ void CNavigationMesh::CreateGridMapAdj(int LineRectCount)
 		}
 
 		// 자기자신 사각형의 왼쪽 하단 삼각형 인덱스를 구한다.
-		idx = i + 1;
+		idx = (int)i + 1;
 		if (idx >= 0 && idx < m_vecCell.size())
 		{
 			Info.Index = idx;
@@ -232,7 +232,7 @@ void CNavigationMesh::CreateGridMapAdj(int LineRectCount)
 		// 오른쪽 사각형의 왼쪽 하단 삼각형 인덱스를 구한다.
 		if ((i / 2) % LineRectCount != LineRectCount - 1)
 		{
-			idx = i + 3;
+			idx = (int)i + 3;
 			Info.Index = idx;
 			Info.EdgeIndex = 1;
 			m_vecCell[i]->vecAdj.push_back(Info);
@@ -242,19 +242,19 @@ void CNavigationMesh::CreateGridMapAdj(int LineRectCount)
 		// 아래쪽 사각형, 왼쪽 사각형, 자기자신 사각형의 오른쪽 상단 삼각형이
 		// 인접정보 후보가 된다.
 		// 자기자신 사각형의 우상단 삼각형 인덱스를 구한다.
-		Info.Index = i;
+		Info.Index = (int)i;
 		Info.EdgeIndex = 0;
 		m_vecCell[i + 1]->vecAdj.push_back(Info);
 
 		// 왼쪽 사각형의 우상단 삼각형 인덱스를 구한다.
 		if ((i / 2) % LineRectCount != 0)
 		{
-			Info.Index = i - 3;
+			Info.Index = (int)i - 3;
 			Info.EdgeIndex = 2;
 			m_vecCell[i + 1]->vecAdj.push_back(Info);
 		}
 
-		idx = i + (LineRectCount * 2);
+		idx = (int)i + (LineRectCount * 2);
 		if (idx < m_vecCell.size())
 		{
 			Info.Index = idx;
@@ -334,11 +334,11 @@ void CNavigationMesh::CreateAdj()
 							Origin[0][PosIdx[k][1]] == Origin[1][PosIdx[l][1]]))
 					{
 						AdjInfo	Info = {};
-						Info.Index = j;
+						Info.Index = (int)j;
 						Info.EdgeIndex = k;
 						m_vecCell[i]->vecAdj.push_back(Info);
 
-						Info.Index = i;
+						Info.Index = (int)i;
 						Info.EdgeIndex = l;
 						m_vecCell[j]->vecAdj.push_back(Info);
 						Insert = true;
@@ -791,7 +791,7 @@ void CNavigationMesh::CreateSection()
 	m_SectionZ = 5;
 
 	Vector3	vLength = m_Max - m_Min;
-	m_SectionSize = vLength / Vector3(m_SectionX, 1, m_SectionZ);
+	m_SectionSize = vLength / Vector3((float)m_SectionX, 1, (float)m_SectionZ);
 
 	SAFE_DELETE_ARRAY(m_Section);
 
@@ -803,8 +803,8 @@ void CNavigationMesh::CreateSection()
 		{
 			int	idx = i * m_SectionX + j;
 			m_Section[idx].Size = m_SectionSize;
-			m_Section[idx].Min = m_Min + m_SectionSize * Vector3(j, 0, i);
-			m_Section[idx].Max = m_Min + m_SectionSize * Vector3((j + 1), 1, (i + 1));
+			m_Section[idx].Min = m_Min + m_SectionSize * Vector3((float)j, 0, i);
+			m_Section[idx].Max = m_Min + m_SectionSize * Vector3((float)(j + 1), 1, (i + 1));
 		}
 	}
 
@@ -1383,8 +1383,8 @@ bool CNavigationMesh::CheckPath(const Vector3& Start,
 	const Vector3& End)
 {
 	int	StartX, StartY, EndX, EndY;
-	StartX = Start.x;
-	StartY = Start.z;
+	StartX = (int)Start.x;
+	StartY = (int)Start.z;
 	EndX = End.x;
 	EndY = End.z;
 

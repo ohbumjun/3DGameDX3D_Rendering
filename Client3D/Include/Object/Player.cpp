@@ -200,9 +200,13 @@ void CPlayer::Update(float DeltaTime)
 				return;
 
 			// 오른쪽 클릭이 되었다면 해당 위치로 이동시킨다.
-			CPickingLogic::DDTPicking(PickObj, this, m_DDTPickedPos);
+			bool PickedToLandScape = CPickingLogic::DDTPicking(PickObj, this, m_DDTPickedPos);
 
 			// bool CheckResult = false; //
+			if (PickedToLandScape)
+			{
+				SetWorldPos(m_DDTPickedPos);
+			}
 		}
 	}
 }
