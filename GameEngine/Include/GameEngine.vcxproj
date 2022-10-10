@@ -51,6 +51,7 @@
     <ClCompile Include="Component\Tile.cpp" />
     <ClCompile Include="Component\TileMapComponent.cpp" />
     <ClCompile Include="Component\Transform.cpp" />
+    <ClCompile Include="Component\WaterComponent.cpp" />
     <ClCompile Include="Component\WidgetComponent.cpp" />
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -100,6 +101,7 @@
     <ClCompile Include="Resource\Mesh\FBXLoader.cpp" />
     <ClCompile Include="Resource\Mesh\Mesh.cpp" />
     <ClCompile Include="Resource\Mesh\MeshManager.cpp" />
+    <ClCompile Include="Resource\Mesh\Sprite3DMesh.cpp" />
     <ClCompile Include="Resource\Mesh\SpriteMesh.cpp" />
     <ClCompile Include="Resource\Mesh\StaticMesh.cpp" />
     <ClCompile Include="Resource\Particle\Particle.cpp" />
@@ -151,6 +153,8 @@
     <ClCompile Include="Resource\Shader\TileMapConstantBuffer.cpp" />
     <ClCompile Include="Resource\Shader\TileMapShader.cpp" />
     <ClCompile Include="Resource\Shader\TransformConstantBuffer.cpp" />
+    <ClCompile Include="Resource\Shader\WaterConstantBuffer.cpp" />
+    <ClCompile Include="Resource\Shader\WaterShader.cpp" />
     <ClCompile Include="Resource\Shader\WidgetConstantBuffer.cpp" />
     <ClCompile Include="Resource\Shader\WidgetShader.cpp" />
     <ClCompile Include="Resource\Sound\Sound.cpp" />
@@ -220,6 +224,7 @@
     <ClInclude Include="Component\Tile.h" />
     <ClInclude Include="Component\TileMapComponent.h" />
     <ClInclude Include="Component\Transform.h" />
+    <ClInclude Include="Component\WaterComponent.h" />
     <ClInclude Include="Component\WidgetComponent.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="Engine.h" />
@@ -274,6 +279,7 @@
     <ClInclude Include="Resource\Mesh\fbxsdk.h" />
     <ClInclude Include="Resource\Mesh\Mesh.h" />
     <ClInclude Include="Resource\Mesh\MeshManager.h" />
+    <ClInclude Include="Resource\Mesh\Sprite3DMesh.h" />
     <ClInclude Include="Resource\Mesh\SpriteMesh.h" />
     <ClInclude Include="Resource\Mesh\StaticMesh.h" />
     <ClInclude Include="Resource\Particle\Particle.h" />
@@ -325,6 +331,8 @@
     <ClInclude Include="Resource\Shader\TileMapConstantBuffer.h" />
     <ClInclude Include="Resource\Shader\TileMapShader.h" />
     <ClInclude Include="Resource\Shader\TransformConstantBuffer.h" />
+    <ClInclude Include="Resource\Shader\WaterConstantBuffer.h" />
+    <ClInclude Include="Resource\Shader\WaterShader.h" />
     <ClInclude Include="Resource\Shader\WidgetConstantBuffer.h" />
     <ClInclude Include="Resource\Shader\WidgetShader.h" />
     <ClInclude Include="Resource\Sound\Sound.h" />
@@ -551,6 +559,21 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TileMapVS</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\Shader\Water.fx">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </AdditionalIncludeDirectories>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">WaterVS</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\Shader\WaterSample.fx">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WaterVS</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">WaterVS</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>

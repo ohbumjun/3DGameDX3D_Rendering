@@ -376,9 +376,10 @@ float CLandScape::GetHeight(const Vector3& Pos)
 // 삼각형 - Ray 까지 거리 
 // LandScapeXIdx : 열
 // LandScapeZIdx : 행
+// Local Space 상의 ray 정보를 얻어올 것이다.
 std::optional<float> CLandScape::CheckRayIntersectsTriangleInLandScape(int LandScapeXIdx,
 	int LandScapeZIdx, 
-	const Vector3& RayOrigin, const Vector3& RayDir)
+	const Vector3& LocalRayOrigin, const Vector3& LocalRayDir)
 {
 	// 평면 방정식 정의 
 	// ax + by + cz + d = 0;
@@ -419,48 +420,51 @@ std::optional<float> CLandScape::CheckRayIntersectsTriangleInLandScape(int LandS
 	RightUpTri_1.x = m_vecPos[Index].x;
 	RightUpTri_1.y = m_vecPos[Index].y;
 	RightUpTri_1.z = m_vecPos[Index].z;
-	RightUpTri_1 = RightUpTri_1 * GetWorldScale() + GetWorldPos();
+	// RightUpTri_1 = RightUpTri_1 * GetWorldScale() + GetWorldPos();
 
 	RightUpTri_2.x = m_vecPos[Index + 1].x;
 	RightUpTri_2.y = m_vecPos[Index + 1].y;
 	RightUpTri_2.z = m_vecPos[Index + 1].z;
-	RightUpTri_2 = RightUpTri_2 * GetWorldScale() + GetWorldPos();
+	// RightUpTri_2 = RightUpTri_2 * GetWorldScale() + GetWorldPos();
 
 	RightUpTri_3.x = m_vecPos[Index + m_CountX + 1].x;
 	RightUpTri_3.y = m_vecPos[Index + m_CountX + 1].y;
 	RightUpTri_3.z = m_vecPos[Index + m_CountX + 1].z;
-	RightUpTri_3 = RightUpTri_3 * GetWorldScale() + GetWorldPos();
+	// RightUpTri_3 = RightUpTri_3 * GetWorldScale() + GetWorldPos();
 
 	if (RightUpTri_2.y > 0)
 		bool True = true;
 
-	bool RightUpTriIntersectResult = CPickingLogic::CheckRayTriangleIntersect(
-		RayOrigin, RayDir, RightUpTri_1, RightUpTri_2, RightUpTri_3, IntersectDist, IntersectPoint);
+	bool RightUpTriIntersectResult = DirectX::TriangleTests::Intersects(LocalRayOrigin.Convert(),
+	 LocalRayDir.Convert(), RightUpTri_1.Convert(), RightUpTri_2.Convert(), RightUpTri_3.Convert(), IntersectDist);
+
+	// bool RightUpTriIntersectResult = CPickingLogic::CheckRayTriangleIntersect(
+	// 	RayOrigin, RayDir, RightUpTri_1, RightUpTri_2, RightUpTri_3, IntersectDist, IntersectPoint);
 
 	if (RightUpTriIntersectResult)
 		return IntersectDist;
-	// float DistToRightUp;
-	// Vector3 IntersectPoint;
-	// bool RightTriIntersect = DirectX::TriangleTests::Intersects(RaySt.Convert(),
-	// 	RayDir.Convert(), RightUpTri_1.Convert(), RightUpTri_2.Convert(), RightUpTri_3.Convert(), DistToRightUp);
+	
 
 	LeftDownTri_1.x = m_vecPos[Index].x;
 	LeftDownTri_1.y = m_vecPos[Index].y;
 	LeftDownTri_1.z = m_vecPos[Index].z;
-	LeftDownTri_1 = LeftDownTri_1 * GetWorldScale() + GetWorldPos();
+	//LeftDownTri_1 = LeftDownTri_1 * GetWorldScale() + GetWorldPos();
 
 	LeftDownTri_2.x = m_vecPos[Index + m_CountX + 1].x;
 	LeftDownTri_2.y = m_vecPos[Index + m_CountX + 1].y;
 	LeftDownTri_2.z = m_vecPos[Index + m_CountX + 1].z;
-	LeftDownTri_2 = LeftDownTri_2 * GetWorldScale() + GetWorldPos();
+	//LeftDownTri_2 = LeftDownTri_2 * GetWorldScale() + GetWorldPos();
 
 	LeftDownTri_3.x = m_vecPos[Index + m_CountX].x;
 	LeftDownTri_3.y = m_vecPos[Index + m_CountX].y;
 	LeftDownTri_3.z = m_vecPos[Index + m_CountX].z;
-	LeftDownTri_3 = LeftDownTri_3 * GetWorldScale() + GetWorldPos();
+	//LeftDownTri_3 = LeftDownTri_3 * GetWorldScale() + GetWorldPos();
 
-	bool LeftDownTriIntersectResult = CPickingLogic::CheckRayTriangleIntersect(
-		RayOrigin, RayDir, LeftDownTri_1, LeftDownTri_2, LeftDownTri_3, IntersectDist, IntersectPoint);
+	bool LeftDownTriIntersectResult = DirectX::TriangleTests::Intersects(LocalRayOrigin.Convert(),
+		LocalRayDir.Convert(), LeftDownTri_1.Convert(), LeftDownTri_2.Convert(), LeftDownTri_3.Convert(), IntersectDist);
+
+	// bool LeftDownTriIntersectResult = CPickingLogic::CheckRayTriangleIntersect(
+	// 	RayOrigin, RayDir, LeftDownTri_1, LeftDownTri_2, LeftDownTri_3, IntersectDist, IntersectPoint);
 
 	if (LeftDownTriIntersectResult)
 		return IntersectDist;

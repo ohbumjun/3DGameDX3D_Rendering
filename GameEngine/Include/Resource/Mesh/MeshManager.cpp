@@ -2,6 +2,7 @@
 #include "MeshManager.h"
 #include "SpriteMesh.h"
 #include "StaticMesh.h"
+#include "Sprite3DMesh.h"
 #include "AnimationMesh.h"
 #include "../../PathManager.h"
 
@@ -15,6 +16,7 @@ CMeshManager::~CMeshManager()
 
 bool CMeshManager::Init()
 {
+	// Sprite Mesh
 	CMesh* SpriteMesh = new CSpriteMesh;
 
 	if (!SpriteMesh->Init())
@@ -26,6 +28,19 @@ bool CMeshManager::Init()
 	SpriteMesh->SetName("SpriteMesh");
 	m_mapMesh.insert(std::make_pair("SpriteMesh", SpriteMesh));
 
+	// Sprite 3D Mesh
+	CMesh* Sprite3DMesh = new CSprite3DMesh;
+
+	if (!Sprite3DMesh->Init())
+	{
+		Sprite3DMesh->Release();
+		return false;
+	}
+
+	Sprite3DMesh->SetName("Sprite3DMesh");
+	m_mapMesh.insert(std::make_pair("Sprite3DMesh", Sprite3DMesh));
+
+	// Static Mesh
 	CMesh* FrameRectMesh = new CStaticMesh;
 
 	Vector3	FrameRectPos[5] =

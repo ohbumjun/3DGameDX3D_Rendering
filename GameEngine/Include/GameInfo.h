@@ -222,6 +222,22 @@ struct VertexUV
 	}
 };
 
+
+struct VertexUV3D
+{
+	Vector3	Pos;
+	Vector3 UV;
+	VertexUV3D()
+	{
+	}
+
+	VertexUV3D(const Vector3& _Pos, const Vector3& _UV) :
+		Pos(_Pos),
+		UV(_UV)
+	{
+	}
+};
+
 struct MaterialCBuffer
 {
 	Vector4	BaseColor;
@@ -361,6 +377,14 @@ struct ProgressBarCBuffer
 	float	Percent;
 	int		Dir;
 	Vector2	Empty;
+};
+
+struct WaterCBuffer
+{
+	float WaveHeight;
+	float WaveSpeed;
+	float WaveFrequencey;
+	float Empty;
 };
 
 struct	ParticleCBuffer

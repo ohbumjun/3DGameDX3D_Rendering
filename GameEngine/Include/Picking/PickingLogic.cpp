@@ -114,7 +114,6 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 	// >> 1. Ray 을 World Space 로 보내준다. (Ray ~ LandScape => World Space 에서 비교해줄 것이다.)
 	CCameraComponent* Camera = CSceneManager::GetInst()->GetScene()->GetCameraManager()->GetCurrentCamera();
 	Ray	ray = CInput::GetInst()->GetRay(Camera->GetViewMatrix());
-	ray.Dir.Normalize();
 		
 	// >> 2. 지형 xz 에 투영한다. (ray의 위치는 y pos 를 0 에 세팅, Dir 의 경우, xz 정보만 고려)
 	// Ray 출발점
@@ -210,16 +209,8 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 		if (vecIntersects.size() != 2)
 			return false;
 
-		if (vecIntersects[0].x < vecIntersects[1].x)
-		{
-			RayFinalCheckStPos = vecIntersects[0];
-			RayFinalCheckEdPos = vecIntersects[1];
-		}
-		else
-		{
-			RayFinalCheckStPos = vecIntersects[1];
-			RayFinalCheckEdPos = vecIntersects[0];
-		}
+		RayFinalCheckStPos = vecIntersects[0];
+		RayFinalCheckEdPos = vecIntersects[1];
 	}
 
 	// X 값이 더 작은 것을, St P 로 세팅할 것이다.
@@ -229,7 +220,7 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 	{
 		Vector3 Temp = RayFinalCheckEdPos;
 		RayFinalCheckEdPos = RayFinalCheckStPos;
-		RayFinalCheckStPos = RayFinalCheckEdPos;
+		RayFinalCheckStPos = Temp;
 	}
 
 	// >> 3. Bresenham 알고리즘을 이용해서, 해당 Ray가 지나가는 LandScape 격자 영역 목록을 뽑아낸다
@@ -355,8 +346,15 @@ bool CPickingLogic::DDTPicking(CGameObject* LandScapeObject, CGameObject* Player
 	for (const auto &[ZIdx, XIdx] : vecLandScapeRayGoingThroughIdx)
 	{ 
 		// 특정 격자안의 2개 삼각형 중에서 충돌하는 삼각형이 있는지 검사한다.
+		// Ray 를 LandScapeComponent 의 Local Space 로 이동시킨다.
+		Ray	LocalRay = CInput::GetInst()->GetRay(LandScapeComponent->GetWorldMatrix() * Camera->GetViewMatrix());
+
 		auto IntersectResult = LandScapeComponent->CheckRayIntersectsTriangleInLandScape(XIdx, ZIdx,
-			ray.Pos, ray.Dir);
+			LocalRay.Pos, LocalRay.Dir);
+
+		// 기존에 Test 해오던 World Space 상에서의 Ray
+		//auto IntersectResult = LandScapeComponent->CheckRayIntersectsTriangleInLandScape(XIdx, ZIdx,
+		//	ray.Pos, ray.Dir);
 
 		if (IntersectResult.has_value())
 		{
@@ -425,18 +423,48 @@ bool CPickingLogic::GetLineIntersect(const Vector3& StartPoint, const Vector3& E
 	return true;
 }
 
+// https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/ray-triangle-intersection-geometric-solution
 bool CPickingLogic::CheckRayTriangleIntersect(
 	const Vector3& rayOrig, const Vector3& rayDir,
 	const Vector3& v0, const Vector3& v1, const Vector3& v2,
 	float& IntersectDist, Vector3& IntersectPoint)
 {
+	// 2가지를 고려해야 한다.
+	// 블로그에서 알려준 방식은, 왼손 좌표계. 를 기준으로 한 것
+
+	// 왼손 좌표계에서의 특징은
+	// 1) 삼각형 3개의 점이, 반시계 방향 순서로 주어져야 , 사용자 측에 보인다는 점
+	// 반면, DX 오른손 좌표계 기준으로는
+	// 1) 3개의 점이, 시계 방향으로 주어져야, 사용자 측에 보인다는 점
+	// 즉, 실제 블로그 글에서, 제시한, v0, v1, v2 순서대로 계산한 것을
+	// 우리의 좌표계 순서에 맞게 조정해줘야 한다.
+	// 블로그에서의 v0 -> v1 -> v2 를
+	// 우리는 v0 -> v2 -> v1 이라고 생각해야 한다.
+
+	// (2번째 내용은 확실하지 않다)
+	// 2) 왼손 좌표계에서는, P1 x P2 와 같이 외적을 할 때
+	// P2 이 , P1 보다 반시계방향, 즉, 위로 있을때, 외적의 값이
+	// 사용자 측을 향하게 된다.즉, 양수가 된다라는 것이다.
+	// 반면, DX 오른손 좌표계에서는
+	// P2 이, P1 보다, 시계 방향, 즉, 아래에 있을 때, 외적의 값이
+	// 사용자 측을 향하게 된다.양수가 된다는 것이다.
+	// 따라서, 외적을 구할때, 외적 곱하는 순서도 고려해줘야 한다.
+
 	// 1단계. 먼저, 평면 ~ 직선. 이 거의 평행한지 여부를 살핀다.
 	// 평면의 Normal 값을 계산한다.
-	// compute plane's normal
+	// 시계방향 순서대로 정점이 주어지는 것을 가정하고 있다.
+	// 시계방향 순서대로 v0, v1, v2 가 주어진다는 것이다.
+	// 그렇다면, Edge2 은, Edge1 보다, 시계방향으로 더 회전된 상태
 	Vector3 Edge1 = v1 - v0;
 	Vector3 Edge2 = v2 - v0;
 
 	// Normalize 할 필요는 없다.
+	// 현재 화면에 보이는 Triangle 들은, Normal Vector 가
+	// 적어도 y + 방향일 것이다 (우리가 위에서 아래로 본다고 한다면)
+	// 오른손 좌표계임을 고려할때, 
+	// 해당 Triangle 의 적절한 Normal 값이 도출되도록 하기 위해서는
+	// (반시계방향 위에 있는 벡터) x (시계방향 아래에 있는 벡터)
+	// 순으로 Cross (외적)을 해줘야 한다.
 	Vector3 NormalV = Edge1.Cross(Edge2);  //N 
 
 	// 거의 0
@@ -473,23 +501,38 @@ bool CPickingLogic::CheckRayTriangleIntersect(
 	IntersectPoint = rayOrig + Vector3(rayDir.x * IntersectDist, rayDir.y * IntersectDist, rayDir.z * IntersectDist);
 	
 	// 5단계 : 교차점이 삼각형 내에 존재하는지 확인
-	Vector3 CkEdge = v1 - v0;
+
+	Vector3 CkEdge = v2 - v0;
 	Vector3 CkPointEdge = IntersectPoint - v0;
-	Vector3 CkCrossResult = CkEdge.Cross(CkPointEdge);
+
+	// 왼손 좌표계 기준으로, CkEdge 보다 CkPointEdge 가
+	// 시계 방향으로 더 회전되어 있다면, 
+	// CKEdge.Cross(CkPointEdge) 라는 외적의 방향과
+	// 삼각형의 Normal은 방향이 반대
+	// 하지만, 오른손 좌표계 기준으로는 
+	// CkEdge 보다 CkPointEdge 가
+	// 반시계 방향으로 더 회전 위로 회전되어 있다면
+	// CKEdge.Cross(CkPointEdge) 라는 외적 결과가
+	// 삼각형의 Normal은 방향 과 같게 나온다.
+	// (복잡)
+	// 여튼, 제대로된 비교를 위해서는 외적 곱하는 순서를
+	// 바꿔줘야 한다.
+	Vector3 CkCrossResult = CkPointEdge.Cross(CkEdge);
 
 	if (NormalV.Dot(CkCrossResult) < 0)
+	// if (NormalV.Dot(CkCrossResult) < 0)
 		return false;
 
-	CkEdge = v2 - v1;
-	CkPointEdge = IntersectPoint - v1;
-	CkCrossResult = CkEdge.Cross(CkPointEdge);
-
-	if (NormalV.Dot(CkCrossResult) < 0)
-		return false;
-
-	CkEdge = v0 - v2;
+	CkEdge = v1 - v2;
 	CkPointEdge = IntersectPoint - v2;
-	CkCrossResult = CkEdge.Cross(CkPointEdge);
+	CkCrossResult = CkPointEdge.Cross(CkEdge);
+
+	if (NormalV.Dot(CkCrossResult) < 0)
+		return false;
+
+	CkEdge = v0 - v1;
+	CkPointEdge = IntersectPoint - v1;
+	CkCrossResult = CkPointEdge.Cross(CkEdge);
 
 	if (NormalV.Dot(CkCrossResult) < 0)
 		return false;

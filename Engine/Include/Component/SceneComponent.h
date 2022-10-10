@@ -438,11 +438,16 @@ public:
 
 	void SetWorldPos(const Vector3& Pos)
 	{
+		// 해당 값을 여기에 사용할지 말지, 더 고민해봐야 한다
+		m_SphereInfo.Center = Pos;
+
 		m_Transform->SetWorldPos(Pos);
 	}
 
 	void SetWorldPos(float x, float y, float z)
 	{
+		m_SphereInfo.Center = Vector3(x,y,z);
+
 		m_Transform->SetWorldPos(x, y, z);
 	}
 

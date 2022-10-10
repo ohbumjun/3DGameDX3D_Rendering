@@ -426,10 +426,9 @@ void CRenderManager::Render(float DeltaTime)
 	}
 
 	// 환경맵 출력
-	CSharedPtr<CGameObject>	SkyObj = CSceneManager::GetInst()->GetScene()->GetSkyObject();
+	// CSharedPtr<CGameObject>	SkyObj = CSceneManager::GetInst()->GetScene()->GetSkyObject();
 
-	SkyObj->Render();
-
+	// SkyObj->Render();
 
 	// 인스턴싱 정보를 만든다.
 	RenderDefaultInstancingInfo();

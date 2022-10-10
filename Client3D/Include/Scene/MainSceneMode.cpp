@@ -12,6 +12,7 @@
 #include "../Object/Monster.h"
 #include "GameObject/LightObj.h"
 #include "Component/LightComponent.h"
+#include "Component/WaterComponent.h"
 #include "Resource/Material/Material.h"
 
 CMainSceneMode::CMainSceneMode()
@@ -45,7 +46,7 @@ bool CMainSceneMode::Init()
 	CMonster* Monster = m_Scene->CreateGameObject<CMonster>("Monster");
 	Monster->SetWorldPos(5.f, 0.f, 5.f);
 	
-	CLandScapeObj* LandScape = m_Scene->CreateGameObject<CLandScapeObj>("LandScape");
+	// CLandScapeObj* LandScape = m_Scene->CreateGameObject<CLandScapeObj>("LandScape");
 	
 	CDecalObj* Decal = m_Scene->CreateGameObject<CDecalObj>("Decal");
 	
@@ -76,8 +77,6 @@ bool CMainSceneMode::Init()
 	// 	}
 	// }
 
-
-
 	CLightObj* Light = m_Scene->CreateGameObject<CLightObj>("Light1");
 
 	((CLightComponent*)Light->GetRootComponent())->SetRelativePos(-3.f, 5.f, 0.f);
@@ -93,7 +92,21 @@ bool CMainSceneMode::Init()
 	((CLightComponent*)Light2->GetRootComponent())->SetDistance(10.f);
 	((CLightComponent*)Light2->GetRootComponent())->SetAtt3(0.02f);
 	((CLightComponent*)Light2->GetRootComponent())->SetColor(Vector4(0.f, 1.f, 0.f, 1.f));
-	
+
+	// Water Obj ¸¸µé±â
+	CGameObject* WaterObject = m_Scene->CreateGameObject<CGameObject>("Water");
+	WaterObject->CreateComponent<CWaterComponent>("Water");
+
+	Vector3 StartPos = Player->GetWorldPos() - Vector3(50.f, 0.f, 50.f);
+	StartPos.y = 12.f;
+
+	dynamic_cast<CWaterComponent*>(WaterObject->GetRootComponent())->CreateWaterMesh("WaterMesh", 2, 2);
+	dynamic_cast<CWaterComponent*>(WaterObject->GetRootComponent())->SetMaterial("WaterMaterial");
+
+	WaterObject->SetWorldPos(StartPos);
+	WaterObject->SetWorldScale(4.f, 5.f, 4.f);
+	WaterObject->AddWorldRotationX(0.f);
+
 	return true;
 }
 
@@ -147,9 +160,25 @@ void CMainSceneMode::LoadMesh()
 
 void CMainSceneMode::CreateMaterial()
 {
+	// Water Material
+	m_Scene->GetResource()->CreateMaterial<CMaterial>("WaterMaterial");
+
+	CMaterial* Material = m_Scene->GetResource()->FindMaterial("WaterMaterial");
+
+	Material->AddTexture(0, (int)Buffer_Shader_Type::Pixel, // Dif
+		"WaterDif", TEXT("Water/Water 0341.jpg"));
+	Material->AddTexture(1, (int)Buffer_Shader_Type::Pixel, // Normal
+		"WaterNrm", TEXT("Water/Water 0341normal.jpg"));
+
+	Material->SetShader("WaterShader");
+	// Material->SetRenderState("CullModeNone");
+	Material->EnableBump();
+
+
+	// Land Scape
 	m_Scene->GetResource()->CreateMaterial<CMaterial>("LandScape");
 
-	CMaterial* Material = m_Scene->GetResource()->FindMaterial("LandScape");
+	Material = m_Scene->GetResource()->FindMaterial("LandScape");
 
 	Material->AddTexture(0, (int)Buffer_Shader_Type::Pixel,
 		"LandScapeSplat1Dif", TEXT("LandScape/ROCK_01+MOSS_COLOR_1.png"));

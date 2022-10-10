@@ -25,6 +25,9 @@ bool CRenderStateManager::Init()
 	CreateRasterizerState("FrontFaceCull", D3D11_FILL_SOLID,
 		D3D11_CULL_FRONT);
 
+	CreateRasterizerState("CullModeNone", D3D11_FILL_SOLID,
+		D3D11_CULL_NONE);
+
 	CreateDepthStencilState("SkyDepth", true, 
 		D3D11_DEPTH_WRITE_MASK_ZERO, D3D11_COMPARISON_LESS_EQUAL);
 

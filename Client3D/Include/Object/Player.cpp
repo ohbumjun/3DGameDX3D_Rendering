@@ -146,8 +146,8 @@ bool CPlayer::Init()
 		this, &CPlayer::RotationY);
 
 	// 3차원 Nav Mesh
-	// CInput::GetInst()->SetKeyCallback<CPlayer>("MovePoint", KeyState_Down,
-	// 	this, &CPlayer::MovePoint);
+	CInput::GetInst()->SetKeyCallback<CPlayer>("MovePoint", KeyState_Down,
+	this, &CPlayer::MovePoint);
 
 	CInput::GetInst()->SetKeyCallback<CPlayer>("Attack1", KeyState_Down,
 		this, &CPlayer::Attack);
@@ -190,26 +190,26 @@ void CPlayer::Update(float DeltaTime)
 
 	
 
-	if (CInput::GetInst()->GetMouseLButtonClick())
-	{
-		bool PickResult = CPickingLogic::Picking(PickObj);
-
-		if (PickResult)
-		{
-			// Picking 대상이 LandScape 라면, DDT 알고리즘을 이용한 이동 처리를 수행한다.
-			if (PickObj->GetRootComponent()->GetTypeID() != typeid(CLandScape).hash_code())
-				return;
-
-			// 오른쪽 클릭이 되었다면 해당 위치로 이동시킨다.
-			bool PickedToLandScape = CPickingLogic::DDTPicking(PickObj, this, m_DDTPickedPos);
-
-			// bool CheckResult = false; //
-			if (PickedToLandScape)
-			{
-				SetWorldPos(m_DDTPickedPos);
-			}
-		}
-	}
+	// if (CInput::GetInst()->GetMouseLButtonClick())
+	// {
+	// 	bool PickResult = CPickingLogic::Picking(PickObj);
+	// 
+	// 	if (PickResult)
+	// 	{
+	// 		// Picking 대상이 LandScape 라면, DDT 알고리즘을 이용한 이동 처리를 수행한다.
+	// 		if (PickObj->GetRootComponent()->GetTypeID() != typeid(CLandScape).hash_code())
+	// 			return;
+	// 
+	// 		// 오른쪽 클릭이 되었다면 해당 위치로 이동시킨다.
+	// 		bool PickedToLandScape = CPickingLogic::DDTPicking(PickObj, this, m_DDTPickedPos);
+	// 
+	// 		// bool CheckResult = false; //
+	// 		if (PickedToLandScape)
+	// 		{
+	// 			SetWorldPos(m_DDTPickedPos);
+	// 		}
+	// 	}
+	// }
 }
 
 void CPlayer::PostUpdate(float DeltaTime)

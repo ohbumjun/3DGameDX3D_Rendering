@@ -1,7 +1,6 @@
-
+// Shader
 #include "ShaderManager.h"
 #include "ColorMeshShader.h"
-#include "ConstantBuffer.h"
 #include "Mesh2DShader.h"
 #include "PosMeshShader.h"
 #include "ColliderShader.h"
@@ -21,12 +20,17 @@
 #include "SkyShader.h"
 #include "LandScapeShader.h"
 #include "DecalShader.h"
+#include "WaterShader.h"
 #include "DecalDebugShader.h"
 #include "BillboardShader.h"
 #include "Standard3DInstancingShader.h"
 #include "ShadowMapShader.h"
 #include "ShadowMapInstancingShader.h"
+
+// Constant Buffer
 #include "ShadowCBuffer.h"
+#include "ConstantBuffer.h"
+
 
 CShaderManager::CShaderManager()
 {
@@ -40,101 +44,55 @@ bool CShaderManager::Init()
 {
 	if (!CreateShader<CColorMeshShader>("ColorMeshShader"))
 		return false;
-
-
 	if (!CreateShader<CPosMeshShader>("PosMeshShader"))
 		return false;
-
-
 	if (!CreateShader<CMesh2DShader>("Mesh2DShader"))
 		return false;
-
-
 	if (!CreateShader<CColliderShader>("ColliderShader"))
 		return false;
-
-
 	if (!CreateShader<CColliderPixelShader>("ColliderPixelShader"))
 		return false;
-
-
 	if (!CreateShader<CWidgetShader>("WidgetShader"))
 		return false;
-
-
 	if (!CreateShader<CProgressBarShader>("ProgressBarShader"))
 		return false;
-
-
 	if (!CreateShader<CNumberShader>("NumberShader"))
 		return false;
-
-
 	if (!CreateShader<CParticleUpdateShader>("ParticleUpdateShader"))
 		return false;
-
-
 	if (!CreateShader<CParticleRenderShader>("ParticleRenderShader"))
 		return false;
-
-
 	if (!CreateShader<CTileMapShader>("TileMapShader"))
 		return false;
-
-
 	if (!CreateShader<CStandard3DShader>("Standard3DShader"))
 		return false;
-
-
 	if (!CreateShader<CAnimationUpdateShader>("AnimationUpdateShader"))
 		return false;
-
-
 	if (!CreateShader<CRenderTargetShader>("RenderTargetShader"))
 		return false;
-
-
 	if (!CreateShader<CLightAccShader>("LightAccShader"))
 		return false;
-
-
 	if (!CreateShader<CLightBlendShader>("LightBlendShader"))
 		return false;
-
-
 	if (!CreateShader<CLightBlendRenderShader>("LightBlendRenderShader"))
 		return false;
-
-
 	if (!CreateShader<CSkyShader>("SkyShader"))
 		return false;
-
-
 	if (!CreateShader<CLandScapeShader>("LandScapeShader"))
 		return false;
-
-
 	if (!CreateShader<CDecalShader>("DecalShader"))
 		return false;
-
-
 	if (!CreateShader<CDecalDebugShader>("DecalDebugShader"))
 		return false;
-
-
 	if (!CreateShader<CBillboardShader>("BillboardShader"))
 		return false;
-
-
 	if (!CreateShader<CStandard3DInstancingShader>("Standard3DInstancingShader"))
 		return false;
-
-
 	if (!CreateShader<CShadowMapShader>("ShadowMapShader"))
 		return false;
-
-
 	if (!CreateShader<CShadowMapInstancingShader>("ShadowMapInstancingShader"))
+		return false;
+	if (!CreateShader<CWaterShader>("WaterShader"))
 		return false;
 
 
