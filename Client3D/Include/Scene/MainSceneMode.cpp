@@ -12,7 +12,7 @@
 #include "../Object/Monster.h"
 #include "GameObject/LightObj.h"
 #include "Component/LightComponent.h"
-#include "Component/WaterComponent.h"
+#include "../Component/WaterComponent.h"
 #include "Resource/Material/Material.h"
 
 CMainSceneMode::CMainSceneMode()
@@ -46,11 +46,11 @@ bool CMainSceneMode::Init()
 	CMonster* Monster = m_Scene->CreateGameObject<CMonster>("Monster");
 	Monster->SetWorldPos(5.f, 0.f, 5.f);
 	
-	// CLandScapeObj* LandScape = m_Scene->CreateGameObject<CLandScapeObj>("LandScape");
+	CLandScapeObj* LandScape = m_Scene->CreateGameObject<CLandScapeObj>("LandScape");
 	
 	CDecalObj* Decal = m_Scene->CreateGameObject<CDecalObj>("Decal");
 	
-	CPortal* Portal = m_Scene->CreateGameObject<CPortal>("Portal");
+	// CPortal* Portal = m_Scene->CreateGameObject<CPortal>("Portal");
 	
 	// CMapObj* MapObj = m_Scene->CreateGameObject<CMapObj>("Map");
 	
@@ -96,16 +96,7 @@ bool CMainSceneMode::Init()
 	// Water Obj ¸¸µé±â
 	CGameObject* WaterObject = m_Scene->CreateGameObject<CGameObject>("Water");
 	WaterObject->CreateComponent<CWaterComponent>("Water");
-
-	Vector3 StartPos = Player->GetWorldPos() - Vector3(50.f, 0.f, 50.f);
-	StartPos.y = 12.f;
-
-	dynamic_cast<CWaterComponent*>(WaterObject->GetRootComponent())->CreateWaterMesh("WaterMesh", 2, 2);
-	dynamic_cast<CWaterComponent*>(WaterObject->GetRootComponent())->SetMaterial("WaterMaterial");
-
-	WaterObject->SetWorldPos(StartPos);
-	WaterObject->SetWorldScale(4.f, 5.f, 4.f);
-	WaterObject->AddWorldRotationX(0.f);
+	WaterObject->SetWorldPos(0.f, 1.f, 0.f);
 
 	return true;
 }
@@ -171,6 +162,7 @@ void CMainSceneMode::CreateMaterial()
 		"WaterNrm", TEXT("Water/Water 0341normal.jpg"));
 
 	Material->SetShader("WaterShader");
+	// Material->SetShader("Mesh2DShader");
 	// Material->SetRenderState("CullModeNone");
 	Material->EnableBump();
 

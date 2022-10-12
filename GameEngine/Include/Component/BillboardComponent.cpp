@@ -48,7 +48,8 @@ bool CBillboardComponent::Init()
 		return false;
 
 	m_Mesh = (CSpriteMesh*)m_Scene->GetResource()->FindMesh("SpriteMesh");
-	m_Material = m_Scene->GetResource()->FindMaterial("Billboard")->Clone();
+	// m_Material = m_Scene->GetResource()->FindMaterial("Billboard")->Clone();
+	m_Material = m_Scene->GetResource()->FindMaterial("WaterMaterial")->Clone();
 
 	SetPivot(0.5f, 0.5f, 0.f);
 	SetRelativeScale(1.f, 1.f, 1.f);

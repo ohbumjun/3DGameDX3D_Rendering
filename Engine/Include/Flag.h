@@ -96,6 +96,18 @@ enum class SceneComponent_Type
 	Max
 };
 
+enum class RenderLayerIdx
+{
+	Back = 0,
+	Default, // 1
+	Decal,  // 2
+	Particle, // 3
+	Transparent, // 4
+	ScreenWidgetComponent, // 5
+	DebugLayer, // 6
+	PickingCullingLayer // 7
+};
+
 enum class Collision_Channel
 {
 	Object,

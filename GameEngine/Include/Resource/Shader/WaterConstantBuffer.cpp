@@ -7,6 +7,7 @@ CWaterConstantBuffer::CWaterConstantBuffer() :
 {
 	m_BufferData.WaveHeight = 0.5f;
 	m_BufferData.WaveSpeed = 2.f;
+	m_BufferData.WaveSpeed = 2.f;
 	m_BufferData.WaveFrequencey = 10.f;
 }
 

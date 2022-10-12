@@ -468,7 +468,7 @@ bool CPickingLogic::CheckRayTriangleIntersect(
 	Vector3 NormalV = Edge1.Cross(Edge2);  //N 
 
 	// 거의 0
-	float kEpsilon = 0.00001;
+	float kEpsilon = 0.00001f;
 
 	// 평면의 Normal Vector 와, Ray 의 Dir의 Dot 결과가
 	// 거의 0이라면, 둘은 거의 수직이라는 것

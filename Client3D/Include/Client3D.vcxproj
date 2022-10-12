@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="Client3D.h" />
     <ClInclude Include="ClientManager3D.h" />
+    <ClInclude Include="Component\WaterComponent.h" />
     <ClInclude Include="Object\BonObj.h" />
     <ClInclude Include="Object\DecalObj.h" />
     <ClInclude Include="Object\LandScapeObj.h" />
@@ -182,6 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientManager3D.cpp" />
+    <ClCompile Include="Component\WaterComponent.cpp" />
     <ClCompile Include="main3D.cpp" />
     <ClCompile Include="Object\BonObj.cpp" />
     <ClCompile Include="Object\DecalObj.cpp" />

@@ -1,12 +1,11 @@
-
 #include "WaterComponent.h"
-#include "../PathManager.h"
-#include "../Resource/Mesh/StaticMesh.h"
-#include "../Scene/Scene.h"
-#include "../Scene/Navigation3DManager.h"
-#include "../Scene/SceneResource.h"
-#include "../Resource/Material/Material.h"
-#include "../Resource/Shader/WaterConstantBuffer.h"
+#include "PathManager.h"
+#include "Resource/Mesh/StaticMesh.h"
+#include "Scene/Scene.h"
+#include "Scene/Navigation3DManager.h"
+#include "Scene/SceneResource.h"
+#include "Resource/Material/Material.h"
+#include "Resource/Shader/WaterConstantBuffer.h"
 
 CWaterComponent::CWaterComponent() :
 	m_CBuffer(nullptr),
@@ -15,7 +14,8 @@ CWaterComponent::CWaterComponent() :
 {
 	SetTypeID<CWaterComponent>();
 	m_Render = true;
-	m_LayerName = "Water";
+	// m_LayerName = "Water";
+	m_LayerName = "Transparent";
 }
 
 CWaterComponent::CWaterComponent(const CWaterComponent& com) :
@@ -198,8 +198,16 @@ bool CWaterComponent::Init()
 	m_CBuffer->Init();
 
 	// m_Mesh = (CSprite3DMesh*)m_Scene->GetResource()->FindMesh("Sprite3DMesh");
+	CreateWaterMesh("WaterMesh", 40, 40);
+	// m_Mesh = (CSpriteMesh*)m_Scene->GetResource()->FindMesh("SpriteMesh");
 
-	SetMeshSize(1.f, 0.f, 1.f);
+	m_Material = m_Scene->GetResource()->FindMaterial("WaterMaterial");
+	// m_Material = m_Scene->GetResource()->FindMaterial("BillBoard");
+
+	SetPivot(0.5f, 0.5f, 0.f);
+	SetRelativeScale(1.f, 1.f, 1.f);
+	SetMeshSize(1.f, 1.f, 1.f);
+	// SetMeshSize(1.f, 1.f, 1.f);
 
 	m_SkyMaterial = m_Scene->GetResource()->FindMaterial("SkyMaterial");
 
@@ -231,7 +239,7 @@ void CWaterComponent::Render()
 	m_CBuffer->UpdateCBuffer();
 
 	// Sky Material
-	m_SkyMaterial->Render();
+	// m_SkyMaterial->Render();
 
 	// Water Material
 	m_Material->Render();
@@ -240,8 +248,9 @@ void CWaterComponent::Render()
 
 	m_Material->Reset();
 
-	m_SkyMaterial->Reset();
+	// m_SkyMaterial->Reset();
 }
+
 
 void CWaterComponent::PostRender()
 {

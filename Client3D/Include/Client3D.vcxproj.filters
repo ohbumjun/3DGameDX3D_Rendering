@@ -19,6 +19,12 @@
     <Filter Include="02. Object">
       <UniqueIdentifier>{e569a60b-9870-4f57-9300-eda3661ab347}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. Component">
+      <UniqueIdentifier>{2ad84d4a-52a4-4179-b0f4-27b328719340}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\01. Water">
+      <UniqueIdentifier>{8878ea6b-3eda-4167-954f-5b7e1b90d8d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -62,6 +68,9 @@
     </ClInclude>
     <ClInclude Include="Object\MapObj.h">
       <Filter>02. Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Component\WaterComponent.h">
+      <Filter>03. Component\01. Water</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -113,6 +122,9 @@
     </ClCompile>
     <ClCompile Include="Object\MapObj.cpp">
       <Filter>02. Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Component\WaterComponent.cpp">
+      <Filter>03. Component\01. Water</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

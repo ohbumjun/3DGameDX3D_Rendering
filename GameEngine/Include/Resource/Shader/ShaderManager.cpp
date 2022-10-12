@@ -149,6 +149,9 @@ bool CShaderManager::Init()
 	CreateConstantBuffer("ShadowCBuffer", sizeof(ShadowCBuffer), 10,
 		(int)Buffer_Shader_Type::Graphic);
 
+	CreateConstantBuffer("WaterCBuffer", sizeof(WaterCBuffer), 9,
+		(int)Buffer_Shader_Type::Graphic);
+
 	return true;
 }
 

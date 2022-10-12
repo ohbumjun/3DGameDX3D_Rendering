@@ -231,16 +231,16 @@ CPlayer* CPlayer::Clone()
 
 void CPlayer::MoveFront(float DeltaTime)
 {
-	m_Velocity += GetWorldAxis(AXIS_Z) * 50.f * DeltaTime;
+	m_Velocity += GetWorldAxis(AXIS_Z) * 10.f * DeltaTime;
 
-	AddWorldPos(GetWorldAxis(AXIS_Z) * 50.f * DeltaTime);
+	AddWorldPos(GetWorldAxis(AXIS_Z) * 10.f * DeltaTime);
 }
 
 void CPlayer::MoveBack(float DeltaTime)
 {
-	m_Velocity += GetWorldAxis(AXIS_Z) * -50.f * DeltaTime;
+	m_Velocity += GetWorldAxis(AXIS_Z) * -10.f * DeltaTime;
 
-	AddWorldPos(GetWorldAxis(AXIS_Z) * -50.f * DeltaTime);
+	AddWorldPos(GetWorldAxis(AXIS_Z) * -10.f * DeltaTime);
 }
 
 void CPlayer::RotationYInv(float DeltaTime)

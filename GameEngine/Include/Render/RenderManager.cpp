@@ -111,44 +111,55 @@ bool CRenderManager::Init()
 	// 기본 레이어 생성
 	RenderLayer* Layer = new RenderLayer;
 	Layer->Name = "Back";
-	Layer->LayerPriority = 0;
+	Layer->LayerPriority = (int)RenderLayerIdx::Back;
 
 	m_RenderLayerList.push_back(Layer);
 
 	Layer = new RenderLayer;
 	Layer->Name = "Default";
-	Layer->LayerPriority = 1;
+	Layer->LayerPriority = (int)RenderLayerIdx::Default;
 
 	m_RenderLayerList.push_back(Layer);
 
 	Layer = new RenderLayer;
 	Layer->Name = "Decal";
-	Layer->LayerPriority = 2;
+	Layer->LayerPriority = (int)RenderLayerIdx::Decal;
 
 	m_RenderLayerList.push_back(Layer);
 
 	Layer = new RenderLayer;
 	Layer->Name = "Particle";
-	Layer->LayerPriority = 3;
+	Layer->LayerPriority = (int)RenderLayerIdx::Particle;
+
+	m_RenderLayerList.push_back(Layer);
+
+	Layer = new RenderLayer;
+	Layer->Name = "Transparent";
+	Layer->LayerPriority = (int)RenderLayerIdx::Transparent;
 
 	m_RenderLayerList.push_back(Layer);
 
 	Layer = new RenderLayer;
 	Layer->Name = "ScreenWidgetComponent";
-	Layer->LayerPriority = 4;
+	Layer->LayerPriority = (int)RenderLayerIdx::ScreenWidgetComponent;
 
 	m_RenderLayerList.push_back(Layer);
 
 	Layer = new RenderLayer;
 	Layer->Name = "DebugLayer";
-	Layer->LayerPriority = 5;
+	Layer->LayerPriority = (int)RenderLayerIdx::DebugLayer;
 
 	m_RenderLayerList.push_back(Layer);
 
 	// Culling, Picking Layer
 	Layer = new RenderLayer;
 	Layer->Name = "PickingCullingLayer";
-	Layer->LayerPriority = 6;
+	Layer->LayerPriority = (int)RenderLayerIdx::PickingCullingLayer;
+
+	// Transparent
+	Layer = new RenderLayer;
+	Layer->Name = "Transparent";
+	Layer->LayerPriority = 7;
 
 	m_RenderLayerList.push_back(Layer);
 
@@ -426,9 +437,9 @@ void CRenderManager::Render(float DeltaTime)
 	}
 
 	// 환경맵 출력
-	// CSharedPtr<CGameObject>	SkyObj = CSceneManager::GetInst()->GetScene()->GetSkyObject();
+	CSharedPtr<CGameObject>	SkyObj = CSceneManager::GetInst()->GetScene()->GetSkyObject();
 
-	// SkyObj->Render();
+	SkyObj->Render();
 
 	// 인스턴싱 정보를 만든다.
 	RenderDefaultInstancingInfo();
@@ -480,13 +491,17 @@ void CRenderManager::Render(float DeltaTime)
 	// 조명처리된 최종 화면을 백버퍼에 그려낸다.
 	RenderFinalScreen();
 
+	// 반투명 물체를 그려낸다.
+	RenderTransparent();
+
 	m_vecGBuffer[2]->SetShader(10, (int)Buffer_Shader_Type::Pixel, 0);
 
 	m_AlphaBlend->SetState();
 
 	// 파티클 레이어 출력
-	auto	iter = m_RenderLayerList[3]->RenderList.begin();
-	auto	iterEnd = m_RenderLayerList[3]->RenderList.end();
+	// auto	iter = m_RenderLayerList[3]->RenderList.begin();
+	auto	iter = m_RenderLayerList[(int)RenderLayerIdx::Particle]->RenderList.begin();
+	auto	iterEnd = m_RenderLayerList[(int)RenderLayerIdx::Particle]->RenderList.end();
 
 	for (; iter != iterEnd; ++iter)
 	{
@@ -504,8 +519,9 @@ void CRenderManager::Render(float DeltaTime)
 	m_vecGBuffer[2]->ResetShader(10, (int)Buffer_Shader_Type::Pixel, 0);
 
 	// Screen Widget 출력
-	iter = m_RenderLayerList[4]->RenderList.begin();
-	iterEnd = m_RenderLayerList[4]->RenderList.end();
+	// iterEnd = m_RenderLayerList[4]->RenderList.end();
+	iter = m_RenderLayerList[(int)RenderLayerIdx::ScreenWidgetComponent]->RenderList.begin();
+	iterEnd = m_RenderLayerList[(int)RenderLayerIdx::ScreenWidgetComponent]->RenderList.end();
 
 	for (; iter != iterEnd; ++iter)
 	{
@@ -584,7 +600,7 @@ void CRenderManager::RenderShadowMap()
 
 	m_ShadowMapShader->SetShader();
 
-	for (size_t i = 0; i <= 1; ++i)
+	for (size_t i = 0; i <= (int)RenderLayerIdx::Default; ++i)
 	{
 		auto	iter = m_RenderLayerList[i]->RenderList.begin();
 		auto	iterEnd = m_RenderLayerList[i]->RenderList.end();
@@ -645,7 +661,7 @@ void CRenderManager::RenderGBuffer()
 	CDevice::GetInst()->GetContext()->OMSetRenderTargets((unsigned int)GBufferSize,
 		&vecTarget[0], PrevDepthTarget);
 
-	for (size_t i = 0; i <= 1; ++i)
+	for (size_t i = 0; i <= (int)RenderLayerIdx::Default; ++i)
 	{
 		auto	iter = m_RenderLayerList[i]->RenderList.begin();
 		auto	iterEnd = m_RenderLayerList[i]->RenderList.end();
@@ -710,8 +726,9 @@ void CRenderManager::RenderDecal()
 	m_vecGBuffer[5]->SetTargetShader(12);
 
 
-	auto	iter = m_RenderLayerList[2]->RenderList.begin();
-	auto	iterEnd = m_RenderLayerList[2]->RenderList.end();
+	// auto	iter = m_RenderLayerList[2]->RenderList.begin();
+	auto	iter = m_RenderLayerList[(int)RenderLayerIdx::Decal]->RenderList.begin();
+	auto	iterEnd = m_RenderLayerList[(int)RenderLayerIdx::Decal]->RenderList.end();
 
 	for (; iter != iterEnd; ++iter)
 	{
@@ -759,8 +776,9 @@ void CRenderManager::RenderDecal()
 		&vecTarget1[0], PrevDepthTarget1);
 
 
-	iter = m_RenderLayerList[2]->RenderList.begin();
-	iterEnd = m_RenderLayerList[2]->RenderList.end();
+	// iter = m_RenderLayerList[2]->RenderList.begin();
+	iter = m_RenderLayerList[(int)RenderLayerIdx::Decal]->RenderList.begin();
+	iterEnd = m_RenderLayerList[(int)RenderLayerIdx::Decal]->RenderList.end();
 
 	for (; iter != iterEnd; ++iter)
 	{
@@ -865,14 +883,12 @@ void CRenderManager::RenderLightBlend()
 	m_ShadowCBuffer->UpdateCBuffer();
 
 
-
 	UINT Offset = 0;
 	CDevice::GetInst()->GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	CDevice::GetInst()->GetContext()->IASetVertexBuffers(0, 0, nullptr, nullptr, &Offset);
 	CDevice::GetInst()->GetContext()->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
 
 	CDevice::GetInst()->GetContext()->Draw(4, 0);
-
 
 	m_DepthDisable->ResetState();
 
@@ -896,8 +912,6 @@ void CRenderManager::RenderFinalScreen()
 
 	m_DepthDisable->SetState();
 
-
-
 	UINT Offset = 0;
 	CDevice::GetInst()->GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	CDevice::GetInst()->GetContext()->IASetVertexBuffers(0, 0, nullptr, nullptr, &Offset);
@@ -905,8 +919,24 @@ void CRenderManager::RenderFinalScreen()
 
 	CDevice::GetInst()->GetContext()->Draw(4, 0);
 
-
 	m_DepthDisable->ResetState();
+
+	FinalScreenTarget->ResetTargetShader(21);
+}
+
+void CRenderManager::RenderTransparent()
+{
+	CRenderTarget* FinalScreenTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("FinalScreen");
+
+	FinalScreenTarget->SetTargetShader(21);
+	
+	auto	iter = m_RenderLayerList[(int)RenderLayerIdx::Transparent]->RenderList.begin();
+	auto	iterEnd = m_RenderLayerList[(int)RenderLayerIdx::Transparent]->RenderList.end();
+
+	for (; iter != iterEnd; ++iter)
+	{
+		(*iter)->Render();
+	}
 
 	FinalScreenTarget->ResetTargetShader(21);
 }
@@ -916,8 +946,9 @@ void CRenderManager::RenderColliderComponents()
 	if (CEngine::GetInst()->IsColliderLayerShowEnable() == false)
 		return;
 
-	auto iter = m_RenderLayerList[5]->RenderList.begin();
-	auto iterEnd = m_RenderLayerList[5]->RenderList.end();
+	// auto iter = m_RenderLayerList[5]->RenderList.begin();
+	auto iter = m_RenderLayerList[(int)RenderLayerIdx::ScreenWidgetComponent]->RenderList.begin();
+	auto iterEnd = m_RenderLayerList[(int)RenderLayerIdx::ScreenWidgetComponent]->RenderList.end();
 
 	for (; iter != iterEnd; ++iter)
 	{
@@ -930,8 +961,8 @@ void CRenderManager::RenderCullingLayer()
 	if (CEngine::GetInst()->IsPickingLayerShowEnable() == false)
 		return;
 
-	auto iter = m_RenderLayerList[6]->RenderList.begin();
-	auto iterEnd = m_RenderLayerList[6]->RenderList.end();
+	auto iter = m_RenderLayerList[(int)RenderLayerIdx::DebugLayer]->RenderList.begin();
+	auto iterEnd = m_RenderLayerList[(int)RenderLayerIdx::DebugLayer]->RenderList.end();
 
 	for (; iter != iterEnd; ++iter)
 	{

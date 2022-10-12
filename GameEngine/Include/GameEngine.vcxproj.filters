@@ -301,9 +301,6 @@
     <Filter Include="10. Picking">
       <UniqueIdentifier>{e68162b2-6c64-4a87-8fbd-b1d1fe48f073}</UniqueIdentifier>
     </Filter>
-    <Filter Include="05. Component\01. SceneComponent\13. Water">
-      <UniqueIdentifier>{fa90dd51-b0d8-4fb6-8c90-db48b320fa7e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. Resource\02. Shader\03. ConstantBuffer\16. Water">
       <UniqueIdentifier>{46e16f2e-b5b9-4891-b7a6-9d1533413a40}</UniqueIdentifier>
     </Filter>
@@ -812,9 +809,6 @@
     </ClCompile>
     <ClCompile Include="Picking\PickingLogic.cpp">
       <Filter>10. Picking</Filter>
-    </ClCompile>
-    <ClCompile Include="Component\WaterComponent.cpp">
-      <Filter>05. Component\01. SceneComponent\13. Water</Filter>
     </ClCompile>
     <ClCompile Include="Resource\Shader\WaterConstantBuffer.cpp">
       <Filter>02. Resource\02. Shader\03. ConstantBuffer\16. Water</Filter>
@@ -1354,9 +1348,6 @@
     </ClInclude>
     <ClInclude Include="Picking\PickingLogic.h">
       <Filter>10. Picking</Filter>
-    </ClInclude>
-    <ClInclude Include="Component\WaterComponent.h">
-      <Filter>05. Component\01. SceneComponent\13. Water</Filter>
     </ClInclude>
     <ClInclude Include="Resource\Shader\WaterConstantBuffer.h">
       <Filter>02. Resource\02. Shader\03. ConstantBuffer\16. Water</Filter>

@@ -1,19 +1,25 @@
 #pragma once
-#include "SceneComponent.h"
+
+#include "Component/SceneComponent.h"
+#include "Resource/Mesh/SpriteMesh.h"
+#include "Resource/Material/Material.h"
 
 class CWaterComponent :
     public CSceneComponent
 {
 	friend class CGameObject;
-	friend class CScene;
+	friend class CCameraManager;
+
 protected:
 	CWaterComponent();
 	CWaterComponent(const CWaterComponent& com);
 	virtual ~CWaterComponent();
 
 protected:
+	// CSharedPtr<CSpriteMesh> m_Mesh;
 	CSharedPtr<class CStaticMesh>	m_Mesh;
 	// CSharedPtr<CSprite3DMesh>	m_Mesh;
+
 	CSharedPtr<CMaterial> m_Material; // Water Material
 	CSharedPtr<CMaterial> m_SkyMaterial; // Water Material
 	class CWaterConstantBuffer* m_CBuffer;
@@ -64,5 +70,6 @@ public:
 private:
 	void ComputeNormal();
 	void ComputeTangent();
+
 };
 
