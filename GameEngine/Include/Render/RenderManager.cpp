@@ -926,9 +926,19 @@ void CRenderManager::RenderFinalScreen()
 
 void CRenderManager::RenderTransparent()
 {
+	// 알파 소팅 적용 -> 뒤에서부터 앞으로 그린다.
+	if (m_RenderLayerList[(int)RenderLayerIdx::Transparent]->RenderList.size() > 1)
+	{
+		m_RenderLayerList[(int)RenderLayerIdx::Transparent]->RenderList.sort(CRenderManager::SortZ);
+	}
+
+	// 반투명 물체들이 그려진 Render Target 정보를 넘겨준다.
 	CRenderTarget* FinalScreenTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("FinalScreen");
 
-	FinalScreenTarget->SetTargetShader(21);
+	FinalScreenTarget->SetTarget();
+
+	// 반투명 물체들은 Forward Rendering 방식으로 그려낼 것이다.
+
 	
 	auto	iter = m_RenderLayerList[(int)RenderLayerIdx::Transparent]->RenderList.begin();
 	auto	iterEnd = m_RenderLayerList[(int)RenderLayerIdx::Transparent]->RenderList.end();
@@ -938,7 +948,7 @@ void CRenderManager::RenderTransparent()
 		(*iter)->Render();
 	}
 
-	FinalScreenTarget->ResetTargetShader(21);
+	FinalScreenTarget->ResetTarget();
 }
 
 void CRenderManager::RenderColliderComponents()
@@ -1182,4 +1192,11 @@ void CRenderManager::RenderDefaultInstancingShadow()
 bool CRenderManager::Sortlayer(RenderLayer* Src, RenderLayer* Dest)
 {
 	return Src->LayerPriority < Dest->LayerPriority;
+}
+
+// 내림차순으로 정렬해야 한다. ViewZ 값이 큰 컴포넌트 들이 앞쪽에 있어야 한다.
+bool CRenderManager::SortZ(CSceneComponent* Src, CSceneComponent* Dest)
+{
+	// return Src->GetViewZ() > Dest->GetViewZ(); (남욱씨 코드)
+	return Src->GetViewZ() < Dest->GetViewZ();
 }

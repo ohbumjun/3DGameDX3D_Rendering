@@ -113,6 +113,8 @@ public:
         return m_Render;
     }
 
+	float GetViewZ() const;
+
 public:
 	void SetSphereOriginInfo(const Vector3& Center, float Radius)
 	{

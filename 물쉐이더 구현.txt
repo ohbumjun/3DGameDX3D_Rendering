@@ -1,3 +1,90 @@
+> Light 처리
+- LightComponent 를 만든다. SceneComponent 를 만든다.
+  LightConstantBuffer (상수버퍼)를 포인터 형태로 들고 있는다
+  ex) Light 색상, 위치, 방향, 각도, Att1, Att2, Att3 등등
+- Light Type 정보도 들고 있는다. (Point, Dir, Spot)
+- 필요한 모든 LightComponent 를 만들고, Start 함수에서 LightManager Class 에
+  push 한다. 이렇게 하면 각 Light 의 상수 버퍼들을 배열 형티로 모아둔 "구조화버퍼"를 만든다.
+-----------------------------------------------------------------
+
+> Deferred Rendering
+
+처음에는 GBuffer 를 만드는 과정
+이때에는 깊이 판정을 수행할 것이다.
+결과적으로 화면에 보여지는 물체들에 대한 정보들만이 GBuffer 에 저장될 것이다.
+
+1) Multi Render Target 으로 교체
+- OMSetRenderTarget, OMGetRenderTarget
+2) VS 에서는 Normal, Tangent, Binormal 을 View 공간으로 전환
+3) PS 에서는 
+- Diffuse
+  BaseTexture 에서 Sampling 한 rgb 색상, 
+  그리고 BaseTexture.a * g_MtrlOpacity 값을 최종 a(알파)로 하여 저장
+- GBuffer1
+  View 공간에서 정의된 Normal, Tangent, Binormal 을 이용하여 Normal Map 에 있는
+  Tangent Space 상에서의 Normal 값을 View 공간으로 좌표계 변환해줄 것이다.
+  
+  Normal Map 에 있는 Normal은 0 에서 1 사이의 값이므로, 이를 -1 에서 1 사이로 변환해준다 (x2 - 1)
+  그리고 Normal Map 에서 Z 축은 항상 1이다. (Tangent Space 상에서 정의된 녀석이기 때문에) 
+  따라서 Normal.z 는 1로 만들어준다.
+ 
+  이때 각각의 Normal, Tangent, Binormal 을 HLSL 상에서 col major 로 맞춰주기 위해
+  row 에 넣은 matrix 를 만든 이후, Normal Map에서 추출한 Normal 에 곱해준다.
+
+  그렇게 구한 Normal을 GBuffer1 에 저장한다.
+- GBuffer2
+  뷰공간 깊이 값 + ...
+- GBuffer 3
+  float4 를 float 형태로 하여 -> MtrlBaseColor, MtrlAmbientColor, SpecularColor, Emissive Color 저장
+- GBuffer4
+  Tangent 값 정보
+- GBuffer5
+  Binormal 값 정보
+
+-----------------------------------------------------------------
+
+> Light 연산 누적 처리
+
+1) Light 처리 결과를 담을 3개의 Render Target 을 만든다
+- LightDif   : Dif + Ambient
+- LightSpc  : Spc
+- LightEmv  : Emv 
+
+즉, 해당 RenderTarget은 화면을 꽉 채운 버퍼이다.
+
+2) RenderState 를 새로 만든다. "LightAcc" -> 혼합 설정을 1:1 비율로 맞춘 설정이다.
+
+AddBlendInfo("LightAcc", true, D3D11_BLEND_ONE, D3D11_BLEND_ONE);
+Src Color, Dest Color RGB 에 1,1,1 을 곱한다는 의미 
+
+즉, 기존에 렌더링되어있는 픽셀의 색상 (프레임 버퍼에 그려져있는 픽셀)과, 
+현재 렌더링하는 픽셀의 색상 비율을 동일하게 해주는 것이다.
+왜냐하면 Light 별 연산결과를 동일하게 누적하여 더해야 하기 때문이다.
+ex) 방향성 조명 1개, 점조명 2개 -> 같은 곳을 비춘다면, 그 부분은 강한 빛 처리를 해주는 원리 
+
+2) Light 결과들을 누적 처리해주기 위해 MultiRenderTarget 으로 교체한다.
+
+3) 깊이판정을 끈다.
+- 즉, 깊이 버퍼에 깊이값을 출력하지 않는 것이다.
+  여러 개의 렌더타겟을 활용하지만, 정작 깊이버퍼는 한개만 사용하고 있다.  
+
+4) "LightAcc" Render State 를 적용한다.
+
+5) GBuffer 정보들을 Shader측에 넘겨준다.
+
+6) 모든 Light 정보들을 돌면서 (LightComponent)
+    각 픽셀마다 조명 처리를 해줄 것이다.
+
+7) 이때 NULL BUFFER 를 활용할 것이다.
+
+-----------------------------------------------------------------
+
+> 최종 렌더링
+
+
+-----------------------------------------------------------------
+
+> Water Component
 1. 900개 정점을 지는 Mesh 임의 생성
 - Normal, Tangent, BiNormal 을 구한다.
 - 여기서 Normal 은 특별히 Normal Map 형태를 넘겨줄 것이다.
@@ -7,3 +94,10 @@
 a. 파도가 위 아래로 출렁이는 효과
 - 파도 속도, 파도 높이 등에 대한 정보를 상수 버퍼로 넘겨서 정점 쉐이더에서
 cos 함수를 통해 y Pos 값에 더해준다.
+
+-----------------------------------------------------------------
+
+> Transparent 렌더링
+- 알파소팅을 적용한다. 즉, 뒤에 있는 녀석부터 그린다. 
+- Forward Rendering 방식으로 그려내야 한다.
+  모든 Light 들에 대한 상수버퍼 정보들을 담은, 구조화 버퍼를 넘겨줄 것이다.

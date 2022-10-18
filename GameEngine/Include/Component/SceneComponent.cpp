@@ -119,6 +119,14 @@ SphereInfo CSceneComponent::GetSphereInfoViewSpace() const
 	return Info;
 }
 
+float CSceneComponent::GetViewZ() const
+{
+	Matrix ViewMatrix = m_Scene->GetCameraManager()->GetCurrentCamera()->GetViewMatrix();
+	float ViewZ = GetWorldPos().TransformCoord(ViewMatrix).z - m_SphereInfo.Radius;
+
+	return ViewZ;
+}
+
 void CSceneComponent::SetSceneComponent(CGameObject* Object)
 {
 	Object->AddSceneComponent(this);

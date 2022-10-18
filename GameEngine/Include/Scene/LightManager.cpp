@@ -150,3 +150,8 @@ void CLightManager::Render()
 		CDevice::GetInst()->GetContext()->Draw(4, 0);
 	}
 }
+
+void CLightManager::SetForwardRenderShader()
+{
+
+}
