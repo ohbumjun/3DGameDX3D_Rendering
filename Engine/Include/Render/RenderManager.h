@@ -167,6 +167,7 @@ private:
 
 private:
 	static bool Sortlayer(RenderLayer* Src, RenderLayer* Dest);
+	static bool SortZ(CSceneComponent* Src, CSceneComponent* Dest);
 
 	DECLARE_SINGLE(CRenderManager)
 };

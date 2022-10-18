@@ -128,6 +128,7 @@
     <ClCompile Include="Resource\Shader\LightBlendRenderShader.cpp" />
     <ClCompile Include="Resource\Shader\LightBlendShader.cpp" />
     <ClCompile Include="Resource\Shader\LightConstantBuffer.cpp" />
+    <ClCompile Include="Resource\Shader\LightFowardConstantBuffer.cpp" />
     <ClCompile Include="Resource\Shader\MaterialConstantBuffer.cpp" />
     <ClCompile Include="Resource\Shader\Mesh2DShader.cpp" />
     <ClCompile Include="Resource\Shader\NumberShader.cpp" />
@@ -305,6 +306,7 @@
     <ClInclude Include="Resource\Shader\LightBlendRenderShader.h" />
     <ClInclude Include="Resource\Shader\LightBlendShader.h" />
     <ClInclude Include="Resource\Shader\LightConstantBuffer.h" />
+    <ClInclude Include="Resource\Shader\LightFowardConstantBuffer.h" />
     <ClInclude Include="Resource\Shader\MaterialConstantBuffer.h" />
     <ClInclude Include="Resource\Shader\Mesh2DShader.h" />
     <ClInclude Include="Resource\Shader\NumberShader.h" />
@@ -589,7 +591,6 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="TransparentInfo.fx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resource\Texture\DirectXTex.inl" />

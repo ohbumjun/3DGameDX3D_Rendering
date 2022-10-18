@@ -938,7 +938,7 @@ void CRenderManager::RenderTransparent()
 	FinalScreenTarget->SetTarget();
 
 	// 반투명 물체들은 Forward Rendering 방식으로 그려낼 것이다.
-
+	CSceneManager::GetInst()->GetScene()->GetLightManager()->SetForwardRenderShader();
 	
 	auto	iter = m_RenderLayerList[(int)RenderLayerIdx::Transparent]->RenderList.begin();
 	auto	iterEnd = m_RenderLayerList[(int)RenderLayerIdx::Transparent]->RenderList.end();
@@ -947,6 +947,8 @@ void CRenderManager::RenderTransparent()
 	{
 		(*iter)->Render();
 	}
+
+	CSceneManager::GetInst()->GetScene()->GetLightManager()->ResetForwardRenderShader();
 
 	FinalScreenTarget->ResetTarget();
 }

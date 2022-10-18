@@ -30,6 +30,7 @@
 // Constant Buffer
 #include "ShadowCBuffer.h"
 #include "ConstantBuffer.h"
+#include "LightFowardConstantBuffer.h"
 
 
 CShaderManager::CShaderManager()
@@ -120,8 +121,6 @@ bool CShaderManager::Init()
 	CreateConstantBuffer("InstancingCBuffer", sizeof(InstancingCBuffer), 6,
 		(int)Buffer_Shader_Type::Vertex | (int)Buffer_Shader_Type::Pixel);
 
-
-
 	CreateConstantBuffer("Animation2DCBuffer", sizeof(Animation2DCBuffer), 10,
 		(int)Buffer_Shader_Type::Graphic);
 
@@ -150,6 +149,9 @@ bool CShaderManager::Init()
 		(int)Buffer_Shader_Type::Graphic);
 
 	CreateConstantBuffer("WaterCBuffer", sizeof(WaterCBuffer), 9,
+		(int)Buffer_Shader_Type::Graphic);
+
+	CreateConstantBuffer("LightFowardCBuffer", sizeof(LightFowardCBuffer), 8,
 		(int)Buffer_Shader_Type::Graphic);
 
 	return true;

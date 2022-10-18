@@ -604,3 +604,8 @@ struct InstancingCBuffer
 	Vector3 InstancingEmpty;
 };
 
+struct LightFowardCBuffer
+{
+	int LightCount;
+	Vector3 Empty;
+};

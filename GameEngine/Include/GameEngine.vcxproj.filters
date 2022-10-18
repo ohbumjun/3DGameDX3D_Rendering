@@ -819,6 +819,9 @@
     <ClCompile Include="Resource\Mesh\Sprite3DMesh.cpp">
       <Filter>02. Resource\01. Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="Resource\Shader\LightFowardConstantBuffer.cpp">
+      <Filter>02. Resource\02. Shader\03. ConstantBuffer\12. Light</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Device.h">
@@ -1358,6 +1361,9 @@
     <ClInclude Include="Resource\Mesh\Sprite3DMesh.h">
       <Filter>02. Resource\01. Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\Shader\LightFowardConstantBuffer.h">
+      <Filter>02. Resource\02. Shader\03. ConstantBuffer\12. Light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\Shader\ColorMesh.fx">
@@ -1409,9 +1415,6 @@
       <Filter>02. Resource\02. Shader\01. HLSL</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\Shader\Water.fx">
-      <Filter>02. Resource\02. Shader\01. HLSL</Filter>
-    </FxCompile>
-    <FxCompile Include="TransparentInfo.fx">
       <Filter>02. Resource\02. Shader\01. HLSL</Filter>
     </FxCompile>
   </ItemGroup>

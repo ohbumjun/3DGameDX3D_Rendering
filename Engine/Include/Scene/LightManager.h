@@ -19,6 +19,12 @@ private:
 private:
 	std::list<CSharedPtr<CLightComponent>>	m_LightList;
 
+	// 반투명 물체들에 Forward Rendering을 적용하기 위한 것
+private :
+	std::vector<LightCBuffer> m_LightListBufferData;
+	class CStructuredBuffer* m_ForwardLightListStructuredBuffer;
+	class CLightFowardConstantBuffer* m_FowardLightCBuffer;
+
 public:
 	class CGameObject* GetGlobalLightObj()	const
 	{
@@ -43,5 +49,11 @@ public:
 	void SetShader();
 	void Destroy();
 	void Render();
+
+	void SetForwardRenderShader();
+	void ResetForwardRenderShader();
+
+private :
+	void CreateLightListStructuredBuffer(); 
 };
 

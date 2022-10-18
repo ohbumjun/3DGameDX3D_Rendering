@@ -17,16 +17,58 @@ protected:
 protected:
 	CLightConstantBuffer* m_CBuffer;
 
+	// Getter
 public:
 	Light_Type GetLightType()	const
 	{
 		return m_CBuffer->GetLightType();
+	}
+	const Vector3& GetLightPos() const
+	{
+		return m_CBuffer->GetLightPos();
+	}
+
+	const Vector3& GetLightDir() const
+	{
+		return m_CBuffer->GetLightDir();
+	}
+
+	const Vector4& GetLightColor() const
+	{
+		return m_CBuffer->GetLightColor();
 	}
 
 	float GetLightDistance()	const
 	{
 		return m_CBuffer->GetLightDistance();
 	}
+
+	float GetLightAngleIn() const
+	{
+		return m_CBuffer->GetLightAngleIn();
+	}
+
+	float GetLightAngleOut() const
+	{
+		return m_CBuffer->GetLightAngleOut();
+	}
+
+	float GetLightAtt1() const
+	{
+		return m_CBuffer->GetLightAtt1();
+	}
+
+	float GetLightAtt2() const
+	{
+		return m_CBuffer->GetLightAtt2();
+	}
+
+	float GetLightAtt3() const
+	{
+		return m_CBuffer->GetLightAtt3();
+	}
+	// Setter
+public :
 	void SetColor(const Vector4& Color)
 	{
 		m_CBuffer->SetColor(Color);
