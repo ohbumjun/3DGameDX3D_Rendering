@@ -15,6 +15,9 @@ CLightManager::CLightManager()
 
 CLightManager::~CLightManager()
 {
+	SAFE_DELETE(m_ForwardLightListStructuredBuffer);
+	SAFE_DELETE(m_FowardLightCBuffer);
+
 }
 
 void CLightManager::AddLight(CLightComponent* Light)

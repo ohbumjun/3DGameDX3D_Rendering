@@ -14,8 +14,9 @@ CWaterComponent::CWaterComponent() :
 {
 	SetTypeID<CWaterComponent>();
 	m_Render = true;
-	// m_LayerName = "Water";
-	m_LayerName = "Transparent";
+	
+	m_LayerName = "Water";
+	// m_LayerName = "Transparent";
 }
 
 CWaterComponent::CWaterComponent(const CWaterComponent& com) :

@@ -1,3 +1,9 @@
+> 기본 렌더링 처리
+- 매번 ClearRenderTarget 을 통해 Clear 해주고 있다. ( BackBuffer에 부착된 RenderTarget)
+- Depth Buffer, Stencil Buffer 도 Clear 해주고 있다. (깊이 버퍼 값을 1로)
+- 자동으로 해주는 것이 아니라, 우리가 함수를 호출해주고 있다.
+
+-----------------------------------------------------------------
 > Light 처리
 - LightComponent 를 만든다. SceneComponent 를 만든다.
   LightConstantBuffer (상수버퍼)를 포인터 형태로 들고 있는다
@@ -79,8 +85,26 @@ ex) 방향성 조명 1개, 점조명 2개 -> 같은 곳을 비춘다면, 그 부
 
 -----------------------------------------------------------------
 
+> 왜 Render Light Acc 는 깊이 판정을 끄는 것인가 ?
+- 자. 각 Light 를 그릴 때, 각 Light의 결과물을 서로 다른 GBuffer 에 담는다
+- 이때 Null Vertex Buffer 를 사용하고 + 깊이 판정을 끈다.
+- 자. 현재 디퍼드렌더링을 구현하기 위해 여러개의 Render Target 을 사용중이지만
+  Depth Target 은 같은 것을 사용하고 있다는 것을 기억해야 한다.
+
 > 최종 렌더링
 
+- 자. Device 혹은 Engine 단을 보면 SwapChain 으로부터 BackBuffer 가져오고
+  BackBuffer 에 사용할, RenderTarget 을 묶는다.
+- Render GBuffer, RenderLightAcc 당시에는 OMGetRenderTarget, OMSetRenderTArget을
+  통해 최종 출력 대상 Render Target 을 바꿔주는 것을 확인할 수 있다.
+- RenderLightBlend -> 즉, 이제 모든 최종 결과물을 담을 Render Target 을 만들 것이다.
+  그런데 이것을 바로 출력할 것은 아니다. 즉, final Render Target은 아니라는 것이다.
+  그래서 m_FinalTarget->SetTarget 을 해줘서, 최종 출력될 Render Target 을
+  바꿔주는 것을 알 수 있다.
+- RenderFinal Screen : RenderLight Blend 함수를 통해 만들어준 최종 Final Render Target 을
+  BackBuffer에 바인딩된 진짜 최종 Render Target 에 그려주는 역할 .
+  그래서 여기서보면 Render Target 을 교체하지 않는다. 최종 Pixel Shader 출력 결과물을
+  BackBuffer RenderTarget 에 그려내겠다는 의미이기 때문이다.
 
 -----------------------------------------------------------------
 

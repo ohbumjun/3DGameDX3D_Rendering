@@ -103,9 +103,10 @@ enum class RenderLayerIdx
 	Decal,  // 2
 	Particle, // 3
 	Transparent, // 4
-	ScreenWidgetComponent, // 5
-	DebugLayer, // 6
-	PickingCullingLayer // 7
+	Water, // 5
+	ScreenWidgetComponent, // 6
+	DebugLayer, // 7
+	PickingCullingLayer // 8
 };
 
 enum class Collision_Channel

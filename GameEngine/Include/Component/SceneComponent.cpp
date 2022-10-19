@@ -72,6 +72,8 @@ CSceneComponent::CSceneComponent(const CSceneComponent& com)	:
 CSceneComponent::~CSceneComponent()
 {
 	SAFE_DELETE(m_Transform);
+
+	// static std::list<InstancingCheckCount*>	m_InstancingCheckList;
 }
 
 void CSceneComponent::SetInstancingInfo(Instancing3DInfo* Info)

@@ -133,9 +133,17 @@ bool CRenderManager::Init()
 
 	m_RenderLayerList.push_back(Layer);
 
+	// Transparent
 	Layer = new RenderLayer;
 	Layer->Name = "Transparent";
 	Layer->LayerPriority = (int)RenderLayerIdx::Transparent;
+
+	m_RenderLayerList.push_back(Layer);
+
+	// Water
+	Layer = new RenderLayer;
+	Layer->Name = "Water";
+	Layer->LayerPriority = (int)RenderLayerIdx::Water;
 
 	m_RenderLayerList.push_back(Layer);
 
@@ -155,11 +163,6 @@ bool CRenderManager::Init()
 	Layer = new RenderLayer;
 	Layer->Name = "PickingCullingLayer";
 	Layer->LayerPriority = (int)RenderLayerIdx::PickingCullingLayer;
-
-	// Transparent
-	Layer = new RenderLayer;
-	Layer->Name = "Transparent";
-	Layer->LayerPriority = 7;
 
 	m_RenderLayerList.push_back(Layer);
 
@@ -272,8 +275,6 @@ bool CRenderManager::Init()
 	LightTarget->SetScale(Vector3(100.f, 100.f, 1.f));
 	LightTarget->SetDebugRender(true);
 	m_vecLightBuffer.push_back(LightTarget);
-
-
 
 	if (!CResourceManager::GetInst()->CreateTarget("FinalScreen",
 		RS.Width, RS.Height, DXGI_FORMAT_R32G32B32A32_FLOAT))
@@ -492,7 +493,7 @@ void CRenderManager::Render(float DeltaTime)
 	RenderFinalScreen();
 
 	// 반투명 물체를 그려낸다.
-	RenderTransparent();
+	RenderTransparentAndWater();
 
 	m_vecGBuffer[2]->SetShader(10, (int)Buffer_Shader_Type::Pixel, 0);
 
@@ -825,6 +826,11 @@ void CRenderManager::RenderLightAcc()
 
 	m_LightAccBlend->SetState();
 
+	// 아래 LightManager Render 를 할 때 Null Buffer 를 활용한다.
+	// VS 를 보면 ProjPos.z 을 0으로 세팅하고 있다.
+	// 이 상황에서, 현재 렌더타겟은 계속 바꾸고 있지만, 깊이타겟은 그대로 두고 있다.
+	// 만약 깊이 판정을 활성화 하면 각 픽셀에 대해서 깊이 값이 0이 될 것이고, 그러면 결과적으로 처음 렌더대상에 그려진 이후
+	// 다른 렌더대상에는 아무런 요소도 그려지지 않을 것이다. 깊이 판정을 통과하지 못할 것이기 때문이다.
 	m_DepthDisable->SetState();
 
 
@@ -924,33 +930,57 @@ void CRenderManager::RenderFinalScreen()
 	FinalScreenTarget->ResetTargetShader(21);
 }
 
-void CRenderManager::RenderTransparent()
+void CRenderManager::RenderTransparentAndWater()
 {
+
 	// 알파 소팅 적용 -> 뒤에서부터 앞으로 그린다.
 	if (m_RenderLayerList[(int)RenderLayerIdx::Transparent]->RenderList.size() > 1)
 	{
 		m_RenderLayerList[(int)RenderLayerIdx::Transparent]->RenderList.sort(CRenderManager::SortZ);
 	}
 
+	if (m_RenderLayerList[(int)RenderLayerIdx::Water]->RenderList.size() > 1)
+	{
+		m_RenderLayerList[(int)RenderLayerIdx::Water]->RenderList.sort(CRenderManager::SortZ);
+	}
+
 	// 반투명 물체들이 그려진 Render Target 정보를 넘겨준다.
 	CRenderTarget* FinalScreenTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("FinalScreen");
 
-	FinalScreenTarget->SetTarget();
+	// FinalScreenTarget->SetTarget();
+	FinalScreenTarget->SetTargetShader(21);
 
-	// 반투명 물체들은 Forward Rendering 방식으로 그려낼 것이다.
+	// 알파 블렌드 적용
+	m_AlphaBlend->SetState();
+
+	// 반투명 물체들은 Forward Rendering 방식으로 그려낼 것이다. (이부분 최적화 필요하다)
 	CSceneManager::GetInst()->GetScene()->GetLightManager()->SetForwardRenderShader();
-	
-	auto	iter = m_RenderLayerList[(int)RenderLayerIdx::Transparent]->RenderList.begin();
-	auto	iterEnd = m_RenderLayerList[(int)RenderLayerIdx::Transparent]->RenderList.end();
 
-	for (; iter != iterEnd; ++iter)
 	{
-		(*iter)->Render();
+		auto	iter = m_RenderLayerList[(int)RenderLayerIdx::Transparent]->RenderList.begin();
+		auto	iterEnd = m_RenderLayerList[(int)RenderLayerIdx::Transparent]->RenderList.end();
+
+		for (; iter != iterEnd; ++iter)
+		{
+			(*iter)->Render();
+		}
+	}
+
+	{
+		auto	iter = m_RenderLayerList[(int)RenderLayerIdx::Water]->RenderList.begin();
+		auto	iterEnd = m_RenderLayerList[(int)RenderLayerIdx::Water]->RenderList.end();
+
+		for (; iter != iterEnd; ++iter)
+		{
+			(*iter)->Render();
+		}
 	}
 
 	CSceneManager::GetInst()->GetScene()->GetLightManager()->ResetForwardRenderShader();
 
-	FinalScreenTarget->ResetTarget();
+	m_AlphaBlend->ResetState();
+
+	FinalScreenTarget->SetTargetShader(21);
 }
 
 void CRenderManager::RenderColliderComponents()

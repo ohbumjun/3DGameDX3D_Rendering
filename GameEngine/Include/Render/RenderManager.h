@@ -141,7 +141,7 @@ private:
 	void RenderLightAcc();
 	void RenderLightBlend();
 	void RenderFinalScreen();
-	void RenderTransparent();
+	void RenderTransparentAndWater();
 	void RenderColliderComponents();
 	void RenderCullingLayer();
 

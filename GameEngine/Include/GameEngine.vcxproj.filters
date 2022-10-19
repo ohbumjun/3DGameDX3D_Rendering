@@ -1417,6 +1417,9 @@
     <FxCompile Include="..\Bin\Shader\Water.fx">
       <Filter>02. Resource\02. Shader\01. HLSL</Filter>
     </FxCompile>
+    <FxCompile Include="..\Bin\Shader\TransparentInfo.fx">
+      <Filter>02. Resource\02. Shader\01. HLSL</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resource\Texture\DirectXTex.inl">
