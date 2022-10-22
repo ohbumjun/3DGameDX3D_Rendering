@@ -239,17 +239,19 @@ void CWaterComponent::Render()
 
 	m_CBuffer->UpdateCBuffer();
 
-	// Sky Material
-	// m_SkyMaterial->Render();
+	// Sky Material 를 Shader Resource View 형태로 넘겨줘야 한다
+	// SkyObject 를 그릴 당시에는 Shader Resource View 로 세팅하고, 그리고, 다시 빼준 상태이다.
+	m_SkyMaterial->Render();
+	// m_SkyMaterial->SetShader();
 
 	// Water Material
 	m_Material->Render();
 
 	m_Mesh->Render();
-
+	
 	m_Material->Reset();
 
-	// m_SkyMaterial->Reset();
+	m_SkyMaterial->Reset();
 }
 
 

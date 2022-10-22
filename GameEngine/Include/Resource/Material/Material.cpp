@@ -10,8 +10,9 @@
 
 CMaterial::CMaterial()	:
 	m_BaseColor(Vector4::White),
-	m_AmbientColor(Vector4(0.2f, 0.2f, 0.2f, 1.f)),
-	m_SpecularColor(Vector4::White),
+	// m_AmbientColor(Vector4(0.2f, 0.2f, 0.2f, 1.f)), -> 조명 처리 할시  적용
+	// m_SpecularColor(Vector4::White), // -> 조명 처리 시 Specular 색상의 r,g,b 를 적용해야 한다. w 는 매끈한 표면의 정도를 의미한다.
+	m_SpecularColor({0.f, 0.f, 0.f, 1.f}),
 	m_EmissiveColor(Vector4::Black),
 	m_Animation3D(false),
 	m_SpecularTex(false),

@@ -21,7 +21,7 @@ protected:
 	// CSharedPtr<CSprite3DMesh>	m_Mesh;
 
 	CSharedPtr<CMaterial> m_Material; // Water Material
-	CSharedPtr<CMaterial> m_SkyMaterial; // Water Material
+	CSharedPtr<CMaterial> m_SkyMaterial; // Sky Material
 	class CWaterConstantBuffer* m_CBuffer;
 	Vector3	m_Min;
 	Vector3	m_Max;

@@ -980,7 +980,7 @@ void CRenderManager::RenderTransparentAndWater()
 
 	m_AlphaBlend->ResetState();
 
-	FinalScreenTarget->SetTargetShader(21);
+	FinalScreenTarget->ResetTargetShader(21);
 }
 
 void CRenderManager::RenderColliderComponents()

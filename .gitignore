@@ -7,7 +7,11 @@
 Client2D/Bin/
 Client3D/Bin/
 Engine/Bin/
-GameEngine/Bin/
+GameEngine/Bin/Texture
+GameEngine/Bin/libfbxsdk-md.lib
+GameEngine/Bin/libfbxsdk-md_Debug.lib
+GameEngine/Bin/GameEngine.lib
+GameEngine/Bin/GameEngine_Debug.lib
 Editor/Bin/
 
 Client2D/BinObj/

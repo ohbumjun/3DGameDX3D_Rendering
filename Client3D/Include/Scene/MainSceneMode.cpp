@@ -46,7 +46,7 @@ bool CMainSceneMode::Init()
 	CMonster* Monster = m_Scene->CreateGameObject<CMonster>("Monster");
 	Monster->SetWorldPos(5.f, 0.f, 5.f);
 	
-	CLandScapeObj* LandScape = m_Scene->CreateGameObject<CLandScapeObj>("LandScape");
+	// CLandScapeObj* LandScape = m_Scene->CreateGameObject<CLandScapeObj>("LandScape");
 	
 	CDecalObj* Decal = m_Scene->CreateGameObject<CDecalObj>("Decal");
 	
@@ -77,21 +77,7 @@ bool CMainSceneMode::Init()
 	// 	}
 	// }
 
-	CLightObj* Light = m_Scene->CreateGameObject<CLightObj>("Light1");
-
-	((CLightComponent*)Light->GetRootComponent())->SetRelativePos(-3.f, 5.f, 0.f);
-	((CLightComponent*)Light->GetRootComponent())->SetLightType(Light_Type::Point);
-	((CLightComponent*)Light->GetRootComponent())->SetDistance(10.f);
-	((CLightComponent*)Light->GetRootComponent())->SetAtt3(0.02f);
-	((CLightComponent*)Light->GetRootComponent())->SetColor(Vector4(1.f, 0.f, 0.f, 1.f));
-
-	CLightObj* Light2 = m_Scene->CreateGameObject<CLightObj>("Light2");
-
-	((CLightComponent*)Light2->GetRootComponent())->SetRelativePos(3.f, 5.f, 0.f);
-	((CLightComponent*)Light2->GetRootComponent())->SetLightType(Light_Type::Point);
-	((CLightComponent*)Light2->GetRootComponent())->SetDistance(10.f);
-	((CLightComponent*)Light2->GetRootComponent())->SetAtt3(0.02f);
-	((CLightComponent*)Light2->GetRootComponent())->SetColor(Vector4(0.f, 1.f, 0.f, 1.f));
+	// CreateLight();
 
 	// Water Obj ¸¸µé±â
 	CGameObject* WaterObject = m_Scene->CreateGameObject<CGameObject>("Water");
@@ -160,6 +146,8 @@ void CMainSceneMode::CreateMaterial()
 		"WaterDif", TEXT("Water/Water 0341.jpg"));
 	Material->AddTexture(1, (int)Buffer_Shader_Type::Pixel, // Normal
 		"WaterNrm", TEXT("Water/Water 0341normal.jpg"));
+
+	Material->SetOpacity(0.5f);
 
 	Material->SetShader("WaterShader");
 	// Material->SetShader("Mesh2DShader");
@@ -295,4 +283,23 @@ void CMainSceneMode::CreateAnimationSequence()
 
 void CMainSceneMode::CreateParticle()
 {
+}
+
+void CMainSceneMode::CreateLight()
+{
+	CLightObj* Light = m_Scene->CreateGameObject<CLightObj>("PointLight_Red");
+
+	((CLightComponent*)Light->GetRootComponent())->SetRelativePos(-3.f, 5.f, 0.f);
+	((CLightComponent*)Light->GetRootComponent())->SetLightType(Light_Type::Point);
+	((CLightComponent*)Light->GetRootComponent())->SetDistance(10.f);
+	((CLightComponent*)Light->GetRootComponent())->SetAtt3(0.02f);
+	((CLightComponent*)Light->GetRootComponent())->SetColor(Vector4(1.f, 0.f, 0.f, 1.f));
+
+	CLightObj* Light2 = m_Scene->CreateGameObject<CLightObj>("PointLight_Green");
+
+	((CLightComponent*)Light2->GetRootComponent())->SetRelativePos(3.f, 5.f, 0.f);
+	((CLightComponent*)Light2->GetRootComponent())->SetLightType(Light_Type::Point);
+	((CLightComponent*)Light2->GetRootComponent())->SetDistance(10.f);
+	((CLightComponent*)Light2->GetRootComponent())->SetAtt3(0.02f);
+	((CLightComponent*)Light2->GetRootComponent())->SetColor(Vector4(0.f, 1.f, 0.f, 1.f));
 }

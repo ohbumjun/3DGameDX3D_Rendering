@@ -19,12 +19,14 @@ bool CMaterialManager::Init()
 
 	m_CBuffer->Init();
 
+	// Color
 	CreateMaterial<CMaterial>("Color");
 
 	CSharedPtr<CMaterial>	Mtrl = FindMaterial("Color");
 
 	Mtrl->SetShader("ColorMeshShader");
 
+	// BaseTexture
 	CreateMaterial<CMaterial>("BaseTexture");
 
 	Mtrl = FindMaterial("BaseTexture");
@@ -35,6 +37,7 @@ bool CMaterialManager::Init()
 
 	Mtrl->AddTexture(0, (int)Buffer_Shader_Type::Pixel, "EngineTexture", Texture);
 
+	// Sky
 	CreateMaterial<CMaterial>("SkyMaterial");
 
 	Mtrl = FindMaterial("SkyMaterial");
@@ -44,6 +47,7 @@ bool CMaterialManager::Init()
 	Mtrl->AddTexture(20, (int)Buffer_Shader_Type::Pixel,
 		"DefaultSky", TEXT("Sky/Sky.dds"));
 
+	// Decal
 	CreateMaterial<CMaterial>("DefaultDecal");
 
 	Mtrl = FindMaterial("DefaultDecal");
@@ -60,13 +64,14 @@ bool CMaterialManager::Init()
 	Mtrl->EnableBump();
 	Mtrl->EnableSpecularTex();
 
+	// Debug Decal
 	CreateMaterial<CMaterial>("DebugDecal");
 
 	Mtrl = FindMaterial("DebugDecal");
 
 	Mtrl->SetShader("DecalDebugShader");
 
-
+	// BillBoard
 	CreateMaterial<CMaterial>("Billboard");
 
 	Mtrl = FindMaterial("Billboard");

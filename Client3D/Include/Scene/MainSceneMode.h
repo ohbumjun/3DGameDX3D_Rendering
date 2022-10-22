@@ -22,6 +22,8 @@ private:
     void CreateAnimationSequence();
     void CreateParticle();
 
+    void CreateLight();
+
 public:
     template <typename T>
     void SetLoadingFunction(T* Obj, void(T::* Func)(bool, float))
