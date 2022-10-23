@@ -967,6 +967,10 @@ void CRenderManager::RenderTransparentAndWater()
 	}
 
 	{
+		// Water 에서 반사광으로 쓸 Sky Tex 정보를 넘겨준다.
+		CMaterial* SkyMaterial = CSceneManager::GetInst()->GetScene()->GetResource()->FindMaterial("SkyMaterial");
+		SkyMaterial->GetTexture()->SetShader(23, (int)Buffer_Shader_Type::Pixel, 0);
+
 		auto	iter = m_RenderLayerList[(int)RenderLayerIdx::Water]->RenderList.begin();
 		auto	iterEnd = m_RenderLayerList[(int)RenderLayerIdx::Water]->RenderList.end();
 
@@ -974,6 +978,8 @@ void CRenderManager::RenderTransparentAndWater()
 		{
 			(*iter)->Render();
 		}
+
+		SkyMaterial->GetTexture()->ResetShader(23, (int)Buffer_Shader_Type::Pixel, 0);
 	}
 
 	CSceneManager::GetInst()->GetScene()->GetLightManager()->ResetForwardRenderShader();

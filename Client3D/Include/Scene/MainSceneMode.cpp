@@ -77,7 +77,8 @@ bool CMainSceneMode::Init()
 	// 	}
 	// }
 
-	// CreateLight();
+	// Light 추가 생성
+	CreateLight();
 
 	// Water Obj 만들기
 	CGameObject* WaterObject = m_Scene->CreateGameObject<CGameObject>("Water");

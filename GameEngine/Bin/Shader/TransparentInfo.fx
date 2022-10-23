@@ -99,7 +99,7 @@ LightResult ComputeLightFromStructuredBuffer(LightInfo Info, float3 Pos, float3 
 	result.Amb = Info.LightColor.xyz * 1.f * MtrlAmb * Attn;
 
 	// Linear Space -> Gamma Space
-	// result.Dif = pow(result.Dif, 1 / 2.2f);
+    // result.Dif = pow(result.Dif, 1 / 2.2f);
 
 	// g_MtrlSpecularColor.w : Ç¥¸é ±î²ø±î²øÇÑ Á¤µµ
 	result.Spc = Info.LightColor.xyz * MtrlSpc * pow(SpcIntensity, g_MtrlSpecularColor.w) * Attn;
