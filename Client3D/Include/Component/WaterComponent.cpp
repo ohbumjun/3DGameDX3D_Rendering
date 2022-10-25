@@ -206,7 +206,7 @@ bool CWaterComponent::Init()
 	// m_Material = m_Scene->GetResource()->FindMaterial("BillBoard");
 
 	SetPivot(0.5f, 0.5f, 0.f);
-	SetRelativeScale(1.f, 1.f, 1.f);
+	SetRelativeScale(4.f, 4.f, 4.f);
 	SetMeshSize(1.f, 1.f, 1.f);
 	// SetMeshSize(1.f, 1.f, 1.f);
 

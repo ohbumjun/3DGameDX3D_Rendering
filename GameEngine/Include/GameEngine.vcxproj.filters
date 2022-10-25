@@ -307,6 +307,9 @@
     <Filter Include="02. Resource\02. Shader\02. ShaderClass\16. Water">
       <UniqueIdentifier>{e238f0f5-c86b-493e-bcaf-afe2a19a9264}</UniqueIdentifier>
     </Filter>
+    <Filter Include="06. Render\02. PostProcessing">
+      <UniqueIdentifier>{e629c510-8d32-43dd-907c-a648d4323193}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device.cpp">
@@ -821,6 +824,9 @@
     </ClCompile>
     <ClCompile Include="Resource\Shader\LightFowardConstantBuffer.cpp">
       <Filter>02. Resource\02. Shader\03. ConstantBuffer\12. Light</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\HDR.cpp">
+      <Filter>06. Render\02. PostProcessing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1363,6 +1369,9 @@
     </ClInclude>
     <ClInclude Include="Resource\Shader\LightFowardConstantBuffer.h">
       <Filter>02. Resource\02. Shader\03. ConstantBuffer\12. Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\HDR.h">
+      <Filter>06. Render\02. PostProcessing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

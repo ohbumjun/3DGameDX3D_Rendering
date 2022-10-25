@@ -85,6 +85,7 @@ bool CDevice::Init(HWND hWnd, unsigned int Width,
 	SwapDesc.BufferDesc.Width = Width;
 	SwapDesc.BufferDesc.Height = Height;
 	SwapDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	// SwapDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	SwapDesc.BufferDesc.RefreshRate.Numerator = 1;
 	SwapDesc.BufferDesc.RefreshRate.Denominator = 60;
 	SwapDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
@@ -172,6 +173,7 @@ bool CDevice::Init(HWND hWnd, unsigned int Width,
 	D2D1_RENDER_TARGET_PROPERTIES	props = D2D1::RenderTargetProperties(
 		D2D1_RENDER_TARGET_TYPE_HARDWARE,
 		D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED));
+		// D2D1::PixelFormat(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, D2D1_ALPHA_MODE_IGNORE));
 
 	if (FAILED(m_2DFactory->CreateDxgiSurfaceRenderTarget(BackSurface, props, &m_2DTarget)))
 		return false;

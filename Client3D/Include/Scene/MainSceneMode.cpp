@@ -58,24 +58,24 @@ bool CMainSceneMode::Init()
 	BonObj->SetWorldPos(3.f, 4.f, 10.f);
 
 	// Static Mesh Instancing
-	// for (int i = 0; i < 30; ++i)
-	// {
-	// 	CBonObj* BonObj = m_Scene->CreateGameObject<CBonObj>("BonObj");
-	// 
-	// 	BonObj->SetWorldPos(i * 3.f, 4.f, 10.f);
-	// }
+	for (int i = 0; i < 30; ++i)
+	{
+		CBonObj* BonObj = m_Scene->CreateGameObject<CBonObj>("BonObj");
+	
+		BonObj->SetWorldPos(i * 3.f, 4.f, 10.f);
+	}
 
 
 	// Animation Mesh Instancing
-	// for (int i = 0; i < 5; ++i)
-	// {
-	// 	for (int j = 0; j < 5; ++j)
-	// 	{
-	// 		CMonster* Monster = m_Scene->CreateGameObject<CMonster>("Monster");
-	// 
-	// 		Monster->SetWorldPos(j * 3.f + 10.f, 5.f, i * 3.f + 10.f);
-	// 	}
-	// }
+	for (int i = 0; i < 5; ++i)
+	{
+		for (int j = 0; j < 5; ++j)
+		{
+			CMonster* Monster = m_Scene->CreateGameObject<CMonster>("Monster");
+	
+			Monster->SetWorldPos(j * 3.f + 10.f, 5.f, i * 3.f + 10.f);
+		}
+	}
 
 	// Light 추가 생성
 	CreateLight();

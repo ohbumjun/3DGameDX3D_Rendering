@@ -100,6 +100,9 @@ private:
 	std::vector<CSharedPtr<CRenderTarget>>	m_vecDecal;
 	std::vector<CSharedPtr<CRenderTarget>>	m_vecLightBuffer;
 
+	// HDR
+
+	// Shadow
 	bool	m_Shadow;
 	CSharedPtr<CRenderTarget>		m_ShadowMapTarget;
 	CSharedPtr<class CShader>		m_ShadowMapShader;
