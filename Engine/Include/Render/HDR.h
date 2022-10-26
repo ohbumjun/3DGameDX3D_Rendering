@@ -13,11 +13,19 @@ protected:
 	CHDR(const CHDR& com) = delete;
 	virtual ~CHDR();
 
-protected :
-	class CStructuredBuffer* m_FirstDownScaleShaderBuffer;
-	class CStructuredBuffer* m_SecondDownScaleShaderBuffer;
+public :
+	bool Init();
 
-	CSharedPtr<CRenderTarget>	m_MidLuminanceTarget;
-	CSharedPtr<CRenderTarget>	m_AvgLuminanceTarget;
+protected :
+	class CStructuredBuffer* m_MiddleLumBuffer;     // 휘도값 계산시 중간값 저장하는 역할
+	class CStructuredBuffer* m_MeanLumBuffer;
+
+	class CHDRDownScaleFirstPass*		   m_FirstPassUpdateShader;
+	class CHDRDownScaleSecondPass*    m_SecondPassUpdateShader;
+
+	// 상수 버퍼 2개 
+	class CFirstHDRDownScaleCBuffer* m_DownScaleCBuffer;
+
+	// 조명 -> HDR -> (톤 매핑) LDR
 };
 

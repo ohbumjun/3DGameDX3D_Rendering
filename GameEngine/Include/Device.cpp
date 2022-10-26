@@ -84,8 +84,8 @@ bool CDevice::Init(HWND hWnd, unsigned int Width,
 
 	SwapDesc.BufferDesc.Width = Width;
 	SwapDesc.BufferDesc.Height = Height;
-	SwapDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	// SwapDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	SwapDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // 
+	// SwapDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB; -> sRGB Force
 	SwapDesc.BufferDesc.RefreshRate.Numerator = 1;
 	SwapDesc.BufferDesc.RefreshRate.Denominator = 60;
 	SwapDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;

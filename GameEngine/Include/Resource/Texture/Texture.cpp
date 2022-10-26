@@ -94,6 +94,7 @@ bool CTexture::LoadTexture(const std::string& Name, const TCHAR* FileName,
 	else
 	{
 		if (FAILED(LoadFromWICFile(FullPath, WIC_FLAGS_NONE, nullptr, *Image)))
+		// if (FAILED(LoadFromWICFile(FullPath, WIC_FLAGS_DEFAULT_SRGB , nullptr, *Image)))
 		{
 			SAFE_DELETE(Info);
 			SAFE_DELETE(Image);
@@ -620,6 +621,13 @@ bool CTexture::CreateResource(int Index)
 		Info->Image->GetImageCount(), Info->Image->GetMetadata(),
 		&Info->SRV)))
 		return false;
+
+	// Gamma 를 적용하고자 할 때
+	// if (FAILED(CreateShaderResourceViewEx(CDevice::GetInst()->GetDevice(), Info->Image->GetImages(),
+	// 	Info->Image->GetImageCount(), Info->Image->GetMetadata(), D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE,
+	// 	0, 0, true,
+	// 	&Info->SRV)))
+	// 	return false;
 
 	Info->Width = (unsigned int)Info->Image->GetImages()[0].width;
 	Info->Height = (unsigned int)Info->Image->GetImages()[0].height;

@@ -64,9 +64,6 @@
     <Filter Include="02. Resource\02. Shader\01. HLSL">
       <UniqueIdentifier>{43e73f19-15cf-41a5-97a7-71ed339d74aa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. Resource\02. Shader\02. ShaderClass">
-      <UniqueIdentifier>{6ae41c8e-ad92-4fec-a1c6-e323811ce8e4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. Resource\02. Shader\03. ConstantBuffer">
       <UniqueIdentifier>{ccba29b1-c604-4073-b30b-a942afe5f41d}</UniqueIdentifier>
     </Filter>
@@ -102,24 +99,6 @@
     </Filter>
     <Filter Include="02. Resource\02. Shader\03. ConstantBuffer\10. TileMap">
       <UniqueIdentifier>{52aebd9b-2912-487a-a8ca-a022019541ce}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Resource\02. Shader\02. ShaderClass\01. ColorMesh">
-      <UniqueIdentifier>{cf50bcb2-6338-4afa-97e0-4289e56fc025}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Resource\02. Shader\02. ShaderClass\02. Mesh2D">
-      <UniqueIdentifier>{22d847cb-90b1-4b4b-9351-66fc3041affa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Resource\02. Shader\02. ShaderClass\03. Collider">
-      <UniqueIdentifier>{ff1e569a-bcf3-4e66-9f0b-9cfd5c804ea5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Resource\02. Shader\02. ShaderClass\04. Widget">
-      <UniqueIdentifier>{cd07b3c2-ab04-4a67-87d0-032fd6569bf0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Resource\02. Shader\02. ShaderClass\05. Particle">
-      <UniqueIdentifier>{ddd06add-4789-416e-9476-e3c39bf2b8c2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Resource\02. Shader\02. ShaderClass\06. TileMap">
-      <UniqueIdentifier>{c1a585a0-166c-43c3-8c3d-82874514bd25}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. Resource\03. Material">
       <UniqueIdentifier>{2a841de2-e64e-4cab-b832-6a71e3b5cbb9}</UniqueIdentifier>
@@ -217,9 +196,6 @@
     <Filter Include="09. Widget\02. Widget">
       <UniqueIdentifier>{02485c82-1cbc-446d-8549-233564902ad8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. Resource\02. Shader\02. ShaderClass\07. Standard3D">
-      <UniqueIdentifier>{fb328517-c61a-4f9c-8236-883faed886f2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="05. Component\01. SceneComponent\07. Arm">
       <UniqueIdentifier>{9d3e9aeb-433f-414c-ac34-7a97a6758ad6}</UniqueIdentifier>
     </Filter>
@@ -238,9 +214,6 @@
     <Filter Include="02. Resource\02. Shader\03. ConstantBuffer\11. Animation3D">
       <UniqueIdentifier>{40b4848e-52e3-4535-8474-605ee568d2b8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. Resource\02. Shader\02. ShaderClass\08. AnimationUpdate">
-      <UniqueIdentifier>{4724764a-65f4-4985-bb8b-f56587f3df3c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="05. Component\01. SceneComponent\08. Light">
       <UniqueIdentifier>{a1bbf11b-9dae-44e1-adef-55ac09228629}</UniqueIdentifier>
     </Filter>
@@ -250,20 +223,8 @@
     <Filter Include="02. Resource\02. Shader\03. ConstantBuffer\12. Light">
       <UniqueIdentifier>{d1fafb9e-2d93-4d74-b831-16eca7f5593d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. Resource\02. Shader\02. ShaderClass\09. RenderTarget">
-      <UniqueIdentifier>{26356d9e-81a3-4ed3-a462-0ac3395ee72e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Resource\02. Shader\02. ShaderClass\10. Light">
-      <UniqueIdentifier>{269f1d9c-e215-473f-a18a-907a8cbc8b3a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Resource\02. Shader\02. ShaderClass\11. Sky">
-      <UniqueIdentifier>{9888ed8d-91fd-42df-830d-a96b0ce88274}</UniqueIdentifier>
-    </Filter>
     <Filter Include="05. Component\01. SceneComponent\09. LandScape">
       <UniqueIdentifier>{963a2b35-7de7-4c4b-94c9-a671e28c6355}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Resource\02. Shader\02. ShaderClass\12. LandScape">
-      <UniqueIdentifier>{ca854901-5f06-4e19-ab1e-4a147bcea228}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. Resource\02. Shader\03. ConstantBuffer\13. LandScape">
       <UniqueIdentifier>{4368a80e-d488-4723-8663-12f3147e70fe}</UniqueIdentifier>
@@ -277,20 +238,11 @@
     <Filter Include="05. Component\01. SceneComponent\10. Decal">
       <UniqueIdentifier>{48781b58-324f-470e-ac88-9e180e67842c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. Resource\02. Shader\02. ShaderClass\13. Decal">
-      <UniqueIdentifier>{bc158816-0bc2-4a3d-a2b0-3847c6ea5d65}</UniqueIdentifier>
-    </Filter>
     <Filter Include="05. Component\01. SceneComponent\11. Billboard">
       <UniqueIdentifier>{a701e4b1-db67-43d9-914c-dfc7479cbb55}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. Resource\02. Shader\02. ShaderClass\14. Billboard">
-      <UniqueIdentifier>{f63951fd-2c18-48b4-a3a5-a27cde29b990}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. Resource\02. Shader\03. ConstantBuffer\14. Instancing">
       <UniqueIdentifier>{6924c4bc-3dd8-46d3-9d1a-9ab0f4b5ddde}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Resource\02. Shader\02. ShaderClass\15. ShadowMap">
-      <UniqueIdentifier>{1f09f063-c062-4ae5-8db4-3263db668e97}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. Resource\02. Shader\03. ConstantBuffer\15. Shadow">
       <UniqueIdentifier>{3b7de16d-a6fe-44c0-848b-933b0deb30ee}</UniqueIdentifier>
@@ -304,11 +256,80 @@
     <Filter Include="02. Resource\02. Shader\03. ConstantBuffer\16. Water">
       <UniqueIdentifier>{46e16f2e-b5b9-4891-b7a6-9d1533413a40}</UniqueIdentifier>
     </Filter>
+    <Filter Include="06. Render\02. PostProcessing">
+      <UniqueIdentifier>{e629c510-8d32-43dd-907c-a648d4323193}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\01. HLSL\1. PostProcessing">
+      <UniqueIdentifier>{3dc67eed-fd96-4720-94b0-ad4c2c2a697a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\01. HLSL\2. Particle">
+      <UniqueIdentifier>{39a51e43-18e2-401e-a923-65646d6ee0d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\01. HLSL\3. Animation">
+      <UniqueIdentifier>{ddd1384f-7ac4-4838-961a-4fca364c0bb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\01. HLSL\4. Billboard">
+      <UniqueIdentifier>{f21a73f8-656e-4a08-b391-f4cdf3d4d7fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\01. HLSL\5. Shadow">
+      <UniqueIdentifier>{ec3b142e-8ab8-4539-8365-99b76aa6e8fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\03. ConstantBuffer\17. HDR">
+      <UniqueIdentifier>{c016d338-4809-42a0-88ac-54c89fe67eb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\02. ShaderClass">
+      <UniqueIdentifier>{6ae41c8e-ad92-4fec-a1c6-e323811ce8e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\02. ShaderClass\01. ColorMesh">
+      <UniqueIdentifier>{cf50bcb2-6338-4afa-97e0-4289e56fc025}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\02. ShaderClass\02. Mesh2D">
+      <UniqueIdentifier>{22d847cb-90b1-4b4b-9351-66fc3041affa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\02. ShaderClass\03. Collider">
+      <UniqueIdentifier>{ff1e569a-bcf3-4e66-9f0b-9cfd5c804ea5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\02. ShaderClass\04. Widget">
+      <UniqueIdentifier>{cd07b3c2-ab04-4a67-87d0-032fd6569bf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\02. ShaderClass\05. Particle">
+      <UniqueIdentifier>{ddd06add-4789-416e-9476-e3c39bf2b8c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\02. ShaderClass\06. TileMap">
+      <UniqueIdentifier>{c1a585a0-166c-43c3-8c3d-82874514bd25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\02. ShaderClass\07. Standard3D">
+      <UniqueIdentifier>{fb328517-c61a-4f9c-8236-883faed886f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\02. ShaderClass\08. AnimationUpdate">
+      <UniqueIdentifier>{4724764a-65f4-4985-bb8b-f56587f3df3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\02. ShaderClass\09. RenderTarget">
+      <UniqueIdentifier>{26356d9e-81a3-4ed3-a462-0ac3395ee72e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\02. ShaderClass\10. Light">
+      <UniqueIdentifier>{269f1d9c-e215-473f-a18a-907a8cbc8b3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\02. ShaderClass\11. Sky">
+      <UniqueIdentifier>{9888ed8d-91fd-42df-830d-a96b0ce88274}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\02. ShaderClass\12. LandScape">
+      <UniqueIdentifier>{ca854901-5f06-4e19-ab1e-4a147bcea228}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\02. ShaderClass\13. Decal">
+      <UniqueIdentifier>{bc158816-0bc2-4a3d-a2b0-3847c6ea5d65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\02. ShaderClass\14. Billboard">
+      <UniqueIdentifier>{f63951fd-2c18-48b4-a3a5-a27cde29b990}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Resource\02. Shader\02. ShaderClass\15. ShadowMap">
+      <UniqueIdentifier>{1f09f063-c062-4ae5-8db4-3263db668e97}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02. Resource\02. Shader\02. ShaderClass\16. Water">
       <UniqueIdentifier>{e238f0f5-c86b-493e-bcaf-afe2a19a9264}</UniqueIdentifier>
     </Filter>
-    <Filter Include="06. Render\02. PostProcessing">
-      <UniqueIdentifier>{e629c510-8d32-43dd-907c-a648d4323193}</UniqueIdentifier>
+    <Filter Include="02. Resource\02. Shader\02. ShaderClass\17. HDR">
+      <UniqueIdentifier>{3091ca43-f9aa-4d8f-978a-7ffd9e1e3eba}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -827,6 +848,18 @@
     </ClCompile>
     <ClCompile Include="Render\HDR.cpp">
       <Filter>06. Render\02. PostProcessing</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\Shader\FirstHDRDownScaleCBuffer.cpp">
+      <Filter>02. Resource\02. Shader\03. ConstantBuffer\17. HDR</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\Shader\SecondHDRDownScale.cpp">
+      <Filter>02. Resource\02. Shader\03. ConstantBuffer\17. HDR</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\Shader\HDRDownScaleFirstPass.cpp">
+      <Filter>02. Resource\02. Shader\02. ShaderClass\17. HDR</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\Shader\HDRDownScaleSecondPass.cpp">
+      <Filter>02. Resource\02. Shader\02. ShaderClass\17. HDR</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1373,15 +1406,24 @@
     <ClInclude Include="Render\HDR.h">
       <Filter>06. Render\02. PostProcessing</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\Shader\SecondHDRDownScale.h">
+      <Filter>02. Resource\02. Shader\03. ConstantBuffer\17. HDR</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\Shader\FirstHDRDownScaleCBuffer.h">
+      <Filter>02. Resource\02. Shader\03. ConstantBuffer\17. HDR</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\Shader\HDRDownScaleFirstPass.h">
+      <Filter>02. Resource\02. Shader\02. ShaderClass\17. HDR</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\Shader\HDRDownScaleSecondPass.h">
+      <Filter>02. Resource\02. Shader\02. ShaderClass\17. HDR</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\Shader\ColorMesh.fx">
       <Filter>02. Resource\02. Shader\01. HLSL</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\Shader\Mesh2D.fx">
-      <Filter>02. Resource\02. Shader\01. HLSL</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Bin\Shader\Particle.fx">
       <Filter>02. Resource\02. Shader\01. HLSL</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\Shader\ShaderInfo.fx">
@@ -1399,12 +1441,6 @@
     <FxCompile Include="..\Bin\Shader\Standard3D.fx">
       <Filter>02. Resource\02. Shader\01. HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="..\Bin\Shader\AnimationUpdate.fx">
-      <Filter>02. Resource\02. Shader\01. HLSL</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Bin\Shader\Light.fx">
-      <Filter>02. Resource\02. Shader\01. HLSL</Filter>
-    </FxCompile>
     <FxCompile Include="..\Bin\Shader\Sky.fx">
       <Filter>02. Resource\02. Shader\01. HLSL</Filter>
     </FxCompile>
@@ -1414,20 +1450,32 @@
     <FxCompile Include="..\Bin\Shader\Decal.fx">
       <Filter>02. Resource\02. Shader\01. HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="..\Bin\Shader\Billboard.fx">
-      <Filter>02. Resource\02. Shader\01. HLSL</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Bin\Shader\ShadowMap.fx">
-      <Filter>02. Resource\02. Shader\01. HLSL</Filter>
-    </FxCompile>
     <FxCompile Include="..\Bin\Shader\WaterSample.fx">
       <Filter>02. Resource\02. Shader\01. HLSL</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\Shader\Water.fx">
-      <Filter>02. Resource\02. Shader\01. HLSL</Filter>
+      <Filter>02. Resource\02. Shader\01. HLSL\1. PostProcessing</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\Shader\TransparentInfo.fx">
-      <Filter>02. Resource\02. Shader\01. HLSL</Filter>
+      <Filter>02. Resource\02. Shader\01. HLSL\1. PostProcessing</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\Shader\Particle.fx">
+      <Filter>02. Resource\02. Shader\01. HLSL\2. Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\Shader\AnimationUpdate.fx">
+      <Filter>02. Resource\02. Shader\01. HLSL\3. Animation</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\Shader\Billboard.fx">
+      <Filter>02. Resource\02. Shader\01. HLSL\4. Billboard</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\Shader\Light.fx">
+      <Filter>02. Resource\02. Shader\01. HLSL\1. PostProcessing</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\Shader\ShadowMap.fx">
+      <Filter>02. Resource\02. Shader\01. HLSL\5. Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\Shader\HDR.fx">
+      <Filter>02. Resource\02. Shader\01. HLSL\1. PostProcessing</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

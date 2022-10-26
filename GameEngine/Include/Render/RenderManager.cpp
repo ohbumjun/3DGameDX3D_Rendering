@@ -285,7 +285,18 @@ bool CRenderManager::Init()
 	FinalScreenTarget->SetScale(Vector3(100.f, 100.f, 1.f));
 	FinalScreenTarget->SetDebugRender(true);
 
+	// HDR
+	// CSharedPtr<CRenderTarget> m_MiddleLuminanceTarget;
+	if (!CResourceManager::GetInst()->CreateTarget("MiddleLumTarget",
+		RS.Width, RS.Height, DXGI_FORMAT_R32G32B32A32_FLOAT))
+		return false;
 
+	m_MiddleLuminanceTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("MiddleLumTarget");
+	m_MiddleLuminanceTarget->SetPos(Vector3(600.f, 0.f, 0.f));
+	m_MiddleLuminanceTarget->SetScale(Vector3(300.f, 300.f, 1.f));
+	m_MiddleLuminanceTarget->SetDebugRender(true);
+
+	// Shadow
 	if (!CResourceManager::GetInst()->CreateTarget("ShadowMap",
 		(unsigned int)SHADOWMAP_WIDTH, (unsigned int)SHADOWMAP_HEIGHT,
 		DXGI_FORMAT_R32G32B32A32_FLOAT,

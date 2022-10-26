@@ -120,8 +120,11 @@
     <ClCompile Include="Resource\Shader\ConstantBufferBase.cpp" />
     <ClCompile Include="Resource\Shader\DecalDebugShader.cpp" />
     <ClCompile Include="Resource\Shader\DecalShader.cpp" />
+    <ClCompile Include="Resource\Shader\FirstHDRDownScaleCBuffer.cpp" />
     <ClCompile Include="Resource\Shader\GlobalConstantBuffer.cpp" />
     <ClCompile Include="Resource\Shader\GraphicShader.cpp" />
+    <ClCompile Include="Resource\Shader\HDRDownScaleFirstPass.cpp" />
+    <ClCompile Include="Resource\Shader\HDRDownScaleSecondPass.cpp" />
     <ClCompile Include="Resource\Shader\InstancingCBuffer.cpp" />
     <ClCompile Include="Resource\Shader\LandScapeConstantBuffer.cpp" />
     <ClCompile Include="Resource\Shader\LandScapeShader.cpp" />
@@ -141,6 +144,7 @@
     <ClCompile Include="Resource\Shader\ProgressBarConstantBuffer.cpp" />
     <ClCompile Include="Resource\Shader\ProgressBarShader.cpp" />
     <ClCompile Include="Resource\Shader\RenderTargetShader.cpp" />
+    <ClCompile Include="Resource\Shader\SecondHDRDownScale.cpp" />
     <ClCompile Include="Resource\Shader\Shader.cpp" />
     <ClCompile Include="Resource\Shader\ShaderManager.cpp" />
     <ClCompile Include="Resource\Shader\ShadowCBuffer.cpp" />
@@ -299,8 +303,11 @@
     <ClInclude Include="Resource\Shader\ConstantBufferBase.h" />
     <ClInclude Include="Resource\Shader\DecalDebugShader.h" />
     <ClInclude Include="Resource\Shader\DecalShader.h" />
+    <ClInclude Include="Resource\Shader\FirstHDRDownScaleCBuffer.h" />
     <ClInclude Include="Resource\Shader\GlobalConstantBuffer.h" />
     <ClInclude Include="Resource\Shader\GraphicShader.h" />
+    <ClInclude Include="Resource\Shader\HDRDownScaleFirstPass.h" />
+    <ClInclude Include="Resource\Shader\HDRDownScaleSecondPass.h" />
     <ClInclude Include="Resource\Shader\InstancingCBuffer.h" />
     <ClInclude Include="Resource\Shader\LandScapeConstantBuffer.h" />
     <ClInclude Include="Resource\Shader\LandScapeShader.h" />
@@ -320,6 +327,7 @@
     <ClInclude Include="Resource\Shader\ProgressBarConstantBuffer.h" />
     <ClInclude Include="Resource\Shader\ProgressBarShader.h" />
     <ClInclude Include="Resource\Shader\RenderTargetShader.h" />
+    <ClInclude Include="Resource\Shader\SecondHDRDownScale.h" />
     <ClInclude Include="Resource\Shader\Shader.h" />
     <ClInclude Include="Resource\Shader\ShaderManager.h" />
     <ClInclude Include="Resource\Shader\ShadowCBuffer.h" />
@@ -443,6 +451,14 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">DecalVS</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\Shader\HDR.fx">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">DownScaleFirstPass</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">DownScaleFirstPass</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>

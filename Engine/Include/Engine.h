@@ -28,6 +28,11 @@ private:
 public:
 	void SetMouseState(Mouse_State State);
 
+	Resolution GetResolution() const
+	{
+		return m_RS;
+	}
+
 	bool IsPickingLayerShowEnable() const
 	{
 		return m_ShowPickingLayer;

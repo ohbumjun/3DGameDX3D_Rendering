@@ -387,6 +387,13 @@ struct WaterCBuffer
 	float Empty;
 };
 
+struct FirstHDRDownScaleCBuffer
+{
+	Vector2 FRes; // 백버퍼의 높이와 너비를 4로 나눈 값
+	unsigned int FDomain; // 백퍼퍼와 높이와 너비를 곱한 후 16으로 나눈 값
+	unsigned int FGroupSize; // 백버퍼의 높이와 너비를 곱한 후, 16으로 나눈 다음 1024를 곱한 값
+};
+
 struct	ParticleCBuffer
 {
 	unsigned int	SpawnEnable;	// 현재 파티클 생성 여부

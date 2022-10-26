@@ -101,6 +101,8 @@ private:
 	std::vector<CSharedPtr<CRenderTarget>>	m_vecLightBuffer;
 
 	// HDR
+	CSharedPtr<CRenderTarget> m_MiddleLuminanceTarget;          // 휘도값 계산 시 중간값 저장하는 역할 
+	// CSharedPtr<CRenderTarget> m_ShadowMapInstancingShader; // 
 
 	// Shadow
 	bool	m_Shadow;

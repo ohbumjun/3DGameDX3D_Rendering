@@ -26,11 +26,14 @@
 #include "Standard3DInstancingShader.h"
 #include "ShadowMapShader.h"
 #include "ShadowMapInstancingShader.h"
+#include "HDRDownScaleFirstPass.h"
 
 // Constant Buffer
 #include "ShadowCBuffer.h"
 #include "ConstantBuffer.h"
 #include "LightFowardConstantBuffer.h"
+#include "FirstHDRDownScaleCBuffer.h"
+#include "HDRDownScaleSecondPass.h"
 
 
 CShaderManager::CShaderManager()
@@ -95,8 +98,10 @@ bool CShaderManager::Init()
 		return false;
 	if (!CreateShader<CWaterShader>("WaterShader"))
 		return false;
-
-
+	if (!CreateShader<CHDRDownScaleFirstPass>("HDRDownScaleFirstPass"))
+		return false;
+	if (!CreateShader<CHDRDownScaleSecondPass>("HDRDownScaleSecondPass"))
+		return false;
 
 
 	// =================== 상수버퍼 ===================
@@ -153,6 +158,11 @@ bool CShaderManager::Init()
 
 	CreateConstantBuffer("LightFowardCBuffer", sizeof(LightFowardCBuffer), 8,
 		(int)Buffer_Shader_Type::Graphic);
+
+	CreateConstantBuffer("FirstHDRDownScaleCBuffer", sizeof(FirstHDRDownScaleCBuffer), 7,
+		(int)Buffer_Shader_Type::Graphic);
+
+	
 
 	return true;
 }
