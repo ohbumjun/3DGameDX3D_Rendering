@@ -112,6 +112,8 @@ bool CRenderManager::Init()
 
 	m_HDR = new CHDR;
 
+	m_HDR->Init();
+
 	// 기본 레이어 생성
 	RenderLayer* Layer = new RenderLayer;
 	Layer->Name = "Back";

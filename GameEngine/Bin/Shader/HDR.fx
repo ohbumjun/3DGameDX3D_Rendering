@@ -14,7 +14,7 @@ cbuffer FirstHDRDownScaleCBuffer : register(b7)
 // Render Target 만들어준 것 넘겨줘야 한다.(Lighting 끝난 Final Target 을 넘겨줘야 하는건가?)
 Texture2D HDRTex : register(t21);
 
-RWStructuredBuffer<float>    AverageLumFinalUAV : register(u15);  // 읽기, 쓰기 둘다 가능
+RWStructuredBuffer<float>    AverageLumFinalUAV : register(u5);  // 읽기, 쓰기 둘다 가능
 
 // 휘도 계산을 위한 상수 
 static const float4 LUM_FACTOR = float4(0.299, 0.587, 0.114, 0);

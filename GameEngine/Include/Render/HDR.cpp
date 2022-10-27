@@ -25,7 +25,7 @@ bool CHDR::Init()
 	// Count * sizeof(float) == 4 * Total Back Buffer Pixel  / (16 * 1024);
 	int Count = 1280 * 720 / (16 * 1024);
 
-	if (!m_MiddleLumBuffer->Init("MiddleLumBuffer", sizeof(float), Count, 15, false, (int)Buffer_Shader_Type::Compute))
+	if (!m_MiddleLumBuffer->Init("MiddleLumBuffer", sizeof(float), Count, 5, false, (int)Buffer_Shader_Type::Compute))
 	{
 		SAFE_DELETE(m_MiddleLumBuffer);
 		assert(false);
