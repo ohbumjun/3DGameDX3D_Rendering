@@ -101,6 +101,7 @@ private:
 	std::vector<CSharedPtr<CRenderTarget>>	m_vecLightBuffer;
 
 	// HDR
+	class CHDR* m_HDR;
 	CSharedPtr<CRenderTarget> m_MiddleLuminanceTarget;          // 휘도값 계산 시 중간값 저장하는 역할 
 	// CSharedPtr<CRenderTarget> m_ShadowMapInstancingShader; // 
 
@@ -149,6 +150,7 @@ private:
 	void RenderTransparentAndWater();
 	void RenderColliderComponents();
 	void RenderCullingLayer();
+	void RenderHDR();
 
 
 	// Render State

@@ -1,18 +1,20 @@
 #include "ShaderInfo.fx"
 
+// 1. Lighting 먼저
+// 2. luminance calculation
+// 3. tone-mapping
 
 cbuffer FirstHDRDownScaleCBuffer : register(b7)
 {
-	float2 g_Res;  // 백버퍼의 높이와 너비를 4로 나눈 값  (너비 -> 높이 순서로 )
+	uint2 g_Res;  // 백버퍼의 높이와 너비를 4로 나눈 값  (너비 -> 높이 순서로 )
 	uint   g_Domain;  // 백퍼퍼와 높이와 너비를 곱한 후 16으로 나눈 값
 	uint   g_GroupSize; // 백버퍼의 높이와 너비를 곱한 후, 16으로 나눈 다음 1024를 곱한 값
 };
 
-// Render Target 만들어준 것 넘겨줘야 한다.
-Texture2D HDRTex : register(t81);
+// Render Target 만들어준 것 넘겨줘야 한다.(Lighting 끝난 Final Target 을 넘겨줘야 하는건가?)
+Texture2D HDRTex : register(t21);
 
-StructuredBuffer<float>		    AverageValues1DSRV	: register(t35);// 읽기 전용
-RWStructuredBuffer<float>    AverageLumFinalUAV : register(u36);  // 읽기, 쓰기 둘다 가능
+RWStructuredBuffer<float>    AverageLumFinalUAV : register(u15);  // 읽기, 쓰기 둘다 가능
 
 // 휘도 계산을 위한 상수 
 static const float4 LUM_FACTOR = float4(0.299, 0.587, 0.114, 0);
@@ -124,7 +126,7 @@ void DownScale4to1(uint dispatchThreadId, uint groupThreadId,
 	}
 }
 
-// 이렇게 구한 값은 셰이더 엔트리 포인트에 대입된다 -> 
+// 이렇게 구한 값은 셰이더 엔트리 포인트에 대입된다 
 [numthreads(1024, 1, 1)]
 void DownScaleFirstPass(uint3 groupId : SV_GroupID, // dispatch 호출의 전체 쓰레드 그룹 중에서, 현재 스레드가 속한 그룹 3차원 식별자 
 	uint3 dispatchThreadId : SV_DispatchThreadID,      // 전체 dispatch 안에서의 현재 쓰레드의 3차원 식별자 (쓰레드의 고유 ID 라고 할 수 있다)
@@ -158,6 +160,8 @@ void DownScaleFirstPass(uint3 groupId : SV_GroupID, // dispatch 호출의 전체 쓰레
 // 2번째 Pass
 // 공유 메모리 그룹에 중간 값 저장
 groupshared float SharedAvgFinal[MAX_GROUPS];
+
+StructuredBuffer<float>		    AverageValues1DSRV	: register(t25); // 읽기 전용
 
 /// 첫 번째 컴퓨트 셰이더의 실행이 완료되면 동일한 상수 버퍼를 사용한 두번째 컴퓨트 셰이더를 실행한다
 // 중간 값 휘도 SRV와 평균 휘도 UAV 값을 지정해 사용한다

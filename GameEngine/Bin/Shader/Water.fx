@@ -43,7 +43,7 @@ cbuffer Water : register(b9)
     float2 g_WaterEmpty;
 };
 
-Texture2DMS<float4> g_FinalRenderTarget : register(t21);
+// Texture2DMS<float4> g_FinalRenderTarget : register(t21);
 
 Vertex3DOutput WaterVS(Vertex3D input)
 {
@@ -137,6 +137,7 @@ PSOutput_Single WaterPS(Vertex3DOutput input)
 
     /* Foward 적용하기 
     */
+
     LightInfo Info;
     LightResult LAcc;
     LightResult LResult;
@@ -160,8 +161,8 @@ PSOutput_Single WaterPS(Vertex3DOutput input)
 
 
     // BaseTextureColor.rgb 색상도     ComputeLightFromStructuredBuffer 에서 같이 계산할 것이다.
-   // output.Color.rgb = BaseTextureColor.rgb * LAcc.Dif.rgb + LAcc.Amb.rgb + LAcc.Spc.rgb + LAcc.Emv.rgb;
-    output.Color.rgb = BaseTextureColor.rgb * LAcc.Dif.rgb;
+    output.Color.rgb = BaseTextureColor.rgb * LAcc.Dif.rgb + LAcc.Amb.rgb + LAcc.Spc.rgb + LAcc.Emv.rgb;
+    // output.Color.rgb = BaseTextureColor.rgb * LAcc.Dif.rgb;
 
     // Rim
     // Frenel => 시야 방향 벡터와, 대상의 노멀 방향 벡터의 관계 이용
@@ -173,14 +174,12 @@ PSOutput_Single WaterPS(Vertex3DOutput input)
     float fresnel = pow(1 - rim, 3.f);
     // float fresnel = 1 - pow(rim, 2) * 0.95f;
 
- 
-
     // 알파값 세팅
     // float4 BaseTextureColor = g_BaseTexture.Sample(g_BaseSmp, input.UV.xy);
     // BaseTextureColor.rgb = BaseTextureColor.rgb * g_MtrlBaseColor.rgb;
 
     // output.Color.a = BaseTextureColor.a * g_MtrlOpacity;
-    output.Color.a = 1.f;
+    output.Color.a = fresnel;
 
     return output;
 }

@@ -17,6 +17,7 @@
 #include "../Resource/Shader/ConstantBuffer.h"
 #include "../Component/PaperBurnComponent.h"
 #include "../Resource/Shader/ShadowCBuffer.h"
+#include "../Render/HDR.h"
 
 DEFINITION_SINGLE(CRenderManager)
 
@@ -46,6 +47,7 @@ CRenderManager::~CRenderManager()
 
 	SAFE_DELETE(m_Standard2DCBuffer);
 	SAFE_DELETE(m_RenderStateManager);
+	SAFE_DELETE(m_HDR);
 }
 
 void CRenderManager::AddRenderList(CSceneComponent* Component)
@@ -107,6 +109,8 @@ bool CRenderManager::Init()
 	m_Standard2DCBuffer = new CStandard2DConstantBuffer;
 
 	m_Standard2DCBuffer->Init();
+
+	m_HDR = new CHDR;
 
 	// 기본 레이어 생성
 	RenderLayer* Layer = new RenderLayer;
@@ -519,6 +523,9 @@ void CRenderManager::Render(float DeltaTime)
 	{
 		(*iter)->Render();
 	}
+
+	// HDR + Tone Mapping 을 진행한다.
+	RenderHDR();
 
 	// Collider 등 Debug 시 Light 적용과 별도로 Render 해줄 녀석들 출력하기 
 	RenderColliderComponents();
@@ -943,7 +950,6 @@ void CRenderManager::RenderFinalScreen()
 
 void CRenderManager::RenderTransparentAndWater()
 {
-
 	// 알파 소팅 적용 -> 뒤에서부터 앞으로 그린다.
 	if (m_RenderLayerList[(int)RenderLayerIdx::Transparent]->RenderList.size() > 1)
 	{
@@ -956,10 +962,8 @@ void CRenderManager::RenderTransparentAndWater()
 	}
 
 	// 반투명 물체들이 그려진 Render Target 정보를 넘겨준다.
-	CRenderTarget* FinalScreenTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("FinalScreen");
-
-	// FinalScreenTarget->SetTarget();
-	FinalScreenTarget->SetTargetShader(21);
+	// CRenderTarget* FinalScreenTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("FinalScreen");
+	// FinalScreenTarget->SetTargetShader(21);
 
 	// 알파 블렌드 적용
 	m_AlphaBlend->SetState();
@@ -997,6 +1001,19 @@ void CRenderManager::RenderTransparentAndWater()
 
 	m_AlphaBlend->ResetState();
 
+	// FinalScreenTarget->ResetTargetShader(21);
+}
+
+void CRenderManager::RenderHDR()
+{
+	// Lighting 이 끝난 Final Target 정보를 가지고 온다.
+	CRenderTarget* FinalScreenTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("FinalScreen");
+	FinalScreenTarget->SetTargetShader(21);
+
+	m_HDR->RenderFirstDownScale();
+
+	m_HDR->RenderSecondDownScale();
+
 	FinalScreenTarget->ResetTargetShader(21);
 }
 
@@ -1028,6 +1045,7 @@ void CRenderManager::RenderCullingLayer()
 		(*iter)->Render();
 	}
 }
+
 
 void CRenderManager::SetBlendFactor(const std::string& Name, float r, float g,
 	float b, float a)

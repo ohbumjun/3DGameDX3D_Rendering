@@ -6,6 +6,7 @@
 
 class CHDR
 {
+	friend class CRenderManager;
 	// 2개의 버퍼
 	// 2개의 상수 버퍼
 	// 2개의 컴퓨터 셰이더
@@ -16,7 +17,8 @@ protected:
 
 public :
 	bool Init();
-	void RenderSetting();
+	void RenderFirstDownScale();
+	void RenderSecondDownScale();
 protected :
 	// HDR을 구현하기 위해서는 
 	// 1) ShaderResourceView와 UnorderedAccessView를 만들어주기 위한 버퍼2개
