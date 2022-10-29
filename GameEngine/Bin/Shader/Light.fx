@@ -102,10 +102,6 @@ LightResult ComputeLight(float3 Pos, float3 Normal, float4 MaterialColor)
     return result;
 }
 
-
-
-
-
 VS_OUTPUT_LIGHTACC LightAccVS(uint VertexID : SV_VertexID)
 {
     VS_OUTPUT_LIGHTACC output = (VS_OUTPUT_LIGHTACC) 0;

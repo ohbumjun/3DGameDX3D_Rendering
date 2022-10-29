@@ -19,6 +19,7 @@ public :
 	bool Init();
 	void RenderFirstDownScale();
 	void RenderSecondDownScale();
+	void FinalToneMapping();
 protected :
 	// HDR을 구현하기 위해서는 
 	// 1) ShaderResourceView와 UnorderedAccessView를 만들어주기 위한 버퍼2개
@@ -32,8 +33,10 @@ protected :
 
 	// 상수 버퍼 2개 
 	class CFirstHDRDownScaleCBuffer* m_DownScaleCBuffer;
+	class CToneMappingCBuffer*         m_ToneMappingCBuffer;
 
-
+private :
+	int m_FirstDownScaleThreadGrpCnt;
 };
 
 // 원리

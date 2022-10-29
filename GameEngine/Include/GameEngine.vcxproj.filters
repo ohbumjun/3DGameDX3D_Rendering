@@ -852,13 +852,16 @@
     <ClCompile Include="Resource\Shader\FirstHDRDownScaleCBuffer.cpp">
       <Filter>02. Resource\02. Shader\03. ConstantBuffer\17. HDR</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\Shader\SecondHDRDownScale.cpp">
+    <ClCompile Include="Resource\Shader\ToneMappingCBuffer.cpp">
       <Filter>02. Resource\02. Shader\03. ConstantBuffer\17. HDR</Filter>
     </ClCompile>
     <ClCompile Include="Resource\Shader\HDRDownScaleFirstPass.cpp">
       <Filter>02. Resource\02. Shader\02. ShaderClass\17. HDR</Filter>
     </ClCompile>
     <ClCompile Include="Resource\Shader\HDRDownScaleSecondPass.cpp">
+      <Filter>02. Resource\02. Shader\02. ShaderClass\17. HDR</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\Shader\ToneMappingShader.cpp">
       <Filter>02. Resource\02. Shader\02. ShaderClass\17. HDR</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1406,7 +1409,7 @@
     <ClInclude Include="Render\HDR.h">
       <Filter>06. Render\02. PostProcessing</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\Shader\SecondHDRDownScale.h">
+    <ClInclude Include="Resource\Shader\ToneMappingCBuffer.h">
       <Filter>02. Resource\02. Shader\03. ConstantBuffer\17. HDR</Filter>
     </ClInclude>
     <ClInclude Include="Resource\Shader\FirstHDRDownScaleCBuffer.h">
@@ -1416,6 +1419,9 @@
       <Filter>02. Resource\02. Shader\02. ShaderClass\17. HDR</Filter>
     </ClInclude>
     <ClInclude Include="Resource\Shader\HDRDownScaleSecondPass.h">
+      <Filter>02. Resource\02. Shader\02. ShaderClass\17. HDR</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\Shader\ToneMappingShader.h">
       <Filter>02. Resource\02. Shader\02. ShaderClass\17. HDR</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1475,6 +1481,9 @@
       <Filter>02. Resource\02. Shader\01. HLSL\5. Shadow</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\Shader\HDR.fx">
+      <Filter>02. Resource\02. Shader\01. HLSL\1. PostProcessing</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\Shader\ToneMapping.fx">
       <Filter>02. Resource\02. Shader\01. HLSL\1. PostProcessing</Filter>
     </FxCompile>
   </ItemGroup>

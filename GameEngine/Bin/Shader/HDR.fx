@@ -12,9 +12,11 @@ cbuffer FirstHDRDownScaleCBuffer : register(b7)
 };
 
 // Render Target 만들어준 것 넘겨줘야 한다.(Lighting 끝난 Final Target 을 넘겨줘야 하는건가?)
-Texture2D HDRTex : register(t21);
+// Texture2D HDRTex : register(t21);
+Texture2DMS<float4> HDRTex : register(t21);
 
-RWStructuredBuffer<float>    AverageLumFinalUAV : register(u5);  // 읽기, 쓰기 둘다 가능
+// HDR.cpp 상에서 m_MiddleLumBuffer
+RWStructuredBuffer<float>    AverageLumUAV : register(u5);  // 읽기, 쓰기 둘다 가능
 
 // 휘도 계산을 위한 상수 
 static const float4 LUM_FACTOR = float4(0.299, 0.587, 0.114, 0);
@@ -39,7 +41,7 @@ float DownScale4x4(uint2 CurPixel, uint groupThreadId)
 	// 픽셀 결합 생략
 	if (CurPixel.y < g_Res.y)
 	{
-		int3 iFullResPos = int3(CurPixel * 4, 0);
+		uint2 iFullResPos = uint2(CurPixel * 4);
 		float4 vDownScaled = float4(0.f, 0.f, 0.f, 0.f);
 
 		[unroll]
@@ -48,13 +50,16 @@ float DownScale4x4(uint2 CurPixel, uint groupThreadId)
 			[unroll]
 			for (int j = 0; j < 4; ++j)
 			{
-				vDownScaled += HDRTex.Load(iFullResPos, int2(j, i));
+				vDownScaled += HDRTex.Load(iFullResPos, 0, int2(j, i));
 			}
 		}
 
 		vDownScaled /= 16;
 
 		// 픽셀별 휘도 값 계산
+		// 첫번째 DownScale 이 끝나면, 휘도 인자를 통해 
+		// 픽셀 색상을 해당하는 휘도값으로 변환한다.
+		// 이 과정은 매우 중요하다. 얻어진 이미지를 다른 후처리 과정에서 사용하기 때문이다.
 		avgLum = dot(vDownScaled, LUM_FACTOR);
 
 		// 공유 메모리에 결과 기록
@@ -67,8 +72,12 @@ float DownScale4x4(uint2 CurPixel, uint groupThreadId)
 	return avgLum;
 }
 
-
+// 각 쓰레드에서 계산된 휘도값을 사용해서 계속 1/4씩 줄여나가는 과정을 반복한다.
 // 위에서 구한 값을 4개의 값으로 다운스케일한다
+// 각 과정에서 (DownScale4to1 포함) 3/4 의 쓰레드는 다운스케일 연산을 수행하지 않고
+// 남은 쓰레드가 해당 쓰레드의 값을 합하여 저장한다.
+// 이 과정이 끝나면 다음 과정이 수행되기 전에 쓰레드를 동기화 한다.
+// 왜냐하면 모든 쓰레드 그룹이 1024개의 픽셀을 포함하지 않을 수도 있기 때문이다.
 float DownScale1024to4(uint dispachThreadId, uint groupThreadId,
 	float avgLum)
 {
@@ -80,6 +89,9 @@ float DownScale1024to4(uint dispachThreadId, uint groupThreadId,
 		if (groupThreadId % iGroupSize == 0)
 		{
 			float fStepAvgLum = avgLum;
+
+			// g_Domain = (1280 * 720) / 16 = 57600
+			// dispatchThreadID 최대범위 = 1024 * 57 = 58368 (넘어서는 녀석은 평균으로)
 
 			fStepAvgLum += dispachThreadId + iStep1 < g_Domain ?
 				SharedPositions[groupThreadId + iStep1] : avgLum;
@@ -121,8 +133,10 @@ void DownScale4to1(uint dispatchThreadId, uint groupThreadId,
 
 		fFinalAvgLum /= 1024.f;
 
+		// 쓰레드 그룹이 각각 모든 픽셀에 대해 다운 스케일을 완료하면
+		// 해당 값들의 평균을 이용하여 2번째 계산 셰이더를 실행한다.
 		// 최종 값을 ID UAV에 기록 후 다음 과정으로
-		AverageLumFinalUAV[groupId] = fFinalAvgLum;
+		AverageLumUAV[groupId] = fFinalAvgLum;
 	}
 }
 
@@ -132,8 +146,7 @@ void DownScaleFirstPass(uint3 groupId : SV_GroupID, // dispatch 호출의 전체 쓰레
 	uint3 dispatchThreadId : SV_DispatchThreadID,      // 전체 dispatch 안에서의 현재 쓰레드의 3차원 식별자 (쓰레드의 고유 ID 라고 할 수 있다)
 	uint3 groupThreadId : SV_GroupThreadID)             // 현재 스레드가 속한 스레드 그룹 안에서의 Idx
 {
-	uint2 vCurPixel = uint2(dispatchThreadId.x % g_Res.x,
-		dispatchThreadId.x / g_Res.x);
+	uint2 vCurPixel = uint2(dispatchThreadId.x % g_Res.x, dispatchThreadId.x / g_Res.x);
 
 	// 16 픽셀 그룹을 하나의 픽셀로 줄여 공유 메모리에 저장
 	float favgLum = DownScale4x4(vCurPixel, groupThreadId.x);
@@ -161,11 +174,16 @@ void DownScaleFirstPass(uint3 groupId : SV_GroupID, // dispatch 호출의 전체 쓰레
 // 공유 메모리 그룹에 중간 값 저장
 groupshared float SharedAvgFinal[MAX_GROUPS];
 
-StructuredBuffer<float>		    AverageValues1DSRV	: register(t25); // 읽기 전용
+// HDR.cpp 상에서 m_MeanLumBuffer
+RWStructuredBuffer<float>    AverageLumFinalUAV : register(u6);  // 읽기, 쓰기 둘다 가능
 
-/// 첫 번째 컴퓨트 셰이더의 실행이 완료되면 동일한 상수 버퍼를 사용한 두번째 컴퓨트 셰이더를 실행한다
+// HDR.cpp 상에서 m_MiddleLumBuffer
+StructuredBuffer<float>		    AverageValues1DSRV	: register(t15); // 읽기 전용
+
+// 첫 번째 컴퓨트 셰이더의 실행이 완료되면 동일한 상수 버퍼를 사용한 두번째 컴퓨트 셰이더를 실행한다
 // 중간 값 휘도 SRV와 평균 휘도 UAV 값을 지정해 사용한다
-// 최종적으로 평균 휘도값을 구해서 사용할 것이다.
+// 즉, 첫번째 셰이더에서 넘어온 중간 값을 다시 다운스케일 하여 최종 평균 휘도값을 구한다.
+// 1개의 쓰레드 그룹만 사용해도 된다.
 [numthreads(MAX_GROUPS, 1, 1)]
 void DownScaleSecondPass(uint3 groupId : SV_GroupID,
 	uint3 groupThreadId : SV_GroupThreadID,
@@ -223,6 +241,12 @@ void DownScaleSecondPass(uint3 groupId : SV_GroupID,
 
 		fFinalLumValue /= 64.f;
 
+		// 적응 휘도 적용
+
+
 		AverageLumFinalUAV[0] = max(fFinalLumValue, 0.0001);
 	}
 }
+
+// Tone Mapping
+// - LDR 값을 출력하는 LDR 렌더링 타겟을 설정해야 한다.

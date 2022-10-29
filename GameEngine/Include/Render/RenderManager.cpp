@@ -292,15 +292,14 @@ bool CRenderManager::Init()
 	FinalScreenTarget->SetDebugRender(true);
 
 	// HDR
-	// CSharedPtr<CRenderTarget> m_MiddleLuminanceTarget;
-	if (!CResourceManager::GetInst()->CreateTarget("MiddleLumTarget",
+	if (!CResourceManager::GetInst()->CreateTarget("LDRTarget",
 		RS.Width, RS.Height, DXGI_FORMAT_R32G32B32A32_FLOAT))
 		return false;
 
-	m_MiddleLuminanceTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("MiddleLumTarget");
-	m_MiddleLuminanceTarget->SetPos(Vector3(600.f, 0.f, 0.f));
-	m_MiddleLuminanceTarget->SetScale(Vector3(300.f, 300.f, 1.f));
-	m_MiddleLuminanceTarget->SetDebugRender(true);
+	m_LDRToneMappingTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("LDRTarget");
+	m_LDRToneMappingTarget->SetPos(Vector3(600.f, 0.f, 0.f));
+	m_LDRToneMappingTarget->SetScale(Vector3(300.f, 300.f, 1.f));
+	m_LDRToneMappingTarget->SetDebugRender(true);
 
 	// Shadow
 	if (!CResourceManager::GetInst()->CreateTarget("ShadowMap",
@@ -319,7 +318,7 @@ bool CRenderManager::Init()
 	m_Standard3DInstancingShader = CResourceManager::GetInst()->FindShader("Standard3DInstancingShader");
 	m_ShadowMapShader = CResourceManager::GetInst()->FindShader("ShadowMapShader");
 	m_ShadowMapInstancingShader = CResourceManager::GetInst()->FindShader("ShadowMapInstancingShader");
-
+	m_ToneMappingShader = CResourceManager::GetInst()->FindShader("ToneMappingShader");
 	m_ShadowCBuffer = new CShadowCBuffer;
 
 	m_ShadowCBuffer->Init();
@@ -1008,15 +1007,44 @@ void CRenderManager::RenderTransparentAndWater()
 
 void CRenderManager::RenderHDR()
 {
+	// 1단계 : 2번의 Down Scale 과정을 통해서 평균 휘도 값을 계산한다.
+	
 	// Lighting 이 끝난 Final Target 정보를 가지고 온다.
 	CRenderTarget* FinalScreenTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("FinalScreen");
 	FinalScreenTarget->SetTargetShader(21);
+	FinalScreenTarget->ResetTargetShader(21);
 
 	m_HDR->RenderFirstDownScale();
 
 	m_HDR->RenderSecondDownScale();
 
+
+	// 2단계 : Tone Mapping 을 적용한다.
+	// - LDR 값을 출력하는 풀 스크린 쿼드 렌더링
+	// - 즉, 출력값을 기존 Back Buffer 가 아니라, 새로운 렌더 타겟에 설정
+	m_LDRToneMappingTarget->SetTarget();
+
+	// 다시 한번 Lighting 이 끝난 Final Target 정보를 넘겨준다.
+	FinalScreenTarget->SetTargetShader(21);
+
+	m_ToneMappingShader->SetShader();
+
+	// 깊이 버퍼 세팅 ?
+
+	// Null Buffer 출력
+	UINT Offset = 0;
+	CDevice::GetInst()->GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	CDevice::GetInst()->GetContext()->IASetVertexBuffers(0, 0, nullptr, nullptr, &Offset);
+	CDevice::GetInst()->GetContext()->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
+
+	CDevice::GetInst()->GetContext()->Draw(4, 0);
+
+	m_HDR->FinalToneMapping();
+
 	FinalScreenTarget->ResetTargetShader(21);
+	
+	m_LDRToneMappingTarget->ResetTarget();
+
 }
 
 void CRenderManager::RenderColliderComponents()

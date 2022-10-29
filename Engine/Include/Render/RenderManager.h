@@ -102,8 +102,8 @@ private:
 
 	// HDR
 	class CHDR* m_HDR;
-	CSharedPtr<CRenderTarget> m_MiddleLuminanceTarget;          // 휘도값 계산 시 중간값 저장하는 역할 
-	// CSharedPtr<CRenderTarget> m_ShadowMapInstancingShader; // 
+	CSharedPtr<CRenderTarget> m_LDRToneMappingTarget;          // 휘도값 계산 시 중간값 저장하는 역할 
+	CSharedPtr<class CShader> m_ToneMappingShader;
 
 	// Shadow
 	bool	m_Shadow;

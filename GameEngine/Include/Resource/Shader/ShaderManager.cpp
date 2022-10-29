@@ -27,13 +27,15 @@
 #include "ShadowMapShader.h"
 #include "ShadowMapInstancingShader.h"
 #include "HDRDownScaleFirstPass.h"
+#include "HDRDownScaleSecondPass.h"
+#include "ToneMappingShader.h"
 
 // Constant Buffer
 #include "ShadowCBuffer.h"
 #include "ConstantBuffer.h"
 #include "LightFowardConstantBuffer.h"
 #include "FirstHDRDownScaleCBuffer.h"
-#include "HDRDownScaleSecondPass.h"
+#include "ToneMappingCBuffer.h"
 
 
 CShaderManager::CShaderManager()
@@ -102,6 +104,8 @@ bool CShaderManager::Init()
 		return false;
 	if (!CreateShader<CHDRDownScaleSecondPass>("HDRDownScaleSecondPass"))
 		return false;
+	if (!CreateShader<CToneMappingShader>("ToneMappingShader"))
+		return false;
 
 
 	// =================== 상수버퍼 ===================
@@ -162,6 +166,8 @@ bool CShaderManager::Init()
 	CreateConstantBuffer("FirstHDRDownScaleCBuffer", sizeof(FirstHDRDownScaleCBuffer), 7,
 		(int)Buffer_Shader_Type::Graphic);
 
+	CreateConstantBuffer("ToneMappingCBuffer", sizeof(ToneMappingCBuffer), 7,
+		(int)Buffer_Shader_Type::Graphic);
 	
 
 	return true;
