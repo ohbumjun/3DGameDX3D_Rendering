@@ -2,8 +2,8 @@
 
 struct VS_TONEMAP_OUTPUT
 {
-    float4 Pos  : SV_Position; // vertex pos
-    float2 UV   : TEXCOORD0;
+    float4 Pos         : SV_POSITION; // vertex pos
+    float4 ProjPos   : POSITION;
 };
 
 // 중간 회색과 흰색 값은, 장면의 모습에 따라, 날씨에 따라 , 낮과 밤에 따라 다르게 설정해야 한다.
@@ -37,8 +37,8 @@ VS_TONEMAP_OUTPUT ToneMappingVS(uint VertexID : SV_VertexID)
 {
     VS_TONEMAP_OUTPUT output = (VS_TONEMAP_OUTPUT)0;
 
-    output.Pos = float4(g_NullPos[VertexID], 0.f, 1.f);
-    output.UV = g_NullUV[VertexID].xy;
+    output.ProjPos = float4(g_NullPos[VertexID], 0.f, 1.f);
+    output.Pos = output.ProjPos;
 
     return output;
 }
@@ -48,15 +48,21 @@ PSOutput_Single ToneMappingPS(VS_TONEMAP_OUTPUT Input)
 {
     PSOutput_Single output = (PSOutput_Single)0;
 
+    float2 UV = (float2) 0;
+    UV.x = Input.ProjPos.x / Input.ProjPos.w * 0.5f + 0.5f;
+    UV.y = Input.ProjPos.y / Input.ProjPos.w * -0.5f + 0.5f;
+
+    int2 TargetPos = (int2) 0;
+    TargetPos.x = (int)(UV.x * g_Resolution.x);
+    TargetPos.y = (int)(UV.y * g_Resolution.y);
+
     // 색상 샘플링 (HDR 색)
-    // float3 vColor = HDRTex.Sample(g_BaseSmp, Input.UV.xy).xyz;
-    // float3 vColor = HDRTex.Load(g_BaseSmp, Input.UV.xy).xyz;
-    float3 vColor = HDRTex.Load(Input.UV.xy, 0).xyz;
+    float4 vColor = HDRTex.Load(TargetPos, 0);
 
     // 톤 매핑(HDR 색을 LDR색으로 변환)
-    vColor = ToneMapping(vColor);
+    vColor.xyz = ToneMapping(vColor);
 
-    output.Color = float4(vColor, 1.f);
+    output.Color = vColor;
 
     // LDR 값 출력
     return output;

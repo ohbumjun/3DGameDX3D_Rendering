@@ -15,7 +15,8 @@ cbuffer FirstHDRDownScaleCBuffer : register(b7)
 // Texture2D HDRTex : register(t21);
 Texture2DMS<float4> HDRTex : register(t21);
 
-RWStructuredBuffer<float>    AverageLumFinalUAV : register(u5);  // 읽기, 쓰기 둘다 가능
+// HDR.cpp 상에서 m_MiddleLumBuffer
+RWStructuredBuffer<float>    AverageLumUAV : register(u5);  // 읽기, 쓰기 둘다 가능
 
 // 휘도 계산을 위한 상수 
 static const float4 LUM_FACTOR = float4(0.299, 0.587, 0.114, 0);
@@ -89,6 +90,9 @@ float DownScale1024to4(uint dispachThreadId, uint groupThreadId,
 		{
 			float fStepAvgLum = avgLum;
 
+			// g_Domain = (1280 * 720) / 16 = 57600
+			// dispatchThreadID 최대범위 = 1024 * 57 = 58368 (넘어서는 녀석은 평균으로)
+
 			fStepAvgLum += dispachThreadId + iStep1 < g_Domain ?
 				SharedPositions[groupThreadId + iStep1] : avgLum;
 
@@ -132,7 +136,7 @@ void DownScale4to1(uint dispatchThreadId, uint groupThreadId,
 		// 쓰레드 그룹이 각각 모든 픽셀에 대해 다운 스케일을 완료하면
 		// 해당 값들의 평균을 이용하여 2번째 계산 셰이더를 실행한다.
 		// 최종 값을 ID UAV에 기록 후 다음 과정으로
-		AverageLumFinalUAV[groupId] = fFinalAvgLum;
+		AverageLumUAV[groupId] = fFinalAvgLum;
 	}
 }
 
@@ -142,8 +146,7 @@ void DownScaleFirstPass(uint3 groupId : SV_GroupID, // dispatch 호출의 전체 쓰레
 	uint3 dispatchThreadId : SV_DispatchThreadID,      // 전체 dispatch 안에서의 현재 쓰레드의 3차원 식별자 (쓰레드의 고유 ID 라고 할 수 있다)
 	uint3 groupThreadId : SV_GroupThreadID)             // 현재 스레드가 속한 스레드 그룹 안에서의 Idx
 {
-	uint2 vCurPixel = uint2(dispatchThreadId.x % g_Res.x,
-		dispatchThreadId.x / g_Res.x);
+	uint2 vCurPixel = uint2(dispatchThreadId.x % g_Res.x, dispatchThreadId.x / g_Res.x);
 
 	// 16 픽셀 그룹을 하나의 픽셀로 줄여 공유 메모리에 저장
 	float favgLum = DownScale4x4(vCurPixel, groupThreadId.x);
@@ -171,6 +174,10 @@ void DownScaleFirstPass(uint3 groupId : SV_GroupID, // dispatch 호출의 전체 쓰레
 // 공유 메모리 그룹에 중간 값 저장
 groupshared float SharedAvgFinal[MAX_GROUPS];
 
+// HDR.cpp 상에서 m_MeanLumBuffer
+RWStructuredBuffer<float>    AverageLumFinalUAV : register(u6);  // 읽기, 쓰기 둘다 가능
+
+// HDR.cpp 상에서 m_MiddleLumBuffer
 StructuredBuffer<float>		    AverageValues1DSRV	: register(t15); // 읽기 전용
 
 // 첫 번째 컴퓨트 셰이더의 실행이 완료되면 동일한 상수 버퍼를 사용한 두번째 컴퓨트 셰이더를 실행한다

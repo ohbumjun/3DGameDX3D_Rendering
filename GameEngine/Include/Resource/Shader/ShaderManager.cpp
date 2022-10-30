@@ -166,7 +166,7 @@ bool CShaderManager::Init()
 	CreateConstantBuffer("FirstHDRDownScaleCBuffer", sizeof(FirstHDRDownScaleCBuffer), 7,
 		(int)Buffer_Shader_Type::Graphic);
 
-	CreateConstantBuffer("ToneMappingCBuffer", sizeof(ToneMappingCBuffer), 7,
+	CreateConstantBuffer("ToneMappingCBuffer", sizeof(ToneMappingCBuffer), 13,
 		(int)Buffer_Shader_Type::Graphic);
 	
 

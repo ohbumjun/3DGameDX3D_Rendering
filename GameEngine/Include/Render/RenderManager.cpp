@@ -1012,39 +1012,32 @@ void CRenderManager::RenderHDR()
 	// Lighting 이 끝난 Final Target 정보를 가지고 온다.
 	CRenderTarget* FinalScreenTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("FinalScreen");
 	FinalScreenTarget->SetTargetShader(21);
-	FinalScreenTarget->ResetTargetShader(21);
 
 	m_HDR->RenderFirstDownScale();
 
 	m_HDR->RenderSecondDownScale();
-
 
 	// 2단계 : Tone Mapping 을 적용한다.
 	// - LDR 값을 출력하는 풀 스크린 쿼드 렌더링
 	// - 즉, 출력값을 기존 Back Buffer 가 아니라, 새로운 렌더 타겟에 설정
 	m_LDRToneMappingTarget->SetTarget();
 
-	// 다시 한번 Lighting 이 끝난 Final Target 정보를 넘겨준다.
-	FinalScreenTarget->SetTargetShader(21);
-
 	m_ToneMappingShader->SetShader();
 
 	// 깊이 버퍼 세팅 ?
+	m_DepthDisable->SetState();
 
-	// Null Buffer 출력
-	UINT Offset = 0;
-	CDevice::GetInst()->GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	CDevice::GetInst()->GetContext()->IASetVertexBuffers(0, 0, nullptr, nullptr, &Offset);
-	CDevice::GetInst()->GetContext()->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
-
-	CDevice::GetInst()->GetContext()->Draw(4, 0);
+	m_AlphaBlend->SetState();
 
 	m_HDR->FinalToneMapping();
 
-	FinalScreenTarget->ResetTargetShader(21);
-	
+	m_AlphaBlend->ResetState();
+
+	m_DepthDisable->ResetState();
+
 	m_LDRToneMappingTarget->ResetTarget();
 
+	FinalScreenTarget->ResetTargetShader(21);
 }
 
 void CRenderManager::RenderColliderComponents()

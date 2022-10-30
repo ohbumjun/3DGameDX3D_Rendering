@@ -6,6 +6,7 @@
 #include "../Shader/HDRDownScaleFirstPass.h"
 #include "../Shader/HDRDownScaleSecondPass.h"
 #include "../Engine.h"
+#include "../Device.h"
 
 CHDR::CHDR()
 {
@@ -13,7 +14,7 @@ CHDR::CHDR()
 
 CHDR::~CHDR()
 {
-	SAFE_DELETE(m_MiddleLumBuffer);
+	SAFE_DELETE(m_MidDownScaleLumBuffer);
 	SAFE_DELETE(m_MeanLumBuffer);
 	SAFE_DELETE(m_DownScaleCBuffer);
 	SAFE_DELETE(m_ToneMappingCBuffer);
@@ -23,18 +24,19 @@ bool CHDR::Init()
 {
 	// First Pass 에서는 전체 화면의 픽셀들을 Group 으로 나눠서 Down Scale 할 때 사용한다.
 	// 중간 휘도 (휘도값을 계산할 때 중간값을 저장하는 역할)
-	m_MiddleLumBuffer = new CStructuredBuffer;
+	m_MidDownScaleLumBuffer = new CStructuredBuffer;
 	
 	// Count * sizeof(float) == 4 * Total Back Buffer Pixel  / (16 * 1024);
 	// int Count = 1280 * 720 / (16 * 1024);
 	Resolution RS = CEngine::GetInst()->GetResolution();
+	
+	unsigned int TotalPixelCnt = RS.Width * RS.Height;
+	m_FirstDownScaleThreadGrpCnt = (unsigned int)ceil((TotalPixelCnt / 16) / 1024);
 
-	m_FirstDownScaleThreadGrpCnt = ceil(((int)RS.Width * (int)RS.Height) / (16 * 1024));
-
-	if (!m_MiddleLumBuffer->Init("MiddleLumBuffer", sizeof(float), 
+	if (!m_MidDownScaleLumBuffer->Init("MiddleLumBuffer", sizeof(float),
 		m_FirstDownScaleThreadGrpCnt, 5, false, (int)Buffer_Shader_Type::Compute))
 	{
-		SAFE_DELETE(m_MiddleLumBuffer);
+		SAFE_DELETE(m_MidDownScaleLumBuffer);
 		assert(false);
 		return false;
 	}
@@ -44,15 +46,15 @@ bool CHDR::Init()
 	
 	// Second Pass 에서는 FirstPass 에서 나온 float 값 하나를 넣어준다.
 	if (!m_MeanLumBuffer->Init("MeanLumBuffer", sizeof(float), 1, 
-		6, false, (int)Buffer_Shader_Type::Compute))
+		6, false, (int)Buffer_Shader_Type::All))
 	{
 		SAFE_DELETE(m_MeanLumBuffer);
 		assert(false);
 		return false;
 	}
 
-	m_FirstPassUpdateShader = (CHDRDownScaleFirstPass*)CResourceManager::GetInst()->FindShader("HDRDownScaleFirstPass");
-	m_SecondPassUpdateShader = (CHDRDownScaleSecondPass*)CResourceManager::GetInst()->FindShader("HDRDownScaleSecondPass");
+	m_DownScaleFirstPassUpdateShader = (CHDRDownScaleFirstPass*)CResourceManager::GetInst()->FindShader("HDRDownScaleFirstPass");
+	m_DownScaleSecondPassUpdateShader = (CHDRDownScaleSecondPass*)CResourceManager::GetInst()->FindShader("HDRDownScaleSecondPass");
 
 	m_DownScaleCBuffer = new CFirstHDRDownScaleCBuffer;
 
@@ -77,12 +79,12 @@ void CHDR::RenderFirstDownScale()
 	m_DownScaleCBuffer->UpdateCBuffer();
 
 	// 쓰기 전용으로 넘겨준다.
-	m_MiddleLumBuffer->SetShader();
+	m_MidDownScaleLumBuffer->SetShader();
 
-	// m_FirstPassUpdateShader->Excute(1, 1, 1);
-	m_FirstPassUpdateShader->Excute(m_FirstDownScaleThreadGrpCnt, 1, 1);
+	m_DownScaleFirstPassUpdateShader->Excute(m_FirstDownScaleThreadGrpCnt, 1, 1);
 
-	m_MiddleLumBuffer->ResetShader();
+	// 혹시 모르니 나중에 빼주자 (Second Down Scale 에서)
+	m_MidDownScaleLumBuffer->ResetShader();
 }
 
 // SecondPass에서도 3번의 DownScale이 일어나는데
@@ -92,35 +94,42 @@ void CHDR::RenderFirstDownScale()
 // -> 최종적으로 평균 휘도 값을 구할 수 있다.
 void CHDR::RenderSecondDownScale()
 {
-	m_DownScaleCBuffer->UpdateCBuffer();
+	// First Pass 에서 해준 상태 
+	// m_DownScaleCBuffer->UpdateCBuffer();
 
 	// 쓰기 전용
 	m_MeanLumBuffer->SetShader();
 
 	// 중간 휘도 SRV : 읽기 전용으로 넘겨준다.
-	m_MiddleLumBuffer->SetShader(15, (int)Buffer_Shader_Type::Compute);
+	m_MidDownScaleLumBuffer->SetShader(15, (int)Buffer_Shader_Type::Compute);
 
 	// 평균 휘도 UAV
-	// m_MeanLumBuffer->SetShader();
 	// 2번째에서는 1개의 쓰레드 그룹만 사용하면 된다.
-	m_SecondPassUpdateShader->Excute(1, 1, 1);
+	m_DownScaleSecondPassUpdateShader->Excute(1, 1, 1);
 
-	m_MiddleLumBuffer->ResetShader(15, (int)Buffer_Shader_Type::Compute);
+	m_MidDownScaleLumBuffer->ResetShader(15, (int)Buffer_Shader_Type::Compute);
 
 	// 쓰기 전용
-	m_MeanLumBuffer->SetShader();
+	m_MeanLumBuffer->ResetShader();
 
-	// m_MeanLumBuffer->ResetShader();
 }
 
 void CHDR::FinalToneMapping()
 {
 	m_ToneMappingCBuffer->UpdateCBuffer();
 
-	// 중간 휘도 SRV : 읽기 전용으로 넘겨준다.
-	m_MiddleLumBuffer->SetShader(15, (int)Buffer_Shader_Type::Compute);
+	// 최종 SRV : 읽기 전용으로 넘겨준다.
+	m_MeanLumBuffer->SetShader(15, (int)Buffer_Shader_Type::Graphic);
 
-	m_MiddleLumBuffer->ResetShader(15, (int)Buffer_Shader_Type::Compute);
+	// Null Buffer 출력
+	UINT Offset = 0;
+	CDevice::GetInst()->GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	CDevice::GetInst()->GetContext()->IASetVertexBuffers(0, 0, nullptr, nullptr, &Offset);
+	CDevice::GetInst()->GetContext()->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
+
+	CDevice::GetInst()->GetContext()->Draw(4, 0);
+
+	m_MeanLumBuffer->ResetShader(15, (int)Buffer_Shader_Type::Graphic);
 
 }
 

@@ -26,13 +26,13 @@ bool CFirstHDRDownScaleCBuffer::Init()
 
 	Resolution RS = CEngine::GetInst()->GetResolution();
 
-	m_BufferData.FRes           = Vector2(RS.Width, RS.Height) / 4.f;
-	m_BufferData.FDomain     = (RS.Width * RS.Height) / 16.f; 
+	m_BufferData.FRes           = Vector2((float)RS.Width, (float)RS.Height) / 4.f;
+	m_BufferData.FDomain     = (RS.Width / 4.f) * (RS.Height / 4.f); 
 	m_BufferData.FGroupSize  = m_BufferData.FDomain * 1024;
 
 	SetConstantBuffer("FirstHDRDownScaleCBuffer");
 
-	return false;
+	return true;
 }
 
 void CFirstHDRDownScaleCBuffer::UpdateCBuffer()
