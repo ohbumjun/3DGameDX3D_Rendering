@@ -121,8 +121,8 @@ Texture2D g_NormalTexture : register(t1);
 Texture2D g_SpecularTexture : register(t2);
 Texture2D g_EmissiveTexture : register(t3);
 
-Texture2D<float4>		g_NoiseTexture	: register(t100);
-Texture2D				g_PaperBurnTexture	: register(t101);
+Texture2D<float4>		g_NoiseTexture	        : register(t100);
+Texture2D				    g_PaperBurnTexture	: register(t101);
 
 StructuredBuffer<float>	g_RandBuffer	: register(t90);
 

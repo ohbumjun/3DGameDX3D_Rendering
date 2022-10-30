@@ -1,4 +1,4 @@
-#include "ShaderInfo.fx"
+#include "PostProcessingInfo.fx"
 
 struct VS_TONEMAP_OUTPUT
 {
@@ -7,29 +7,47 @@ struct VS_TONEMAP_OUTPUT
 };
 
 // 중간 회색과 흰색 값은, 장면의 모습에 따라, 날씨에 따라 , 낮과 밤에 따라 다르게 설정해야 한다.
-cbuffer FinalPassConstants : register(s7)
+cbuffer FinalPassConstants : register(b13)
 {
-    float g_MiddleGrey;
-    float g_LumWhiteSqr;
+    uint g_MiddleGrey;
+    uint g_LumWhiteSqr;
     float2 g_FinalPassEmpty;
-}
-
-// 휘도 계산을 위한 상수 
-static const float4 LUM_FACTOR = float4(0.299, 0.587, 0.114, 0);
+};
 
 // Texture2D<float4> HDRTexture : register(t51);
-Texture2DMS<float4> HDRTex : register(t21);
-StructuredBuffer<float> AvgLum	: register(t15); // 읽기 전용
+StructuredBuffer<float> AvgLum	: register(t35); // 읽기 전용
 
-float3 ToneMapping(float3 vHDRColor)
+float4 ToneMapping(float3 vHDRColor)
 {
     // 현재 픽셀에 대한 휘도 스케일 계산
-    float fLScale = dot(vHDRColor, LUM_FACTOR);
-    fLScale *= g_MiddleGrey / AvgLum[0];
-    fLScale = (fLScale + fLScale * fLScale / g_LumWhiteSqr) / (1.f + fLScale);
+    // 중간 회색값
+    float LScale = dot(vHDRColor, LUM_FACTOR.xyz); // 이거는 문제 X
+
+    // fLScale *= g_MiddleGrey / AvgLum[0];
+    LScale *= g_MiddleGrey / AvgLum[0];
+
+    float FinalScale = (float)0.f;
+
+    // 분자 
+    float Numerator = LScale;
+    Numerator += (LScale * LScale) / (g_LumWhiteSqr * g_LumWhiteSqr);
+    // Numerator += (LScale * LScale) / (g_LumWhiteSqr * g_LumWhiteSqr);
+    
+    // 분모
+    float Denominator = 1.f + LScale;
+    FinalScale = Numerator / Denominator;
+
+    // 문제 1 : 상수 버퍼 값을 제대로 읽어오지 못한다. (해결 => 상수버퍼 형식을 uint 로 했어야 했는데 float 으로 해버렸었다)
+    // 문제 2 : AvgLum[0] 가 0 인 것 같다. 
+    // -> 2_1) 계산 셰이더에서 잘못 계산해주거나  
+    // - DownScaleBuffer 를 한번만 Update 해줘서 그런건가 ?
+    // => 이게 유력하다. 현재 거의 0이 나온다. (계산 셰이더 참고) 
+    // 2_2. 셰이더 리소스 뷰로 읽어오지 못하거나
 
     // 휘도 스케일을 픽셀 색상에 적용
-    return vHDRColor * fLScale;
+    return float4(vHDRColor * FinalScale, 1.f);
+    // return float4(vHDRColor * FinalScale, 1.f);
+    // return vHDRColor * 1;
 }
 
 
@@ -60,7 +78,7 @@ PSOutput_Single ToneMappingPS(VS_TONEMAP_OUTPUT Input)
     float4 vColor = HDRTex.Load(TargetPos, 0);
 
     // 톤 매핑(HDR 색을 LDR색으로 변환)
-    vColor.xyz = ToneMapping(vColor);
+    vColor = ToneMapping(vColor.xyz);
 
     output.Color = vColor;
 

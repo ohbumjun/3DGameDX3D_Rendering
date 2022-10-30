@@ -100,6 +100,9 @@ private:
 	std::vector<CSharedPtr<CRenderTarget>>	m_vecDecal;
 	std::vector<CSharedPtr<CRenderTarget>>	m_vecLightBuffer;
 
+	// Final Target
+	CSharedPtr<CRenderTarget>	m_FinalTarget;
+
 	// HDR
 	class CHDR* m_HDR;
 	CSharedPtr<CRenderTarget> m_LDRToneMappingTarget;          // 휘도값 계산 시 중간값 저장하는 역할 
@@ -141,8 +144,9 @@ public:
 
 
 private:
+	void RenderSkyBox();
 	void RenderShadowMap();
-	void RenderSkyBoxAndGBuffer();
+	void RenderGBuffer();
 	void RenderDecal();
 	void RenderLightAcc();
 	void RenderLightBlend();

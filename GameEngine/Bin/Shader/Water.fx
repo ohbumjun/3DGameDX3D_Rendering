@@ -179,7 +179,8 @@ PSOutput_Single WaterPS(Vertex3DOutput input)
     // 두 벡터가 이루는 각이 수직에 가까울 수록, 투과율이 감소하고
     // 반사율이 증가한다.
 
-    float rim = saturate(dot(normalize(FinalNormal), normalize(input.ViewPos * -1.f)));
+    // float rim = saturate(dot(normalize(FinalNormal), normalize(input.ViewPos * -1.f)));
+    float rim = saturate(dot(normalize(FinalNormal), normalize(input.ViewPos) * -1.f));
     float exponential = pow(1 - rim, 5);
     float fresnel = 0.3f + 0.7f * exponential;
     

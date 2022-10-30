@@ -1486,6 +1486,9 @@
     <FxCompile Include="..\Bin\Shader\ToneMapping.fx">
       <Filter>02. Resource\02. Shader\01. HLSL\1. PostProcessing</Filter>
     </FxCompile>
+    <FxCompile Include="..\Bin\Shader\PostProcessingInfo.fx">
+      <Filter>02. Resource\02. Shader\01. HLSL\1. PostProcessing</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resource\Texture\DirectXTex.inl">

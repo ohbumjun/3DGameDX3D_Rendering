@@ -34,7 +34,9 @@ bool CHDR::Init()
 	Resolution RS = CEngine::GetInst()->GetResolution();
 	
 	unsigned int TotalPixelCnt = RS.Width * RS.Height;
-	m_FirstDownScaleThreadGrpCnt = (unsigned int)ceil((TotalPixelCnt / 16) / 1024);
+	// m_FirstDownScaleThreadGrpCnt = (unsigned int)ceil((TotalPixelCnt / (16 * 1024));
+	m_FirstDownScaleThreadGrpCnt = TotalPixelCnt / (16 * 1024);
+	// m_FirstDownScaleThreadGrpCnt = TotalPixelCnt / (16 * 1024) + 1;
 
 	if (!m_MidDownScaleLumBuffer->Init("MiddleLumBuffer", sizeof(float),
 		m_FirstDownScaleThreadGrpCnt, 5, false, (int)Buffer_Shader_Type::Compute))
@@ -75,6 +77,9 @@ bool CHDR::Init()
 	if (!m_DownScaleCBuffer->Init())
 		return false;
 
+	// 변하지 않는 값이다. 처음 한번만 Update 해줄 것이다.
+	m_DownScaleCBuffer->UpdateCBuffer();
+
 	m_ToneMappingCBuffer = new CToneMappingCBuffer;
 
 	if (!m_ToneMappingCBuffer->Init())
@@ -90,7 +95,8 @@ bool CHDR::Init()
 // 3) 4 에서 1 로 Down Scale (4개의 값을 하나의 평균값으로 다운스케일)
 void CHDR::RenderFirstDownScale()
 {
-	m_DownScaleCBuffer->UpdateCBuffer();
+	// 변하지 않는 값이므로 처음 한번만 Update 한다.
+	// m_DownScaleCBuffer->UpdateCBuffer();
 
 	// 쓰기 전용으로 넘겨준다.
 	m_MidDownScaleLumBuffer->SetShader();
@@ -115,13 +121,13 @@ void CHDR::RenderSecondDownScale()
 	m_MeanLumBuffer->SetShader();
 
 	// 중간 휘도 SRV : 읽기 전용으로 넘겨준다.
-	m_MidDownScaleLumBuffer->SetShader(15, (int)Buffer_Shader_Type::Compute);
+	m_MidDownScaleLumBuffer->SetShader(75, (int)Buffer_Shader_Type::Compute);
 
 	// 평균 휘도 UAV
 	// 2번째에서는 1개의 쓰레드 그룹만 사용하면 된다.
 	m_DownScaleSecondPassUpdateShader->Excute(1, 1, 1);
 
-	m_MidDownScaleLumBuffer->ResetShader(15, (int)Buffer_Shader_Type::Compute);
+	m_MidDownScaleLumBuffer->ResetShader(75, (int)Buffer_Shader_Type::Compute);
 
 	// 쓰기 전용
 	m_MeanLumBuffer->ResetShader();
@@ -132,7 +138,7 @@ void CHDR::RenderFinalToneMapping()
 	m_ToneMappingCBuffer->UpdateCBuffer();
 
 	// 최종 SRV : 읽기 전용으로 넘겨준다.
-	m_MeanLumBuffer->SetShader(15, (int)Buffer_Shader_Type::Graphic);
+	m_MeanLumBuffer->SetShader(35, (int)Buffer_Shader_Type::All);
 
 	// Null Buffer 출력
 	UINT Offset = 0;
@@ -142,10 +148,10 @@ void CHDR::RenderFinalToneMapping()
 
 	CDevice::GetInst()->GetContext()->Draw(4, 0);
 
-	m_MeanLumBuffer->ResetShader(15, (int)Buffer_Shader_Type::Graphic);
+	m_MeanLumBuffer->ResetShader(35, (int)Buffer_Shader_Type::All);
 
-	// 이전 프레임 평균 휘도값 Update
-	UpdatePrevMeanLum();
+	// 이전 프레임 평균 휘도값 Update (적응 효과를 주기 위함이다.)
+	// UpdatePrevMeanLum();
 }
 
 void CHDR::UpdatePrevMeanLum()

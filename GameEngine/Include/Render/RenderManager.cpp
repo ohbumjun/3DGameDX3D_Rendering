@@ -286,10 +286,10 @@ bool CRenderManager::Init()
 		RS.Width, RS.Height, DXGI_FORMAT_R32G32B32A32_FLOAT))
 		return false;
 
-	CRenderTarget* FinalScreenTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("FinalScreen");
-	FinalScreenTarget->SetPos(Vector3(200.f, 0.f, 0.f));
-	FinalScreenTarget->SetScale(Vector3(100.f, 100.f, 1.f));
-	FinalScreenTarget->SetDebugRender(true);
+	m_FinalTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("FinalScreen");
+	m_FinalTarget->SetPos(Vector3(200.f, 0.f, 0.f));
+	m_FinalTarget->SetScale(Vector3(100.f, 100.f, 1.f));
+	m_FinalTarget->SetDebugRender(true);
 
 	// HDR
 	if (!CResourceManager::GetInst()->CreateTarget("LDRTarget",
@@ -298,7 +298,7 @@ bool CRenderManager::Init()
 
 	m_LDRToneMappingTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("LDRTarget");
 	m_LDRToneMappingTarget->SetPos(Vector3(600.f, 0.f, 0.f));
-	m_LDRToneMappingTarget->SetScale(Vector3(300.f, 300.f, 1.f));
+	m_LDRToneMappingTarget->SetScale(Vector3(200.f, 200.f, 1.f));
 	m_LDRToneMappingTarget->SetDebugRender(true);
 
 	// Shadow
@@ -453,10 +453,8 @@ void CRenderManager::Render(float DeltaTime)
 		}
 	}
 
-	// 환경맵 출력 => RenderSkyBox 함수를 통해서 GBuffer 에 그릴 것이다.
-	// CSharedPtr<CGameObject>	SkyObj = CSceneManager::GetInst()->GetScene()->GetSkyObject();
-	// SkyObj->Render();
-
+	// 하늘을 그린다.
+	RenderSkyBox();
 
 	// 인스턴싱 정보를 만든다.
 	RenderDefaultInstancingInfo();
@@ -465,7 +463,7 @@ void CRenderManager::Render(float DeltaTime)
 	RenderShadowMap();
 
 	// GBuffer를 만들어낸다.
-	RenderSkyBoxAndGBuffer();
+	RenderGBuffer();
 
 	// Decal을 그려낸다.
 	RenderDecal();
@@ -602,6 +600,20 @@ void CRenderManager::Render(float DeltaTime)
 	m_DepthDisable->ResetState();
 }
 
+
+void CRenderManager::RenderSkyBox()
+{
+	// FinalScreenTarget->ClearTarget();
+
+	m_FinalTarget->SetTarget();
+
+	// 환경맵 출력 => RenderSkyBox 함수를 통해서 Final Target 에 그린다 => HDR 상에서 휘도 계산시 포함되도록 한다.
+	CSharedPtr<CGameObject>	SkyObj = CSceneManager::GetInst()->GetScene()->GetSkyObject();
+	SkyObj->Render();
+
+	m_FinalTarget->ResetTarget();
+}
+
 void CRenderManager::RenderShadowMap()
 {
 	D3D11_VIEWPORT	VP = {};
@@ -653,7 +665,7 @@ void CRenderManager::RenderShadowMap()
 	CDevice::GetInst()->GetContext()->RSSetViewports(1, &PrevVP);
 }
 
-void CRenderManager::RenderSkyBoxAndGBuffer()
+void CRenderManager::RenderGBuffer()
 {
 	// 현재 백버퍼로 렌더타겟이 지정되어 있다.
 	// 이를 GBuffer 렌더타겟으로 교체해야 한다.
@@ -677,7 +689,6 @@ void CRenderManager::RenderSkyBoxAndGBuffer()
 
 	CDevice::GetInst()->GetContext()->OMSetRenderTargets((unsigned int)GBufferSize,
 		&vecTarget[0], PrevDepthTarget);
-
 
 	for (size_t i = 0; i <= (int)RenderLayerIdx::Default; ++i)
 	{
@@ -880,15 +891,10 @@ void CRenderManager::RenderLightAcc()
 
 void CRenderManager::RenderLightBlend()
 {
-	CRenderTarget* FinalScreenTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("FinalScreen");
+	// 이것을 해주게 되면, 위에서 그려준 Sky Box 가 안보이게 된다.
+	// m_FinalTarget->ClearTarget();
 
-	FinalScreenTarget->ClearTarget();
-
-	FinalScreenTarget->SetTarget(nullptr);
-
-	// 먼저 Back Buffer 를 그린다. -> 그 다음 
-	CSharedPtr<CGameObject>	SkyObj = CSceneManager::GetInst()->GetScene()->GetSkyObject();
-	SkyObj->Render();
+	m_FinalTarget->SetTarget(nullptr);
 
 	m_vecGBuffer[0]->SetTargetShader(14);
 	m_vecGBuffer[2]->SetTargetShader(16);
@@ -909,6 +915,7 @@ void CRenderManager::RenderLightBlend()
 
 	m_ShadowCBuffer->UpdateCBuffer();
 
+
 	UINT Offset = 0;
 	CDevice::GetInst()->GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	CDevice::GetInst()->GetContext()->IASetVertexBuffers(0, 0, nullptr, nullptr, &Offset);
@@ -925,14 +932,12 @@ void CRenderManager::RenderLightBlend()
 	m_vecLightBuffer[2]->ResetTargetShader(20);
 	m_ShadowMapTarget->ResetTargetShader(22);
 
-	FinalScreenTarget->ResetTarget();
+	m_FinalTarget->ResetTarget();
 }
 
 void CRenderManager::RenderFinalScreen()
 {
-	CRenderTarget* FinalScreenTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("FinalScreen");
-
-	FinalScreenTarget->SetTargetShader(21);
+	m_FinalTarget->SetTargetShader(21);
 
 	m_LightBlendRenderShader->SetShader();
 
@@ -947,7 +952,7 @@ void CRenderManager::RenderFinalScreen()
 
 	m_DepthDisable->ResetState();
 
-	FinalScreenTarget->ResetTargetShader(21);
+	m_FinalTarget->ResetTargetShader(21);
 }
 
 void CRenderManager::RenderTransparentAndWater()
@@ -962,10 +967,6 @@ void CRenderManager::RenderTransparentAndWater()
 	{
 		m_RenderLayerList[(int)RenderLayerIdx::Water]->RenderList.sort(CRenderManager::SortZ);
 	}
-
-	// 반투명 물체들이 그려진 Render Target 정보를 넘겨준다.
-	// CRenderTarget* FinalScreenTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("FinalScreen");
-	// FinalScreenTarget->SetTargetShader(21);
 
 	// 알파 블렌드 적용
 	m_AlphaBlend->SetState();
@@ -1002,17 +1003,13 @@ void CRenderManager::RenderTransparentAndWater()
 	CSceneManager::GetInst()->GetScene()->GetLightManager()->ResetForwardRenderShader();
 
 	m_AlphaBlend->ResetState();
-
-	// FinalScreenTarget->ResetTargetShader(21);
 }
 
 void CRenderManager::RenderHDR(float DeltaTime)
 {
 	// 1단계 : 2번의 Down Scale 과정을 통해서 평균 휘도 값을 계산한다.
-	
 	// Lighting 이 끝난 Final Target 정보를 가지고 온다.
-	CRenderTarget* FinalScreenTarget = (CRenderTarget*)CResourceManager::GetInst()->FindTexture("FinalScreen");
-	FinalScreenTarget->SetTargetShader(21);
+	m_FinalTarget->SetTargetShader(81);
 
 	m_HDR->RenderFirstDownScale();
 
@@ -1021,27 +1018,25 @@ void CRenderManager::RenderHDR(float DeltaTime)
 	// 2단계 : Tone Mapping 을 적용한다.
 	// - LDR 값을 출력하는 풀 스크린 쿼드 렌더링
 	// - 즉, 출력값을 기존 Back Buffer 가 아니라, 새로운 렌더 타겟에 설정
-	m_LDRToneMappingTarget->SetTarget();
+	// m_LDRToneMappingTarget->ClearTarget();
+
+	// m_LDRToneMappingTarget->SetTarget();
 
 	m_ToneMappingShader->SetShader();
 
 	// 깊이 버퍼 세팅 ?
-	m_DepthDisable->SetState();
-
-	m_AlphaBlend->SetState();
+	// m_DepthDisable->SetState();
 
 	// 적응값 Update
-	m_HDR->Update(DeltaTime);
+	// m_HDR->Update(DeltaTime);
 
 	m_HDR->RenderFinalToneMapping();
 
-	m_AlphaBlend->ResetState();
+	// m_DepthDisable->ResetState();
 
-	m_DepthDisable->ResetState();
+	// m_LDRToneMappingTarget->ResetTarget();
 
-	m_LDRToneMappingTarget->ResetTarget();
-
-	FinalScreenTarget->ResetTargetShader(21);
+	m_FinalTarget->ResetTargetShader(81);
 }
 
 void CRenderManager::RenderColliderComponents()

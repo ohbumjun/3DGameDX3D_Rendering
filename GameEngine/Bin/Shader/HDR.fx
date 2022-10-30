@@ -1,4 +1,5 @@
-#include "ShaderInfo.fx"
+
+#include "PostProcessingInfo.fx"
 
 // 1. Lighting 먼저
 // 2. luminance calculation
@@ -6,7 +7,7 @@
 
 cbuffer FirstHDRDownScaleCBuffer : register(b7)
 {
-	uint2 g_Res;  // 백버퍼의 높이와 너비를 4로 나눈 값  (너비 -> 높이 순서로 )
+	float2 g_Res;  // 백버퍼의 높이와 너비를 4로 나눈 값  (너비 -> 높이 순서로 )
 	uint   g_Domain;  // 백퍼퍼와 높이와 너비를 곱한 후 16으로 나눈 값
 	uint   g_GroupSize; // 백버퍼의 높이와 너비를 곱한 후, 16으로 나눈 다음 1024를 곱한 값
 	
@@ -15,15 +16,11 @@ cbuffer FirstHDRDownScaleCBuffer : register(b7)
 	float2 g_DownScaleEmpty2;
 };
 
-// Render Target 만들어준 것 넘겨줘야 한다.(Lighting 끝난 Final Target 을 넘겨줘야 하는건가?)
+// Render Target 만들어준 것 넘겨줘야 한다.
 // Texture2D HDRTex : register(t21);
-Texture2DMS<float4> HDRTex : register(t21);
 
 // HDR.cpp 상에서 m_MiddleLumBuffer
 RWStructuredBuffer<float>    AverageLumUAV : register(u5);  // 읽기, 쓰기 둘다 가능
-
-// 휘도 계산을 위한 상수 
-static const float4 LUM_FACTOR = float4(0.299, 0.587, 0.114, 0);
 
 // 1번째 Pass
 // 그룹 공유 메모리  (같은 그룹 내 쓰레드끼리만 에만 공유되는 정보 ==> 레지스터 ~ 장치 메모리 사이에 위치하여 읽기 쓰기 속도 및 용량이 중간 정도)
@@ -55,6 +52,7 @@ float DownScale4x4(uint2 CurPixel, uint groupThreadId)
 			for (int j = 0; j < 4; ++j)
 			{
 				vDownScaled += HDRTex.Load(iFullResPos, 0, int2(j, i));
+				// vDownScaled += HDRTex.Load(iFullResPos + int2(j, i), 0);
 			}
 		}
 
@@ -64,6 +62,7 @@ float DownScale4x4(uint2 CurPixel, uint groupThreadId)
 		// 첫번째 DownScale 이 끝나면, 휘도 인자를 통해 
 		// 픽셀 색상을 해당하는 휘도값으로 변환한다.
 		// 이 과정은 매우 중요하다. 얻어진 이미지를 다른 후처리 과정에서 사용하기 때문이다.
+		// avgLum = dot(vDownScaled, float4(0.299, 0.587, 0.114, 0));
 		avgLum = dot(vDownScaled, LUM_FACTOR);
 
 		// 공유 메모리에 결과 기록
@@ -150,7 +149,7 @@ void DownScaleFirstPass(uint3 groupId : SV_GroupID, // dispatch 호출의 전체 쓰레
 	uint3 dispatchThreadId : SV_DispatchThreadID,      // 전체 dispatch 안에서의 현재 쓰레드의 3차원 식별자 (쓰레드의 고유 ID 라고 할 수 있다)
 	uint3 groupThreadId : SV_GroupThreadID)             // 현재 스레드가 속한 스레드 그룹 안에서의 Idx
 {
-	uint2 vCurPixel = uint2(dispatchThreadId.x % g_Res.x, dispatchThreadId.x / g_Res.x);
+	uint2 vCurPixel = uint2(dispatchThreadId.x % (uint)g_Res.x, dispatchThreadId.x / (uint)g_Res.x);
 
 	// 16 픽셀 그룹을 하나의 픽셀로 줄여 공유 메모리에 저장
 	float favgLum = DownScale4x4(vCurPixel, groupThreadId.x);
@@ -180,10 +179,10 @@ groupshared float SharedAvgFinal[MAX_GROUPS];
 
 // HDR.cpp 상에서 m_MeanLumBuffer
 RWStructuredBuffer<float>    AverageLumFinalUAV : register(u6);  // 읽기, 쓰기 둘다 가능
-RWStructuredBuffer<float>    PrevAverageLumUAV : register(u7);  // 읽기, 쓰기 둘다 가능
+// RWStructuredBuffer<float>    PrevAverageLumUAV : register(u7);  // 읽기, 쓰기 둘다 가능
 
 // HDR.cpp 상에서 m_MiddleLumBuffer
-StructuredBuffer<float>		    AverageValues1DSRV	: register(t15); // 읽기 전용
+StructuredBuffer<float>		    AverageValues1DSRV	: register(t75); // 읽기 전용
 
 // 첫 번째 컴퓨트 셰이더의 실행이 완료되면 동일한 상수 버퍼를 사용한 두번째 컴퓨트 셰이더를 실행한다
 // 중간 값 휘도 SRV와 평균 휘도 UAV 값을 지정해 사용한다
@@ -229,6 +228,28 @@ void DownScaleSecondPass(uint3 groupId : SV_GroupID,
 
 	GroupMemoryBarrierWithGroupSync(); // 동기화 후 다음 과정으로
 
+	// 16 에서 4로 다운 스케일
+	// 64에서 16으로 다운 스케일
+	if (dispatchThreadId.x % 16 == 0)
+	{
+		// 휘도 값 합산
+		float fstepAvgLum = favgLum;
+
+		fstepAvgLum += dispatchThreadId.x + 4 < g_GroupSize ?
+			SharedAvgFinal[dispatchThreadId.x + 4] : favgLum;
+
+		fstepAvgLum += dispatchThreadId.x + 8 < g_GroupSize ?
+			SharedAvgFinal[dispatchThreadId.x + 8] : favgLum;
+
+		fstepAvgLum += dispatchThreadId.x + 12 < g_GroupSize ?
+			SharedAvgFinal[dispatchThreadId.x + 12] : favgLum;
+
+		// 결과 값 저장
+		favgLum = fstepAvgLum;
+
+		SharedAvgFinal[dispatchThreadId.x] = fstepAvgLum;
+	}
+
 	// 4에서 1로 다운스케일
 	if (dispatchThreadId.x == 0)
 	{
@@ -255,8 +276,10 @@ void DownScaleSecondPass(uint3 groupId : SV_GroupID,
 
 		// 이전 프레임과 현재 프레임의 평균 휘도를 Adaptation 계수를 가지고 선형 보간 처리한다.
 		// float AdaptedAverageLum = lerp(PrevAverageLumUAV[0], fFinalLumValue, g_Adaptation);
-		// AverageLumFinalUAV[0] = max(AdaptedAverageLum, 0.0001f);
-		AverageLumFinalUAV[0] = max(fFinalLumValue, 0.0001f);
+		// AverageLumFinalUAV[0] = max(AdaptedAverageLum, 0.001f);
+		AverageLumFinalUAV[0] = max(fFinalLumValue, 0.0001f); 
+
+		// AverageLumFinalUAV[0] = fFinalLumValue;
 
 	}
 }

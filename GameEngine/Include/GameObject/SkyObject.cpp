@@ -23,10 +23,12 @@ bool CSkyObject::Init()
 {
 	m_Mesh = CreateComponent<CStaticMeshComponent>("Mesh");
 
+	// 즉, 원형 구에 SkyBox를 입히고, 우리는 그 안에서 밖을 바라보는 형태
 	m_Mesh->SetMesh("SpherePos");
 
 	CMaterial* Material = m_Scene->GetResource()->FindMaterial("SkyMaterial");
 
+	// 안쪽에서 밖을 향해 볼 수 있어야 한다.
 	Material->SetRenderState("FrontFaceCull");
 	Material->SetRenderState("SkyDepth");
 

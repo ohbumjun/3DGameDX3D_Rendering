@@ -28,6 +28,8 @@ bool CRenderStateManager::Init()
 	CreateRasterizerState("CullModeNone", D3D11_FILL_SOLID,
 		D3D11_CULL_NONE);
 
+	// SkyBox 는 가장 멀리 그릴 것이다. 즉, 깊이값이 최대값이다. 
+	// 1보다 작거나 같아도 깊이판정에서 없애지 않는 것으로 설정한다.
 	CreateDepthStencilState("SkyDepth", true, 
 		D3D11_DEPTH_WRITE_MASK_ZERO, D3D11_COMPARISON_LESS_EQUAL);
 
