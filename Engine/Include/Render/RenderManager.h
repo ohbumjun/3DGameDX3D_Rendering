@@ -142,7 +142,7 @@ public:
 
 private:
 	void RenderShadowMap();
-	void RenderGBuffer();
+	void RenderSkyBoxAndGBuffer();
 	void RenderDecal();
 	void RenderLightAcc();
 	void RenderLightBlend();
@@ -150,7 +150,7 @@ private:
 	void RenderTransparentAndWater();
 	void RenderColliderComponents();
 	void RenderCullingLayer();
-	void RenderHDR();
+	void RenderHDR(float DeltaTime);
 
 
 	// Render State

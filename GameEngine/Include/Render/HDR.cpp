@@ -8,8 +8,10 @@
 #include "../Engine.h"
 #include "../Device.h"
 
-CHDR::CHDR()
+CHDR::CHDR() :
+	m_AdaptValue(3.f) // 적응 값은 1 ~ 3초 범위가 가장 적절하다.
 {
+
 }
 
 CHDR::~CHDR()
@@ -18,6 +20,7 @@ CHDR::~CHDR()
 	SAFE_DELETE(m_MeanLumBuffer);
 	SAFE_DELETE(m_DownScaleCBuffer);
 	SAFE_DELETE(m_ToneMappingCBuffer);
+	SAFE_DELETE(m_PrevMeanLumBuffer);
 }
 
 bool CHDR::Init()
@@ -49,6 +52,17 @@ bool CHDR::Init()
 		6, false, (int)Buffer_Shader_Type::All))
 	{
 		SAFE_DELETE(m_MeanLumBuffer);
+		assert(false);
+		return false;
+	}
+
+	// 적응을 위한 이전 프레임 평균 휘도 값 버퍼
+	m_PrevMeanLumBuffer = new CStructuredBuffer;
+
+	if (!m_PrevMeanLumBuffer->Init("PrevMeanLumBuffer", sizeof(float), 1,
+		7, false, (int)Buffer_Shader_Type::All))
+	{
+		SAFE_DELETE(m_PrevMeanLumBuffer);
 		assert(false);
 		return false;
 	}
@@ -111,10 +125,9 @@ void CHDR::RenderSecondDownScale()
 
 	// 쓰기 전용
 	m_MeanLumBuffer->ResetShader();
-
 }
 
-void CHDR::FinalToneMapping()
+void CHDR::RenderFinalToneMapping()
 {
 	m_ToneMappingCBuffer->UpdateCBuffer();
 
@@ -131,6 +144,45 @@ void CHDR::FinalToneMapping()
 
 	m_MeanLumBuffer->ResetShader(15, (int)Buffer_Shader_Type::Graphic);
 
+	// 이전 프레임 평균 휘도값 Update
+	UpdatePrevMeanLum();
+}
+
+void CHDR::UpdatePrevMeanLum()
+{
+	ID3D11Buffer* TempMeanLumBuffer;
+	ID3D11UnorderedAccessView* TempMeanLumUAV;
+	ID3D11ShaderResourceView*  TempMeanLumSRV;
+
+	TempMeanLumBuffer = m_MeanLumBuffer->GetBuffer();
+	TempMeanLumUAV = m_MeanLumBuffer->GetUAV();
+	TempMeanLumSRV = m_MeanLumBuffer->GetSRV();
+
+	m_MeanLumBuffer->SetBuffer(m_PrevMeanLumBuffer->GetBuffer());
+	m_MeanLumBuffer->SetUAV(m_PrevMeanLumBuffer->GetUAV());
+	m_MeanLumBuffer->SetSRV(m_PrevMeanLumBuffer->GetSRV());
+
+	// 이전 프레임 평균 휘도값에, 현재 프레임 평균 휘도값을 대입해야 한다.
+	m_PrevMeanLumBuffer->SetBuffer(TempMeanLumBuffer);
+	m_PrevMeanLumBuffer->SetUAV(TempMeanLumUAV);
+	m_PrevMeanLumBuffer->SetSRV(TempMeanLumSRV);
+}
+
+void CHDR::Update(float DeltaTime)
+{
+	m_AdaptElapsedTime += DeltaTime;
+
+	// Adaptation 이 3초에 한번씩 실행하게 해주는 코드
+	// 시간이 0초부터 3초까지 흐르는 시간을 실행될 시간으로 나누어주면 
+	// 선형 보간을 통해 완전 하얀 화면에서 점점 원래의 화면으로 변한다.
+	// if (m_AdaptElapsedTime > 3.f)
+	if (m_AdaptElapsedTime > m_AdaptValue)
+		m_AdaptElapsedTime -= m_AdaptValue;
+
+	// float CalculatedAdaptVal = min(m_AdaptValue < 0.0001f ? m_AdaptValue : m_AdaptElapsedTime / m_AdaptValue, m_AdaptValue - 0.0001f);
+	float CalculatedAdaptVal = min(m_AdaptElapsedTime / m_AdaptValue, m_AdaptValue);
+
+	m_DownScaleCBuffer->SetAdaptValue(CalculatedAdaptVal);
 }
 
 

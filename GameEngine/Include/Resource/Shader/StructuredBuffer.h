@@ -24,6 +24,15 @@ private:
 	bool			m_Dynamic;
 
 public:
+	
+	ID3D11ShaderResourceView* GetSRV() const
+	{
+		return m_SRV;
+	}
+	ID3D11UnorderedAccessView* GetUAV() const
+	{
+		return m_UAV;
+	}
 	ID3D11Buffer* GetBuffer()	const
 	{
 		return m_Buffer;
@@ -34,6 +43,19 @@ public:
 		return m_Name;
 	}
 
+public :
+	void SetBuffer(ID3D11Buffer* NewBuffer)
+	{
+		m_Buffer = NewBuffer;
+	}
+	void SetSRV(ID3D11ShaderResourceView* NewSRV)
+	{
+		m_SRV = NewSRV;
+	}
+	void SetUAV(ID3D11UnorderedAccessView* NewUAV)
+	{
+		m_UAV = NewUAV;
+	}
 public:
 	bool Init(const std::string& Name, unsigned int Size, unsigned int Count, int Register, bool Dynamic = false,
 		int StructuredBufferShaderType = (int)Buffer_Shader_Type::Compute);

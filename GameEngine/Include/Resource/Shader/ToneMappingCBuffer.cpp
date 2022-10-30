@@ -3,8 +3,8 @@
 
 CToneMappingCBuffer::CToneMappingCBuffer()
 {
-	m_BufferData.MiddleGrey = 1.f;
-	m_BufferData.LumWhiteSqr = 1.f;
+	m_BufferData.MiddleGrey = 2;
+	m_BufferData.LumWhiteSqr = 30;
 }
 
 CToneMappingCBuffer::CToneMappingCBuffer(const CToneMappingCBuffer& Buffer)

@@ -453,10 +453,10 @@ void CRenderManager::Render(float DeltaTime)
 		}
 	}
 
-	// 환경맵 출력
-	CSharedPtr<CGameObject>	SkyObj = CSceneManager::GetInst()->GetScene()->GetSkyObject();
+	// 환경맵 출력 => RenderSkyBox 함수를 통해서 GBuffer 에 그릴 것이다.
+	// CSharedPtr<CGameObject>	SkyObj = CSceneManager::GetInst()->GetScene()->GetSkyObject();
+	// SkyObj->Render();
 
-	SkyObj->Render();
 
 	// 인스턴싱 정보를 만든다.
 	RenderDefaultInstancingInfo();
@@ -465,7 +465,7 @@ void CRenderManager::Render(float DeltaTime)
 	RenderShadowMap();
 
 	// GBuffer를 만들어낸다.
-	RenderGBuffer();
+	RenderSkyBoxAndGBuffer();
 
 	// Decal을 그려낸다.
 	RenderDecal();
@@ -526,7 +526,7 @@ void CRenderManager::Render(float DeltaTime)
 	}
 
 	// HDR + Tone Mapping 을 진행한다.
-	RenderHDR();
+	RenderHDR(DeltaTime);
 
 	// Collider 등 Debug 시 Light 적용과 별도로 Render 해줄 녀석들 출력하기 
 	RenderColliderComponents();
@@ -588,11 +588,8 @@ void CRenderManager::Render(float DeltaTime)
 
 	CSceneManager::GetInst()->GetScene()->GetViewport()->Render();
 
-
 	// 디버깅용 렌더타겟을 출력한다.
 	CResourceManager::GetInst()->RenderTarget();
-
-
 
 	// 마우스 출력
 	CWidgetWindow* MouseWidget = CEngine::GetInst()->GetMouseWidget();
@@ -656,7 +653,7 @@ void CRenderManager::RenderShadowMap()
 	CDevice::GetInst()->GetContext()->RSSetViewports(1, &PrevVP);
 }
 
-void CRenderManager::RenderGBuffer()
+void CRenderManager::RenderSkyBoxAndGBuffer()
 {
 	// 현재 백버퍼로 렌더타겟이 지정되어 있다.
 	// 이를 GBuffer 렌더타겟으로 교체해야 한다.
@@ -680,6 +677,7 @@ void CRenderManager::RenderGBuffer()
 
 	CDevice::GetInst()->GetContext()->OMSetRenderTargets((unsigned int)GBufferSize,
 		&vecTarget[0], PrevDepthTarget);
+
 
 	for (size_t i = 0; i <= (int)RenderLayerIdx::Default; ++i)
 	{
@@ -888,6 +886,10 @@ void CRenderManager::RenderLightBlend()
 
 	FinalScreenTarget->SetTarget(nullptr);
 
+	// 먼저 Back Buffer 를 그린다. -> 그 다음 
+	CSharedPtr<CGameObject>	SkyObj = CSceneManager::GetInst()->GetScene()->GetSkyObject();
+	SkyObj->Render();
+
 	m_vecGBuffer[0]->SetTargetShader(14);
 	m_vecGBuffer[2]->SetTargetShader(16);
 	m_vecLightBuffer[0]->SetTargetShader(18);
@@ -906,7 +908,6 @@ void CRenderManager::RenderLightBlend()
 	m_ShadowCBuffer->SetShadowVP(matView * matProj);
 
 	m_ShadowCBuffer->UpdateCBuffer();
-
 
 	UINT Offset = 0;
 	CDevice::GetInst()->GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
@@ -1005,7 +1006,7 @@ void CRenderManager::RenderTransparentAndWater()
 	// FinalScreenTarget->ResetTargetShader(21);
 }
 
-void CRenderManager::RenderHDR()
+void CRenderManager::RenderHDR(float DeltaTime)
 {
 	// 1단계 : 2번의 Down Scale 과정을 통해서 평균 휘도 값을 계산한다.
 	
@@ -1029,7 +1030,10 @@ void CRenderManager::RenderHDR()
 
 	m_AlphaBlend->SetState();
 
-	m_HDR->FinalToneMapping();
+	// 적응값 Update
+	m_HDR->Update(DeltaTime);
+
+	m_HDR->RenderFinalToneMapping();
 
 	m_AlphaBlend->ResetState();
 

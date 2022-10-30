@@ -9,6 +9,10 @@ cbuffer FirstHDRDownScaleCBuffer : register(b7)
 	uint2 g_Res;  // 백버퍼의 높이와 너비를 4로 나눈 값  (너비 -> 높이 순서로 )
 	uint   g_Domain;  // 백퍼퍼와 높이와 너비를 곱한 후 16으로 나눈 값
 	uint   g_GroupSize; // 백버퍼의 높이와 너비를 곱한 후, 16으로 나눈 다음 1024를 곱한 값
+	
+	float  g_Adaptation; // 적응값
+	float g_DownScaleEmpty;
+	float2 g_DownScaleEmpty2;
 };
 
 // Render Target 만들어준 것 넘겨줘야 한다.(Lighting 끝난 Final Target 을 넘겨줘야 하는건가?)
@@ -176,6 +180,7 @@ groupshared float SharedAvgFinal[MAX_GROUPS];
 
 // HDR.cpp 상에서 m_MeanLumBuffer
 RWStructuredBuffer<float>    AverageLumFinalUAV : register(u6);  // 읽기, 쓰기 둘다 가능
+RWStructuredBuffer<float>    PrevAverageLumUAV : register(u7);  // 읽기, 쓰기 둘다 가능
 
 // HDR.cpp 상에서 m_MiddleLumBuffer
 StructuredBuffer<float>		    AverageValues1DSRV	: register(t15); // 읽기 전용
@@ -242,9 +247,17 @@ void DownScaleSecondPass(uint3 groupId : SV_GroupID,
 		fFinalLumValue /= 64.f;
 
 		// 적응 휘도 적용
+		// HDR 렌더링의 경우, 카메라의 움직임이나 씬의 변화에 의해 HDR 이미지의 내용이 바뀐다.
+		// 따라서 평균 휘도값이 매우 불안정하다
+		// 해당 불안정성에 의해 LDR 이미지의 밝기가 변함에 따라 톤 매핑 범위가 두드러지게 바뀐다.
+		// 밝은 곳으로 어두운 곳으로 움직일 때, 우리 눈은 그 밝기에 적응하기 위해
+		// 어느 정도의 시간을 필요로 한다. 이러한 원리를 적용한다.
 
+		// 이전 프레임과 현재 프레임의 평균 휘도를 Adaptation 계수를 가지고 선형 보간 처리한다.
+		// float AdaptedAverageLum = lerp(PrevAverageLumUAV[0], fFinalLumValue, g_Adaptation);
+		// AverageLumFinalUAV[0] = max(AdaptedAverageLum, 0.0001f);
+		AverageLumFinalUAV[0] = max(fFinalLumValue, 0.0001f);
 
-		AverageLumFinalUAV[0] = max(fFinalLumValue, 0.0001);
 	}
 }
 

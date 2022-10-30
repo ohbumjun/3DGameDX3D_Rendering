@@ -234,9 +234,6 @@ PSOutput_GBuffer Standard3DPS(Vertex3DOutput input)
     return output;
 }
 
-
-
-
 SkinningInfo SkinningInstancing(float3 Pos, float3 Normal, float3 Tangent, float3 Binormal,
     float4 BlendWeight, float4 BlendIndex, uint InstanceID)
 {

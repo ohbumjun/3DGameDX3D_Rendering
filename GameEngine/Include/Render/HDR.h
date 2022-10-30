@@ -19,7 +19,9 @@ public :
 	bool Init();
 	void RenderFirstDownScale();
 	void RenderSecondDownScale();
-	void FinalToneMapping();
+	void RenderFinalToneMapping();
+	void UpdatePrevMeanLum();
+	void Update(float DeltaTime);
 protected :
 	// HDR을 구현하기 위해서는 
 	// 1) ShaderResourceView와 UnorderedAccessView를 만들어주기 위한 버퍼2개
@@ -27,6 +29,7 @@ protected :
 	// 3) ToneMapping에 평균 휘도 값을 넣어줄 ShaderResourceView 1개가 필요하다(이하 Shader Resource View 를 SRV, UnorderedAccessView를 UAV라 하겠다)
 	class CStructuredBuffer* m_MidDownScaleLumBuffer;     // 휘도값 계산시 중간값 저장하는 역할
 	class CStructuredBuffer* m_MeanLumBuffer;
+	class CStructuredBuffer* m_PrevMeanLumBuffer;
 
 	class CHDRDownScaleFirstPass*		   m_DownScaleFirstPassUpdateShader;
 	class CHDRDownScaleSecondPass*    m_DownScaleSecondPassUpdateShader;
@@ -37,6 +40,8 @@ protected :
 
 private :
 	unsigned int  m_FirstDownScaleThreadGrpCnt;
+	float m_AdaptElapsedTime;
+	float m_AdaptValue;
 };
 
 // 원리

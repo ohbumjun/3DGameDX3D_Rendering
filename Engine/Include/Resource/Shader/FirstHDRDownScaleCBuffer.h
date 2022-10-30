@@ -16,6 +16,15 @@ public:
 	virtual bool Init();
 	virtual void UpdateCBuffer();
 	virtual CConstantBufferBase* Clone();
-
+public :
+	float GetAdaptValue()
+	{
+		return m_BufferData.FAdaptation;
+	}
+public :
+	void SetAdaptValue(float Value)
+	{
+		m_BufferData.FAdaptation = Value;
+	}
 };
 
